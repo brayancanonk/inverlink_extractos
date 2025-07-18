@@ -1,0 +1,236 @@
+{
+  "createdAt": "2025-06-05T15:40:22.181Z",
+  "updatedAt": "2025-07-04T20:56:54.903Z",
+  "id": "EhKPHf1TZgjt9NkG",
+  "name": "Inverlink - Conciliación",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        -20
+      ],
+      "id": "395eaf25-5b00-413b-9ebd-edd95553ba4d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "readRows",
+        "workbook": {
+          "__rl": true,
+          "value": "01PHCLF5D5XYYOHN3P2FHK4BYAQG6UXRGA",
+          "mode": "list",
+          "cachedResultName": "Data_Invoices",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7BE330BE7D-6FB7-4ED1-AE07-0081BD4BC4C0%7D&file=Data_Invoices.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "DB",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7BE330BE7D-6FB7-4ED1-AE07-0081BD4BC4C0%7D&file=Data_Invoices.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=DB!A1"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        80
+      ],
+      "id": "3eaa07b0-17b8-49aa-b6ca-7a75a7e679c5",
+      "name": "DB Invoices",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "0BgLamAe7CuNGvED",
+          "name": "Microsoft Excel account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "readRows",
+        "workbook": {
+          "__rl": true,
+          "value": "01PHCLF5CXEHAMPHF7IZAKQDQNY7IADLM5",
+          "mode": "list",
+          "cachedResultName": "Extractos_Inverlink",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7BC7C02157-BF9C-4046-A80E-0DC7D001AD9D%7D&file=Extractos_Inverlink.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Hoja1",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7BC7C02157-BF9C-4046-A80E-0DC7D001AD9D%7D&file=Extractos_Inverlink.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Hoja1!A1"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        -100
+      ],
+      "id": "857d47a8-393b-4d89-bee5-052c8f58c978",
+      "name": "DB Extractos",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "0BgLamAe7CuNGvED",
+          "name": "Microsoft Excel account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function cleanValor(valor) {\n    if (typeof valor !== 'string') valor = String(valor);\n    valor = valor.trim().replace(/\\$/g, '').replace(/\\s/g, '');\n    if (valor.includes(',')) {\n        valor = valor.replace(/\\./g, '').replace(',', '.');\n    } else if (valor.match(/[.]\\d{2}$/)) {\n        valor = valor.replace(/,/g, '');\n    }\n    const num = Number(valor);\n    return Math.abs(Math.trunc(num));\n}\nfunction cleanFecha(fecha) {\n    if (!fecha) return null;\n    fecha = String(fecha).trim();\n    if (fecha.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})$/)) {\n        let [_, d, m, y] = fecha.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})$/);\n        if (y.length === 2) y = '20' + y;\n        return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;\n    }\n    return fecha;\n}\nconst facturasLimpias = items.map(e => {\n    return {\n        ...e.json,\n        valor_limpio: cleanValor(e.json['Monto total cobrado']),\n        fecha_limpia: cleanFecha(e.json['Fecha de pago o compra']),\n        nit_limpio: (e.json['Proveedor de pago'] || '').replace(/[^0-9a-zA-Z-]/g, '').toLowerCase(),\n    }\n});\nreturn [\n    {\n        json: {\n            facturas: facturasLimpias\n        }\n    }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        80
+      ],
+      "id": "a0d3e43f-78ec-48c6-ac86-8584c369f736",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "function cleanValor(valor) {\n    if (typeof valor !== 'string') valor = String(valor);\n    valor = valor.trim().replace(/\\$/g, '').replace(/\\s/g, '');\n    if (valor.includes(',')) {\n        valor = valor.replace(/\\./g, '').replace(',', '.');\n    } else if (valor.match(/[.]\\d{2}$/)) {\n        valor = valor.replace(/,/g, '');\n    }\n    const num = Number(valor);\n    return Math.abs(Math.trunc(num));\n}\nfunction cleanFecha(fecha) {\n    if (!fecha) return null;\n    fecha = String(fecha).trim();\n    if (fecha.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})$/)) {\n        let [_, d, m, y] = fecha.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})$/);\n        if (y.length === 2) y = '20' + y;\n        return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;\n    }\n    return fecha;\n}\nreturn items.map(e => {\n    return {\n        json: {\n            ...e.json,\n            valor_limpio: cleanValor(e.json['Valor Compra'] || e.json['Cargos y Abonos']),\n            fecha_limpia: cleanFecha(e.json['Fecha (Día/Mes)']),\n            nit_limpio: (e.json['NIT'] || '').replace(/[^0-9a-zA-Z-]/g, '').toLowerCase(),\n        }\n    };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        -100
+      ],
+      "id": "708f1ca7-64da-4fc9-9500-eb0fb51920b9",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "let extractos = [];\nlet facturas = [];\n\nfor (const item of items) {\n  if (Array.isArray(item.json.extractos)) {\n    extractos = item.json.extractos;\n  }\n  if (Array.isArray(item.json.facturas)) {\n    facturas = item.json.facturas;\n  }\n}\n\n// ... (el resto de la lógica igual, usando extractos y facturas como arrays)\nconst cruzadosCompleto = [];\nconst cruzadosSoloValor = [];\nconst noCruzados = [];\nconst facturasCruzadas = new Set();\nconst comparaciones = [];\n\n// El resto igual a lo anterior...\nextractos.forEach(extracto => {\n    let cruceCompleto = null;\n    let cruceValorSolo = null;\n    for (const factura of facturas) {\n        const valorExtracto = String(extracto.valor_limpio).trim();\n        const valorFactura = String(factura.valor_limpio).trim();\n        const fechaExtracto = String(extracto.fecha_limpia).trim();\n        const fechaFactura = String(factura.fecha_limpia).trim();\n        const nitExtracto = String(extracto.nit_limpio || '').trim().toLowerCase();\n        const nitFactura = String(factura.nit_limpio || '').trim().toLowerCase();\n\n        comparaciones.push({\n            valorExtracto,\n            valorFactura,\n            matchValor: valorExtracto === valorFactura,\n            fechaExtracto,\n            fechaFactura,\n            matchFecha: fechaExtracto === fechaFactura,\n            nitExtracto,\n            nitFactura,\n            matchNit: nitExtracto === nitFactura,\n            extractoDescripcion: extracto['Descripción'],\n            facturaDescripcion: factura['Descripción'],\n        });\n\n        if (\n            valorExtracto === valorFactura &&\n            fechaExtracto === fechaFactura &&\n            (nitExtracto === nitFactura || !nitExtracto || !nitFactura)\n        ) {\n            cruceCompleto = { extracto, factura };\n            facturasCruzadas.add(factura['Número de comprobante o referencia']);\n            break;\n        }\n    }\n    if (!cruceCompleto) {\n        for (const factura of facturas) {\n            const valorExtracto = String(extracto.valor_limpio).trim();\n            const valorFactura = String(factura.valor_limpio).trim();\n            if (valorExtracto === valorFactura) {\n                cruceValorSolo = { extracto, factura };\n                facturasCruzadas.add(factura['Número de comprobante o referencia']);\n                break;\n            }\n        }\n    }\n    if (cruceCompleto) {\n        cruzadosCompleto.push(cruceCompleto);\n    } else if (cruceValorSolo) {\n        cruzadosSoloValor.push(cruceValorSolo);\n    } else {\n        noCruzados.push({ extracto });\n    }\n});\n\nconst facturasNoCruzadas = facturas.filter(f => !facturasCruzadas.has(f['Número de comprobante o referencia']));\nfacturasNoCruzadas.forEach(factura => {\n    noCruzados.push({ factura });\n});\n\nreturn [\n    { json: { cruzadosCompleto } },\n    { json: { cruzadosSoloValor } },\n    { json: { noCruzados } },\n    { json: { comparaciones } }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        -20
+      ],
+      "id": "5c27a133-74d5-46a9-9a0a-01df9a75aa40",
+      "name": "Cruce"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        200,
+        -20
+      ],
+      "id": "22ab3d4b-fe18-4232-89b0-00a9f405adb1",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "DB Invoices",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DB Extractos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB Invoices": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB Extractos": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Cruce",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "671986d2-fc68-43e9-b7e8-382908209f34",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-06-03T20:36:49.469Z",
+      "updatedAt": "2025-06-03T20:36:49.469Z",
+      "id": "E9oSeWOtAViNQ19X",
+      "name": "Inverlink"
+    }
+  ]
+}
