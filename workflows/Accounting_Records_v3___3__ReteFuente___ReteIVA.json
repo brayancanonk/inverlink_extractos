@@ -1,0 +1,1515 @@
+{
+  "createdAt": "2024-10-23T22:22:30.314Z",
+  "updatedAt": "2025-06-17T20:56:14.443Z",
+  "id": "DLHN7DyWE9GlU2dQ",
+  "name": "Accounting Records v3 - 3. ReteFuente - ReteIVA",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Parametrización del Modelo\n\n### - Cargue parámetros para el modelo AI y prompts\n### - Listado facturas disponibles para procesar\n\n\n",
+        "height": 735.8256129947246,
+        "width": 1353.156444372109,
+        "color": 7
+      },
+      "id": "d2a4cec6-30ca-49e7-b9de-4956d42963c8",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -6580,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "operation": "search",
+        "query": "01PHCLF5GSSTYCRT6MRNA3L2W7QU3UPEA5"
+      },
+      "id": "eaaee40f-44d6-49d2-ac3a-f17e4c9b5ee2",
+      "name": "Microsoft OneDrive",
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        -6320,
+        1380
+      ],
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "VuffFQLziQK9I5pc",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Revisión Responsabilidad ReteFuente\n\n### - Revisa la data en la data del flujo el item \"TaxLevelCode\", toma el código y lo compara con la base en SupaBase con el mismo nombre.\n### - Revisa el código y trae el nombre del régimen para el tercero.\n",
+        "height": 1191.4365458325947,
+        "width": 588.3196106722916,
+        "color": 7
+      },
+      "id": "a31ff0ff-a89d-4050-9c02-3843e0a11cab",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -5180,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Liquidación  ReteFuente\n\n### - Revisa la data para confirmar que la ciudad en la que se genera la factura no es la misma que la ciudad en que esta registrado el comprador. Sí es así, no debe tener ReteICA.\n### - Después de revisar la ciudad, valida la base de datos de la actividad del generador, junto con la descripción de la factura para confirmar si aplica o no alguna retención. \n### - Si no es autorretenedor se aplica retención en la fuente.",
+        "height": 1181.3770083864347,
+        "width": 2289.583178118439,
+        "color": 7
+      },
+      "id": "84cc694a-6350-41b9-b319-5f7bb818e4a7",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4540,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appxDB6mSqj7XDzIC",
+          "mode": "list",
+          "cachedResultName": "InvoiceData",
+          "cachedResultUrl": "https://airtable.com/appxDB6mSqj7XDzIC"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPHIUqpr9gmLfZJ",
+          "mode": "list",
+          "cachedResultName": "AIModels_Prompts",
+          "cachedResultUrl": "https://airtable.com/appxDB6mSqj7XDzIC/tblPHIUqpr9gmLfZJ"
+        },
+        "filterByFormula": "ActualProject = \"Accounting Records\"",
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "ID"
+            }
+          ]
+        }
+      },
+      "id": "2a71eff7-c97a-4c3d-8800-09e04a9e76e4",
+      "name": "AI_Variables",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -6320,
+        1060
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "qt2DSN1Xi7hBivEb",
+          "name": "Airtable Personal Access Token"
+        }
+      },
+      "notes": "Parametrización modelos AI y Prompts"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "Retefuente_TAX",
+        "returnAll": true,
+        "filterType": "none"
+      },
+      "id": "4bf8e2c0-b66d-496d-9041-a4c835053b33",
+      "name": "Tablas ReteFuente",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -6140,
+        1060
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      },
+      "notes": "Parametrización Retención en la Fuente"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "1bb6b4b4-0d1b-4126-b3ff-a65c52d31814",
+      "name": "Parametrizacion ReteFuente",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -5960,
+        1060
+      ],
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aaf1aed6-347b-4119-a406-9c3f6dab2339",
+              "name": "Parametros ReteFuente",
+              "value": "={{ $json.data }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "03c91150-6657-4660-95e7-40824799d915",
+      "name": "Parametros ReteFuente",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5780,
+        1060
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8b565e93-0a7f-47f7-a8f1-4be3d0e53e79",
+              "name": "Description",
+              "value": "={{ $json.ItemDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "b725ac85-a5d3-4c76-93cd-96d620eb8be1",
+              "name": "Quantity",
+              "value": "={{ $json.Quantity }}",
+              "type": "string"
+            },
+            {
+              "id": "c8b2252d-e993-4302-b8f7-fd101a0c5697",
+              "name": "Unit_Value",
+              "value": "={{ $json.Unit_Value }}",
+              "type": "string"
+            },
+            {
+              "id": "6944de35-3853-4574-91e5-0d5ac8ec3a94",
+              "name": "Total_Value",
+              "value": "={{ $json.Total_Value }}",
+              "type": "string"
+            },
+            {
+              "id": "46d5c056-baf4-47a8-a3d2-e37be4c52256",
+              "name": "ParentDocumentID",
+              "value": "={{ $json.ParentDocumentID }}",
+              "type": "string"
+            },
+            {
+              "id": "df4f99dd-5312-44dc-bd8d-60ddc8031f51",
+              "name": "SenderParty_CompanyID",
+              "value": "={{ $json.SenderParty_CompanyID }}",
+              "type": "string"
+            },
+            {
+              "id": "8622e1c2-58cd-4047-a237-43fc7c4c7832",
+              "name": "SenderParty_RegistrationName",
+              "value": "={{ $json.SenderParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "b1c50f7d-12f9-47fa-99bc-9c34f5cc7fbf",
+              "name": "SenderParty_TaxLevelCode",
+              "value": "={{ $json.SenderParty_TaxLevelCode }}",
+              "type": "string"
+            },
+            {
+              "id": "b727f6a4-27f2-4bc6-802a-92b3ad12cef1",
+              "name": "Item_uuid",
+              "value": "={{ $json.Item_uuid }}",
+              "type": "string"
+            },
+            {
+              "id": "19e0a91f-4632-4d54-a3e6-7a1c24eb82c7",
+              "name": "Invoice_uuid",
+              "value": "={{ $json.Invoice_uuid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bac71c36-f8f6-4e85-9402-d396e5e64722",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4460,
+        1340
+      ],
+      "notesInFlow": true,
+      "notes": "Prepara toda los items de la factura para clasificar por Producto o Servicio"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize an empty array to store the results\nlet result = [];\n\n// Loop through each item in the input\nfor (let i = 0; i < this.items.length; i++) {\n  // Get the ExpenseType from the current item in \"Invoice Description1\"\n  const expenseType = this.items[i].json.choices[0].message.content.ExpenseType;\n\n  // Get the Parametros ReteFuente data (this data is expected to be static across all items)\n  const parametrosReteFuente = $node[\"Parametros ReteFuente\"].json['Parametros ReteFuente'];\n\n  // Ensure data exists before proceeding\n  if (!expenseType || !parametrosReteFuente) {\n    throw new Error(`Required data missing from Invoice Description1 or Parametros ReteFuente nodes for item ${i}`);\n  }\n\n  // Filter the Parametros ReteFuente data based on the ExpenseType\n  const filteredData = parametrosReteFuente.filter(item => item.CATEGORY === expenseType);\n\n  // Extract unique \"TYPE\" values\n  const uniqueTypes = [...new Set(filteredData.map(item => item.TYPE))];\n\n  // Push the result for the current item into the result array\n  result.push({\n    json: {\n      uniqueTypes: uniqueTypes\n    }\n  });\n}\n// Return the results for all items\nreturn result;\n"
+      },
+      "id": "3d1a7ff3-ee5d-41d0-9336-0033b1dac72c",
+      "name": "ReteFuente_Filtrado_Type",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3980,
+        1300
+      ],
+      "notes": "Filtra el type según la clasificación de la categoría."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retrieve the data from the 'Item Type' node (assumed to be an array of items)\nconst itemTypeData = $input.all(); // Fetches all the input items from the \"Item Type\" node\nconst paramData = $node[\"Parametros ReteFuente\"].json[\"Parametros ReteFuente\"];\n\n// Prepare an empty array to store the final result\nlet finalResult = [];\n\n// Loop through each item in the 'Item Type' node\nitemTypeData.forEach(item => {\n  const typeValue = item.json.choices[0].message.content.Type;\n  \n  // Filter the 'Parametros ReteFuente' data based on the 'Type' value from 'Item Type'\n  const filteredData = paramData.filter(param => param.TYPE === typeValue);\n  \n  // Collect 'NUM' and 'CONCEPT' for the current itemType\n  const numAndConcept = filteredData.map(param => {\n    return {\n      NUM: param.NUM,\n      CONCEPT: param.CONCEPT\n    };\n  });\n  \n  // Add this filtered list (numAndConcept) to the final result\n  finalResult.push({\n    itemType: typeValue,\n    results: numAndConcept // Array of filtered 'NUM' and 'CONCEPT' objects\n  });\n});\n\n// Return the result, one list for each input item\nreturn finalResult;\n"
+      },
+      "id": "f8887425-b2ee-47dc-8ede-40187aeb62bb",
+      "name": "ReteFuente_Filtrado_Concept",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3500,
+        1280
+      ],
+      "notes": "Filtra el type según la clasificación de la categoría."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retrieve all input data from the node\nconst allInputData = $input.all(); // Fetches all the input items\nconst paramData = $node[\"Parametros ReteFuente\"].json?.[\"Parametros ReteFuente\"]; // Safely get Parametros ReteFuente\n\nif (!paramData) {\n  // Handle case where Parametros ReteFuente is not found\n  throw new Error(\"No data found in 'Parametros ReteFuente'\");\n}\n\n// Prepare an empty array to store the final result for each input\nlet finalResult = [];\n\n// Loop through each input item and process it individually\nallInputData.forEach(item => {\n  // Safely extract the 'Num' from 'Item Concept', handling cases where it might be undefined\n  const itemConcept = $node[\"Item Concept\"].json?.choices?.[0]?.message?.content?.NUM;\n\n  if (!itemConcept) {\n    // If 'Num' is not found, return an error message for this input\n    finalResult.push({\n      json: {\n        message: \"No 'NUM' found in 'Item Concept'.\",\n        item: item.json\n      }\n    });\n    return; // Skip this iteration and move to the next item\n  }\n\n  const itemConceptNum = String(itemConcept); // Convert 'Num' to a string\n\n  // Filter the 'Parametros ReteFuente' data based on the 'Num' from 'Item Concept'\n  const filteredData = paramData.find(param => String(param.NUM) === itemConceptNum);\n\n  if (filteredData) {\n    // Convert the 'TARIFA' string to a float and store it in a variable called 'Tariff'\n    const tariff = parseFloat(filteredData.TARIFA);\n\n    // Push the result for this particular input item\n    finalResult.push({\n      json: {\n        Tariff: tariff,\n        NUM: filteredData.NUM,\n        CONCEPT: filteredData.CONCEPT\n      }\n    });\n  } else {\n    // Handle case if no matching 'Num' is found in 'Parametros ReteFuente' for this input item\n    finalResult.push({\n      json: {\n        message: \"No matching NUM found for this input item.\",\n        NUM: itemConceptNum\n      }\n    });\n  }\n});\n\n// Return the final result, ensuring one output per input item\nreturn finalResult;\n"
+      },
+      "id": "14e39f60-551b-4e1b-ae8a-f53b8871f34b",
+      "name": "ReteFuente_Value",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3100,
+        1260
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Items",
+        "options": {}
+      },
+      "id": "88cdec4b-b4c1-4486-aae3-00dcb946c7b0",
+      "name": "Split Items",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -5360,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "={{ $item(3).$node[\"AI_Variables\"].json[\"ActualModel\"] }}",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $item(3).$node[\"AI_Variables\"].json[\"SystemPrompt\"] }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $item(3).$node[\"AI_Variables\"].json[\"UserPrompt_1\"] }}"
+            },
+            {
+              "content": "={{ $item(3).$node[\"AI_Variables\"].json[\"UserPrompt_2\"] }}"
+            },
+            {
+              "content": "={{ $item(3).$node[\"AI_Variables\"].json[\"UserPrompt_3\"] }}"
+            },
+            {
+              "content": "={{ $item(3).$node[\"AI_Variables\"].json[\"UserPrompt_4\"] }}"
+            },
+            {
+              "content": "=Item Description\n{{ $json.Description }}\n{{ $json.SenderParty_RegistrationName }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4096,
+          "temperature": "={{ $item(3).$node[\"AI_Variables\"].json[\"Temperature\"] }}"
+        }
+      },
+      "id": "3f750fe4-e545-42dd-b407-0492baea35d4",
+      "name": "Item Category",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -4240,
+        1320
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "0r1L7QIDC5ZRtM0r",
+          "name": "OpenAi"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "={{ $item(4).$node[\"AI_Variables\"].json[\"ActualModel\"] }}",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $item(4).$node[\"AI_Variables\"].json[\"SystemPrompt\"] }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $item(4).$node[\"AI_Variables\"].json[\"UserPrompt_1\"] }}"
+            },
+            {
+              "content": "={{ $item(4).$node[\"AI_Variables\"].json[\"UserPrompt_2\"] }}"
+            },
+            {
+              "content": "={{ $item(4).$node[\"AI_Variables\"].json[\"UserPrompt_3\"] }}"
+            },
+            {
+              "content": "={{ $item(4).$node[\"AI_Variables\"].json[\"UserPrompt_4\"] }}"
+            },
+            {
+              "content": "=Item Description\n{{ $('Edit Fields').item.json.Description }}\n\nType List\n{{ $json.uniqueTypes }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4096,
+          "temperature": "={{ $item(4).$node[\"AI_Variables\"].json[\"Temperature\"] }}"
+        }
+      },
+      "id": "b1e64e9b-4820-4bf8-a5d6-ba2d7f587316",
+      "name": "Item Type",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -3760,
+        1300
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "0r1L7QIDC5ZRtM0r",
+          "name": "OpenAi"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9e4c0f54-2456-4a2c-ba7d-3e483085b3ca",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -4860,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "={{ $item(5).$node[\"AI_Variables\"].json[\"ActualModel\"] }}",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $item(5).$node[\"AI_Variables\"].json[\"SystemPrompt\"] }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $item(5).$node[\"AI_Variables\"].json[\"UserPrompt_1\"] }}"
+            },
+            {
+              "content": "={{ $item(5).$node[\"AI_Variables\"].json[\"UserPrompt_2\"] }}"
+            },
+            {
+              "content": "={{ $item(5).$node[\"AI_Variables\"].json[\"UserPrompt_3\"] }}"
+            },
+            {
+              "content": "={{ $item(5).$node[\"AI_Variables\"].json[\"UserPrompt_4\"] }}"
+            },
+            {
+              "content": "=# INPUT INFORMATION\n\nItem Description\n{{ $('Edit Fields').item.json.Description }}\n\nItem Category\n{{ $('Item Category').item.json.choices[0].message.content.ExpenseType }}\n\nItem Type\n{{ $('Item Type').item.json.choices[0].message.content.Type }}\n\nConcept List\nA structured list, each with a \"NUM\" and \"CONCEPT\" that you must match to the item description.\n\n{{ $json.results.map(result => `NUM: ${result.NUM}, CONCEPT: ${result.CONCEPT}`).join(', ') }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4096,
+          "temperature": "={{ $item(5).$node[\"AI_Variables\"].json[\"Temperature\"] }}"
+        }
+      },
+      "id": "f53446d1-e280-48dd-a859-84a0c27f1111",
+      "name": "Item Concept",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -3300,
+        1280
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "0r1L7QIDC5ZRtM0r",
+          "name": "OpenAi"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9c3d9ba-9ba5-4ddf-b2b5-5a9e341cb485",
+              "name": "ParentDocumentID",
+              "value": "={{ $('Edit Fields').item.json.ParentDocumentID }}",
+              "type": "string"
+            },
+            {
+              "id": "b98c17c4-00bf-4eec-9249-0927e649a7e7",
+              "name": "SenderParty_CompanyID",
+              "value": "={{ $('Edit Fields').item.json.SenderParty_CompanyID }}",
+              "type": "string"
+            },
+            {
+              "id": "2e6d0125-9d9e-4750-93ce-74920d5f207c",
+              "name": "SenderParty_RegistrationName",
+              "value": "={{ $('Edit Fields').item.json.SenderParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "74d3adfb-9f2f-4428-a29b-26cd7bbac4be",
+              "name": "SenderParty_TaxLevelCode",
+              "value": "={{ $('Edit Fields').item.json.SenderParty_TaxLevelCode }}",
+              "type": "string"
+            },
+            {
+              "id": "fcc0d00c-0628-4216-8d74-6f7fae970e68",
+              "name": "ItemDescription",
+              "value": "={{ $('Edit Fields').item.json.Description }}",
+              "type": "string"
+            },
+            {
+              "id": "bfd808d9-cadf-4ec9-b3a5-2ddf67b4d36a",
+              "name": "Quantity",
+              "value": "={{ $('Edit Fields').item.json.Quantity }}",
+              "type": "string"
+            },
+            {
+              "id": "8991e882-5fe7-4521-8489-379c3ecd3390",
+              "name": "Unit_Value",
+              "value": "={{ $('Edit Fields').item.json.Unit_Value }}",
+              "type": "string"
+            },
+            {
+              "id": "b57d99e7-7883-433a-94ce-875f65016b54",
+              "name": "Total_Value",
+              "value": "={{ $('Edit Fields').item.json.Total_Value }}",
+              "type": "string"
+            },
+            {
+              "id": "80e490e4-ac1e-4bf9-9019-0ceb4c90a002",
+              "name": "ExpenseType",
+              "value": "={{ $('Item Category').item.json.choices[0].message.content.ExpenseType }}",
+              "type": "string"
+            },
+            {
+              "id": "7caa3e8c-5883-4a72-b964-9f082682c939",
+              "name": "Type",
+              "value": "={{ $('Item Type').item.json.choices[0].message.content.Type }}",
+              "type": "string"
+            },
+            {
+              "id": "d599a55d-95eb-4fbb-a44f-8e1f2991c827",
+              "name": "Tariff",
+              "value": "={{ $json.Tariff }}",
+              "type": "number"
+            },
+            {
+              "id": "1c5d550b-4213-4e4f-bb04-7e87fbd503ae",
+              "name": "NUM",
+              "value": "={{ $json.NUM }}",
+              "type": "number"
+            },
+            {
+              "id": "ec72afe2-f8bf-419e-92f4-1164cbd7d6cd",
+              "name": "ReteFuente_Item_Value",
+              "value": "={{ $('Edit Fields').item.json.Total_Value * $json.Tariff }}\n",
+              "type": "number"
+            },
+            {
+              "id": "52525cee-1c45-49d1-8fac-3882ba8121f6",
+              "name": "Item_uuid",
+              "value": "={{ $('Edit Fields').item.json.Item_uuid }}",
+              "type": "string"
+            },
+            {
+              "id": "48d568b5-ef87-4c69-b072-ed9ed252768c",
+              "name": "Invoice_uuid",
+              "value": "={{ $('Edit Fields').item.json.Invoice_uuid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "abebf719-17a0-454a-8cc1-4b74ef8b221d",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2920,
+        1320
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "37ddd1de-248e-41b6-b9ad-8185f7bb5b37",
+      "name": "Aggregate Items RF",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -4440,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input from \"Aggregate Items RF\" node\nconst inputData = $input.all()[0].json.data; \n\n// Initialize a result array to store the grouped data\nlet groupedResults = [];\n\n// Helper function to group items by `Invoice_uuid` and `NUM` and sum `Total_Value`\nfunction groupBy(arr, keys) {\n  return arr.reduce((acc, item) => {\n    // Create a unique group key based on the Invoice_uuid and NUM\n    const groupKey = keys.map(key => item[key]).join('-');\n\n    // If the group doesn't exist, initialize it\n    if (!acc[groupKey]) {\n      acc[groupKey] = {\n        Invoice_uuid: item.Invoice_uuid,\n        NUM: item.NUM,\n        Total_Item_NUM: 0 // Initialize the total sum of Total_Value\n      };\n    }\n\n    // Sum up the `Total_Value` for each group\n    acc[groupKey].Total_Item_NUM += parseFloat(item.Total_Value);\n\n    return acc;\n  }, {});\n}\n\n// Step 1: Group by `Invoice_uuid` and `NUM` and sum `Total_Value`\nconst groupedData = groupBy(inputData, ['Invoice_uuid', 'NUM']);\n\n// Convert the grouped object into an array of results\nfor (const groupKey in groupedData) {\n  groupedResults.push(groupedData[groupKey]);\n}\n\n// Return the result as an array of objects\nreturn groupedResults.map(group => ({ json: group }));"
+      },
+      "id": "4078dc21-54b4-49ef-a4cf-a64834b24797",
+      "name": "Subtotal_Invoice_NUM",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4220,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retrieve data from the \"Subtotal_Invoice_NUM\" node\nconst subtotalData = $input.all(); \n\n// Retrieve \"Parametros ReteFuente\" data with explicit structure access\nconst parametrosReteFuenteNode = $node['Parametros ReteFuente'];\nconst parametrosReteFuenteData = parametrosReteFuenteNode ? parametrosReteFuenteNode.json['Parametros ReteFuente'] : null;\n\n// Check if \"Parametros ReteFuente\" data is available\nif (!parametrosReteFuenteData) {\n  // Output an error message and available node data for debugging\n  throw new Error(\"Parametros ReteFuente data is missing. Verify if the node 'Parametros ReteFuente' has run and contains data in 'Parametros_ReteFuente'.\");\n}\n\n// Initialize an array to store the final result\nlet finalResults = [];\n\n// Loop through each item in the \"Subtotal_Invoice_NUM\" data\nsubtotalData.forEach(item => {\n  const numValue = item.json.NUM; // Get the \"NUM\" value\n\n  // Step 1: Filter \"Parametros ReteFuente\" data using \"NUM\" value\n  const matchingParam = parametrosReteFuenteData.find(param => param.NUM === numValue);\n\n  if (!matchingParam) {\n    throw new Error(`No matching Parametros ReteFuente found for NUM: ${numValue}`);\n  }\n\n  const basePesos = parseFloat(matchingParam.BASE_PESOS); // Get the \"BASE_PESOS\" value\n\n  // Step 2: Create the \"ReteFuente_Liquida\" boolean variable\n  const reteFuenteLiquida = parseFloat(item.json.Total_Item_NUM) >= basePesos;\n\n  // Step 3: Add the result for this item to the finalResults array\n  finalResults.push({\n    Invoice_uuid: item.json.Invoice_uuid,\n    NUM: item.json.NUM,\n    Total_Item_NUM: item.json.Total_Item_NUM,\n    ReteFuente_Liquida: reteFuenteLiquida\n  });\n});\n\n// Return the final results\nreturn finalResults.map(result => ({ json: result }));\n\n\n\n"
+      },
+      "id": "628feaed-773e-4384-9190-66b281f65b75",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4000,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retrieve data from 'Aggregate Items RF' node\nconst aggregateItemsData = $node['Aggregate Items RF']?.json?.data || [];\n\n// Retrieve data from the 'Code' node\nlet reteFuenteLiquidaData = $node['Code']?.json || [];\n\n// Ensure reteFuenteLiquidaData is always an array, even if it contains a single object\nif (!Array.isArray(reteFuenteLiquidaData)) {\n  reteFuenteLiquidaData = [reteFuenteLiquidaData];\n}\n\n// Check if 'Aggregate Items RF' has valid data\nif (aggregateItemsData.length === 0) {\n  throw new Error(\"No data received from 'Aggregate Items RF'. Verify if the node has valid data.\");\n}\n\n// Initialize an array to store the final results\nlet finalResults = [];\n\n// Loop through each item in the 'Aggregate Items RF' data\naggregateItemsData.forEach(item => {\n  // Find the matching item in 'Code' node data using 'Invoice_uuid' and 'NUM'\n  const matchingItem = reteFuenteLiquidaData.find(reteItem => \n    reteItem.Invoice_uuid === item.Invoice_uuid && reteItem.NUM === item.NUM\n  );\n\n  // Add the 'ReteFuente_Liquida' value to the current item if a match is found\n  if (matchingItem) {\n    item.ReteFuente_Liquida = matchingItem.ReteFuente_Liquida;\n  } else {\n    // If no match is found, set the default value for 'ReteFuente_Liquida' as false\n    item.ReteFuente_Liquida = false;\n  }\n\n  // Push the modified item with all required fields to the final results\n  finalResults.push({\n    ParentDocumentID: item.ParentDocumentID,\n    SenderParty_CompanyID: item.SenderParty_CompanyID,\n    SenderParty_RegistrationName: item.SenderParty_RegistrationName,\n    SenderParty_TaxLevelCode: item.SenderParty_TaxLevelCode,\n    ItemDescription: item.ItemDescription,\n    Quantity: item.Quantity,\n    Unit_Value: item.Unit_Value,\n    Total_Value: item.Total_Value,\n    ExpenseType: item.ExpenseType,\n    Type: item.Type,\n    Tariff: item.Tariff,\n    NUM: item.NUM,\n    ReteFuente_Liquida: item.ReteFuente_Liquida,\n    ReteFuente_Item_Value: item.ReteFuente_Item_Value,\n    Item_uuid: item.Item_uuid,\n    Invoice_uuid: item.Invoice_uuid\n  });\n});\n\n// Return the final results as the output of the node\nreturn finalResults.map(result => ({ json: result }));"
+      },
+      "id": "fa4359e4-0c87-4242-9449-2d746b506d7c",
+      "name": "Item_Data_DB",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3780,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f3bb3c7-9d19-463a-9325-9fc3a914ac4d",
+              "name": "ReteFuente_ExpenseType",
+              "value": "={{ $json.ExpenseType }}",
+              "type": "string"
+            },
+            {
+              "id": "7133fc2e-7e18-453e-b54e-b855466a5a32",
+              "name": "ReteFuente_Type",
+              "value": "={{ $json.Type }}",
+              "type": "string"
+            },
+            {
+              "id": "bee604d7-a841-4382-ba80-4d627b68076f",
+              "name": "ReteFuente_Tariff",
+              "value": "={{ $json.Tariff }}",
+              "type": "number"
+            },
+            {
+              "id": "41fbae76-0faf-43a7-ba5b-bbc678f1db2b",
+              "name": "ReteFuente_NUM",
+              "value": "={{ $json.NUM }}",
+              "type": "number"
+            },
+            {
+              "id": "23a44518-a465-4498-9787-177833eb1fe4",
+              "name": "ReteFuente_Liquida",
+              "value": "={{ $json.ReteFuente_Liquida }}",
+              "type": "boolean"
+            },
+            {
+              "id": "66a0f7dd-acdc-4920-b745-888e52fe6a00",
+              "name": "ReteFuente_Item_Value",
+              "value": "={{ $('Item_Data_DB').item.json.Total_Value * $json.Tariff }}",
+              "type": "number"
+            },
+            {
+              "id": "59f4524b-6345-453f-8a7d-8379c49591b3",
+              "name": "Item_uuid",
+              "value": "={{ $json.Item_uuid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7a946c8a-6d83-446e-b4be-cd38f246ac34",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3560,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "8682650b-68d1-46ca-8e62-9896090c2cdb",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -2380,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input data from the previous node\nconst inputData = $input.all().map(item => item.json);\n\n// Step 1: Initialize an empty object to hold the grouped data\nconst groupedData = {};\n\n// Step 2: Group by \"Invoice_uuid\" and sum \"ReteFuente_Item_Value\"\ninputData.forEach(item => {\n  const invoiceId = item.Invoice_uuid;\n  \n  // If the group for this Invoice_uuid doesn't exist, initialize it\n  if (!groupedData[invoiceId]) {\n    groupedData[invoiceId] = {\n      Invoice_uuid: invoiceId,\n      ReteFuente: 0 // Initialize ReteFuente to 0\n    };\n  }\n  \n  // Add the \"ReteFuente_Item_Value\" to the \"ReteFuente\" total\n  groupedData[invoiceId].ReteFuente += parseFloat(item.ReteFuente_Item_Value || 0);\n});\n\n// Step 3: Convert the grouped data object to an array of results\nconst result = Object.values(groupedData);\n\n// Return the final result as an array of objects, each containing \"Invoice_uuid\" and \"ReteFuente\"\nreturn result.map(group => ({ json: group }));"
+      },
+      "id": "280bf612-e754-42fc-b8d2-33fb168c5c48",
+      "name": "ReteFuente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3120,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "613c54a3-f33c-4c58-a324-9a09d3ac172c",
+              "name": "Invoice_uuid",
+              "value": "={{ $json.Invoice_uuid }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ec095913-4d26-4824-ac8a-395391556406",
+      "name": "Data_ReteIVA",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4860,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "34388c4d-ee36-4b53-bd77-9562b2e3b625",
+                    "leftValue": "={{ $json.SenderParty_TaxLevelCode }}",
+                    "rightValue": "O-12",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Simple"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.SenderParty_TaxLevelCode }}",
+                    "rightValue": "O-15",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Autorretenedor"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "2cbbf73d-e207-4f6b-a425-99a14851ddb0",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -5020,
+        1060
+      ]
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "Invoice_uuid",
+        "options": {}
+      },
+      "id": "a1856b6f-fa9b-4c75-b089-10c432ad54f1",
+      "name": "Remove Duplicates",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        -4440,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a97f4a9-ef9d-4af4-a003-829e3dd2842b",
+              "name": "Invoice_uuid",
+              "value": "={{ $json.Invoice_uuid }}",
+              "type": "string"
+            },
+            {
+              "id": "a6f43e76-c872-49f9-b755-bae56e9961c6",
+              "name": "ReteIVA",
+              "value": "={{ ($json.IVA || 0) * 0.15 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7ff7cfdb-191b-4555-915e-71c0a99fff48",
+      "name": "Calculo ReteIVA",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3920,
+        660
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "f8fa75c6-5d48-4dae-8a07-4bae50b92a79",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -4800,
+        880
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "0bffc248-98f2-4e36-8a65-7b7d4fef7b09",
+      "name": "No Operation, do nothing1",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2900,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "636743ae-91b3-42d6-8f1e-9fde1287c121",
+              "name": "Items",
+              "value": "={{ $('Webhook').item.json.body.Items }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "06f92130-31f8-4425-9ff6-742446fcc809",
+      "name": "Mapping Items",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5580,
+        1060
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "InvoicesItems",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Item_uuid",
+              "condition": "eq",
+              "keyValue": "={{ $json.Item_uuid }}"
+            }
+          ]
+        },
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "69d909b1-dce9-42cf-b5c4-927165d0c084",
+      "name": "Items_ReteFuente",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3340,
+        1060
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Accounting_Records",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Invoice_uuid",
+              "condition": "eq",
+              "keyValue": "={{ $json.Invoice_uuid }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ReteFuente",
+              "fieldValue": "={{ $json.ReteFuente }}"
+            }
+          ]
+        }
+      },
+      "id": "784a96da-738c-4d84-9856-7bc575c71dbf",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2900,
+        1040
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Accounting_Records",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Invoice_uuid",
+              "condition": "eq",
+              "keyValue": "={{ $json.Invoice_uuid }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ReteIVA",
+              "fieldValue": "={{ $json.ReteIVA }}"
+            }
+          ]
+        }
+      },
+      "id": "ad9eede3-0869-4565-af91-62d258e6e721",
+      "name": "Update ReteIVA",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3620,
+        660
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "InvoicesData",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Invoice_uuid",
+              "keyValue": "={{ $json.Invoice_uuid }}"
+            }
+          ]
+        }
+      },
+      "id": "060bcf22-4ed3-4618-a942-a5ea880d3018",
+      "name": "Invoices Data",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -4220,
+        680
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "457ebf6f-d74c-4e53-bf7a-4ed58e70e598",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -2600,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "723886f9-f152-4182-b775-201b52833438",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a8085e62-3c59-4733-8a53-5e6a69e3850f",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -6520,
+        1060
+      ],
+      "webhookId": "64fdbb24-5120-46d4-908a-3d914adcfb99"
+    }
+  ],
+  "connections": {
+    "Tablas ReteFuente": {
+      "main": [
+        [
+          {
+            "node": "Parametrizacion ReteFuente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parametrizacion ReteFuente": {
+      "main": [
+        [
+          {
+            "node": "Parametros ReteFuente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parametros ReteFuente": {
+      "main": [
+        [
+          {
+            "node": "Mapping Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Item Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReteFuente_Filtrado_Type": {
+      "main": [
+        [
+          {
+            "node": "Item Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReteFuente_Filtrado_Concept": {
+      "main": [
+        [
+          {
+            "node": "Item Concept",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Items": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Category": {
+      "main": [
+        [
+          {
+            "node": "ReteFuente_Filtrado_Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Type": {
+      "main": [
+        [
+          {
+            "node": "ReteFuente_Filtrado_Concept",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Items RF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item Concept": {
+      "main": [
+        [
+          {
+            "node": "ReteFuente_Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReteFuente_Value": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Items RF": {
+      "main": [
+        [
+          {
+            "node": "Subtotal_Invoice_NUM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subtotal_Invoice_NUM": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Item_Data_DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Item_Data_DB": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Items_ReteFuente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI_Variables": {
+      "main": [
+        [
+          {
+            "node": "Tablas ReteFuente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReteFuente": {
+      "main": [
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Data_ReteIVA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data_ReteIVA": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Invoices Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculo ReteIVA": {
+      "main": [
+        [
+          {
+            "node": "Update ReteIVA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Mapping Items": {
+      "main": [
+        [
+          {
+            "node": "Split Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Items_ReteFuente": {
+      "main": [
+        [
+          {
+            "node": "ReteFuente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ReteFuente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update ReteIVA": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Invoices Data": {
+      "main": [
+        [
+          {
+            "node": "Calculo ReteIVA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calculo ReteIVA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI_Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "89290f23-1e9f-4cd0-a488-0f417a041a10",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-02-04T13:55:27.606Z",
+      "updatedAt": "2025-02-04T13:55:27.606Z",
+      "id": "sFbVSiMOCzwy8ZoJ",
+      "name": "Causacion"
+    }
+  ]
+}
