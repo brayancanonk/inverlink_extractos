@@ -1,0 +1,1821 @@
+{
+  "createdAt": "2025-06-03T23:15:35.227Z",
+  "updatedAt": "2025-07-16T22:12:25.739Z",
+  "id": "S44HHbHmkytcu1GT",
+  "name": "Inverlink - Flujo Extractos",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3980,
+        -360
+      ],
+      "id": "53f55e48-26b1-4299-b41a-3c1d4058d42f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "## Flujo de extractos\n\n* Se dividen los datos extraídos de los extractos, gravamentos y datos de los extractos\n* Se realiza el cargue de datos en los dos diferentes Excel\n* Se realiza limpieza de información de los extractos de Jeeves, para hacer el cargue, se hace cambio de formato en fechas \n\n* Control del tema de bebidas alcoholicas",
+        "height": 240,
+        "width": 660
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        -1200
+      ],
+      "id": "a57f7bb5-98af-4398-b1eb-dc57c3183979",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a11a01a3-1c39-4d6e-9f8c-72954c1e3f05",
+              "name": "Descripción",
+              "value": "={{ $json.descripcion }}",
+              "type": "string"
+            },
+            {
+              "id": "a8c11fb7-0dbc-4958-a733-2b93453c665d",
+              "name": "No de Compte",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "cbf29296-a83a-4d14-b70e-f421d446801d",
+              "name": "numeroAutorizacion",
+              "value": "={{ $json.numeroAutorizacion }}",
+              "type": "string"
+            },
+            {
+              "id": "04976e36-a5e5-4d8a-bb61-6a43c4d1dd62",
+              "name": "Fecha (Día/Mes/Año)",
+              "value": "={{ $json.fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "8eae6f48-5dc2-4d8f-8e16-9c9b44dc44ff",
+              "name": "Valor Compra",
+              "value": "={{ $json.valorOriginal }}",
+              "type": "string"
+            },
+            {
+              "id": "52bf59f5-cafb-4ceb-a914-8e2d93e0fe21",
+              "name": "Cargos y Abonos",
+              "value": "={{ $json.cargosAbonos }}",
+              "type": "string"
+            },
+            {
+              "id": "259ed281-b389-4d99-950c-6fc6d0a13271",
+              "name": "Saldo Diferido",
+              "value": "={{ $json.saldoDiferir }}",
+              "type": "string"
+            },
+            {
+              "id": "745de008-51ed-42cc-acfb-1e03c97d32a2",
+              "name": "Plazo",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "d3b7bae5-7757-4c99-9f7c-ece256a7dd82",
+              "name": "Cuota Fact.",
+              "value": "={{ $json.cuotas }}",
+              "type": "string"
+            },
+            {
+              "id": "fab02b78-4766-4140-917e-15f9cf06344c",
+              "name": "Cuota Pend",
+              "value": "=",
+              "type": "number"
+            },
+            {
+              "id": "5a5ac042-ff48-410b-b9f9-11c19bf531c6",
+              "name": "Tasa%",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "183c0f8e-aa53-41fc-be01-23d49a807826",
+              "name": "NIT",
+              "value": "={{ $json.NIT }}",
+              "type": "string"
+            },
+            {
+              "id": "5afb5132-57d6-498e-9ed4-ffe8fd55492e",
+              "name": "Banco",
+              "value": "={{ $json.banco }}",
+              "type": "string"
+            },
+            {
+              "id": "fdfab014-0c0b-421f-8053-4128c90736e5",
+              "name": "Tarjeta (últimos dígitos)",
+              "value": "={{ $json.ultimos4Tarjeta }}",
+              "type": "string"
+            },
+            {
+              "id": "4e1bc5fd-c100-49ba-ae6d-aacf34bc64e8",
+              "name": "Periodo Extracto",
+              "value": "={{ $json.periodoExtracto }}",
+              "type": "string"
+            },
+            {
+              "id": "aa1d63d2-62fd-4cb7-ba35-e84c849b25ea",
+              "name": "titular",
+              "value": "={{ $json.persona }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        -640
+      ],
+      "id": "ebfc8182-c301-43fd-9c92-1ad56f6ee37a",
+      "name": "Set Gravamentos",
+      "notes": "Se envían los gravamentos establecidos para cada banco, ya que cada uno tiene diferente descripción"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a11a01a3-1c39-4d6e-9f8c-72954c1e3f05",
+              "name": "Descripción",
+              "value": "={{ $json.descripcion }}",
+              "type": "string"
+            },
+            {
+              "id": "a8c11fb7-0dbc-4958-a733-2b93453c665d",
+              "name": "=No de Compte",
+              "value": "={{ $json.numeroAutorizacion }}",
+              "type": "string"
+            },
+            {
+              "id": "cbf29296-a83a-4d14-b70e-f421d446801d",
+              "name": "Ciudad/País",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "04976e36-a5e5-4d8a-bb61-6a43c4d1dd62",
+              "name": "Fecha (Día/Mes/Año)",
+              "value": "={{ $json.fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "8eae6f48-5dc2-4d8f-8e16-9c9b44dc44ff",
+              "name": "Valor Compra",
+              "value": "={{ $json.valorOriginal }}",
+              "type": "string"
+            },
+            {
+              "id": "52bf59f5-cafb-4ceb-a914-8e2d93e0fe21",
+              "name": "Cargos y Abonos",
+              "value": "={{ $json.cargosAbonos }}",
+              "type": "string"
+            },
+            {
+              "id": "259ed281-b389-4d99-950c-6fc6d0a13271",
+              "name": "Saldo Diferido",
+              "value": "={{ $json.saldoDiferir }}",
+              "type": "string"
+            },
+            {
+              "id": "745de008-51ed-42cc-acfb-1e03c97d32a2",
+              "name": "Plazo",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "fab02b78-4766-4140-917e-15f9cf06344c",
+              "name": "Cuota Pend",
+              "value": "=",
+              "type": "number"
+            },
+            {
+              "id": "5a5ac042-ff48-410b-b9f9-11c19bf531c6",
+              "name": "Tasa%",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "183c0f8e-aa53-41fc-be01-23d49a807826",
+              "name": "NIT",
+              "value": "={{ $json.NIT }}",
+              "type": "string"
+            },
+            {
+              "id": "5afb5132-57d6-498e-9ed4-ffe8fd55492e",
+              "name": "Banco",
+              "value": "={{ $json.banco }}",
+              "type": "string"
+            },
+            {
+              "id": "fdfab014-0c0b-421f-8053-4128c90736e5",
+              "name": "Tarjeta (últimos dígitos)",
+              "value": "={{ $json.ultimos4Tarjeta }}",
+              "type": "string"
+            },
+            {
+              "id": "4e1bc5fd-c100-49ba-ae6d-aacf34bc64e8",
+              "name": "Periodo Extracto",
+              "value": "={{ $json.periodoExtracto }}",
+              "type": "string"
+            },
+            {
+              "id": "aa1d63d2-62fd-4cb7-ba35-e84c849b25ea",
+              "name": "titular",
+              "value": "={{ $json.persona }}",
+              "type": "string"
+            },
+            {
+              "id": "84696921-f692-4d71-8aee-848d830cbe43",
+              "name": "URL_extracto",
+              "value": "={{ $json.URl_extracto }}",
+              "type": "string"
+            },
+            {
+              "id": "af11b10b-ecdf-4a8d-b96d-ca9888c59ce9",
+              "name": "ID_EXTRACTO",
+              "value": "={{ $json.ID_EXTRACTO }}",
+              "type": "string"
+            },
+            {
+              "id": "cb6b27bd-2a70-4432-9e83-f0f4caa7531d",
+              "name": "Cuota Fact.",
+              "value": "={{ $json.tasaFacturada }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        -480
+      ],
+      "id": "83fd82ad-0ef2-4015-9320-358168950e1a",
+      "name": "Set extractos",
+      "notes": "Se realiza validación y ajuste de la información para hacer merge con los datos del extracto de Jeeves"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.urlDownload }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -660,
+        -80
+      ],
+      "id": "4c515030-092f-4b36-acc3-cdc056c5efcb",
+      "name": "Descarga xlsx",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "iCNVrjz2iccszU7h",
+          "name": "Inverlink sharepoint"
+        }
+      },
+      "notes": "Se realiza la descarga del archivo XLSX"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        380,
+        -100
+      ],
+      "id": "29899981-4363-4913-9ef6-24123bc222e5",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.urlDownload }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1080,
+        -420
+      ],
+      "id": "6c21aa35-4c27-44ed-9dfd-327ef07fde5d",
+      "name": "Descarga PDF1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "iCNVrjz2iccszU7h",
+          "name": "Inverlink sharepoint"
+        }
+      },
+      "notes": "En este nodo se realiza la descarga de los PDF de extractos obtenidos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "39b000ab-79ef-41dc-aea7-9e9bc8a8b137",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": ".pdf",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "51ec3599-4d8b-4f8d-b308-b1edd45c88d4",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": ".PDF",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1300,
+        -280
+      ],
+      "id": "742f5f7d-f73c-4497-92a1-249c58e45e98",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {
+          "password": "860353765"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        -400
+      ],
+      "id": "0ce73b71-0202-4477-849e-3b1679b0cdca",
+      "name": "extraer texto PDF",
+      "notes": "En el nodo de extraer texto del PDF se debe configurar la clave del extracto, el cual es el NIT de los extractos 860353765"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/drives/b!PU0gxZ5Z3U2p8sh5AytDNQ0r9LElzUdKoJM90a8dwlNNksuuoU34TpjRp8lz1oPs/root:/REGISTRO%20OPERACIONES%20HELISA(%20Inverlink%20-IEI-%20IIA)/A%C3%91O%202025/INVERLINK%20SAS/c.%20Tarjetas%20de%20Cr%C3%A9dito:/children",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3780,
+        -360
+      ],
+      "id": "69e392a5-5db6-4b8a-8b7a-1524fe6e42e8",
+      "name": "Listar archivos",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        },
+        "microsoftGraphSecurityOAuth2Api": {
+          "id": "3bJKtXRc91GFo2Tj",
+          "name": "Microsoft Graph Security account"
+        },
+        "oAuth2Api": {
+          "id": "iCNVrjz2iccszU7h",
+          "name": "Inverlink sharepoint"
+        }
+      },
+      "notes": "En este nodo se listan todos los datos del folder padre de los meses"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -3600,
+        -360
+      ],
+      "id": "c67b299a-8fcd-498f-978e-4bc168c52d9f",
+      "name": "Split Out1",
+      "notes": "En este nodo se realiza la división de los items de value de los folder traidos"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener todos los datos de entrada\nconst todosLosItems = $input.all();\nconst meses = [];\n\nfor (const item of todosLosItems) {\n  const carpeta = item.json.name; // Declarar la variable con const\n  meses.push(carpeta);\n}\n\n// Retornar en formato esperado por n8n\nreturn meses.map(entry => ({ json: { mes: entry } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3420,
+        -360
+      ],
+      "id": "748e10c3-90b6-444a-aca6-7815f59b3b18",
+      "name": "Extraer folders mes",
+      "notes": "En este nodo se debe realizar la extracción de los meses que se tienen actualmente "
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8fc3000-a150-4f7b-8cde-735fa181c660",
+              "name": "MesSeleccionado",
+              "value": "02. Febrero",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3240,
+        -360
+      ],
+      "id": "f819bb9f-f524-468e-8214-02afa584f162",
+      "name": "Mes seleccionado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "200e1770-0ca4-4f0f-a9a5-a82ab6253c3e",
+              "leftValue": "={{ $('Extraer folders mes').item.json.mes }}",
+              "rightValue": "={{ $json.MesSeleccionado }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3080,
+        -360
+      ],
+      "id": "329e99e8-cb28-4177-86dc-46c646e48129",
+      "name": "Obtener mes seleccionado"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/drives/b!PU0gxZ5Z3U2p8sh5AytDNQ0r9LElzUdKoJM90a8dwlNNksuuoU34TpjRp8lz1oPs/root:/REGISTRO%20OPERACIONES%20HELISA(%20Inverlink%20-IEI-%20IIA)/A%C3%91O%202025/INVERLINK%20SAS/c.%20Tarjetas%20de%20Cr%C3%A9dito/{{ $json.MesSeleccionado }}:/children",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2620,
+        -260
+      ],
+      "id": "f18cd161-f2e3-422d-94d8-04eb40040145",
+      "name": "Listar Folder mes seleccionado",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        },
+        "microsoftGraphSecurityOAuth2Api": {
+          "id": "3bJKtXRc91GFo2Tj",
+          "name": "Microsoft Graph Security account"
+        },
+        "oAuth2Api": {
+          "id": "iCNVrjz2iccszU7h",
+          "name": "Inverlink sharepoint"
+        }
+      },
+      "notes": "se realiza una petición del mes seleccionado y se lista toda la información de los directorios"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/drives/b!PU0gxZ5Z3U2p8sh5AytDNQ0r9LElzUdKoJM90a8dwlNNksuuoU34TpjRp8lz1oPs/root:/REGISTRO%20OPERACIONES%20HELISA(%20Inverlink%20-IEI-%20IIA)/A%C3%91O%202025/INVERLINK%20SAS/c.%20Tarjetas%20de%20Cr%C3%A9dito/{{ $('Merge1').item.json.MesSeleccionado }}/{{ $json.banco }}:/children",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1920,
+        -280
+      ],
+      "id": "2409821e-be9d-4ba5-bbfc-f2f807f34bfa",
+      "name": "Listar documentos",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        },
+        "microsoftGraphSecurityOAuth2Api": {
+          "id": "3bJKtXRc91GFo2Tj",
+          "name": "Microsoft Graph Security account"
+        },
+        "oAuth2Api": {
+          "id": "iCNVrjz2iccszU7h",
+          "name": "Inverlink sharepoint"
+        }
+      },
+      "notes": "Se realiza una petición de los archivos que se encuentran dentro del directorio Extractos, ademas se concatena la URL del flujo"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d8934554-a0d9-46a7-b4c8-32ee645cfad7",
+              "leftValue": "={{ $json.banco }}",
+              "rightValue": "Extractos",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2180,
+        -260
+      ],
+      "id": "21e6e7f2-c8de-48f4-ba54-e95ca5e043b7",
+      "name": "Validar folder extractos",
+      "notes": "En este nodo se realiza la validación que se haga el apuntamiento al folder de Extractos. "
+    },
+    {
+      "parameters": {
+        "jsCode": "const prefix = 'EXT';\nconst timestamp = Date.now();\n\n// --- Obtener el nombre del archivo del nodo \"Descarga xlsx\" ---\nconst fileName = $node[\"Descarga xlsx\"].json.name;\n\n// --- Extraer el mes del nombre del archivo y convertirlo a nombre del mes ---\nconst monthNames = [\n  \"Enero\", \"Febrero\", \"Marzo\", \"Abril\", \"Mayo\", \"Junio\",\n  \"Julio\", \"Agosto\", \"Septiembre\", \"Octubre\", \"Noviembre\", \"Diciembre\"\n];\n\nlet periodoExtracto = \"Desconocido\";\nif (fileName) {\n  // Buscar patrón de fecha YYYY-MM-DD en el nombre del archivo\n  const dateMatch = fileName.match(/(\\d{4})-(\\d{2})-(\\d{2})/);\n  if (dateMatch) {\n    const monthNumber = parseInt(dateMatch[2], 10); // Extraer el mes\n    periodoExtracto = monthNames[monthNumber - 1]; // Convertir a nombre del mes\n  }\n}\n\nreturn items.map((item, index) => {\n  // --- Generar ID_EXTRACTO único para cada elemento ---\n  const random = Math.floor(Math.random() * 1000);\n  const ID_EXTRACTO = `${prefix}-${timestamp}-${random}-${index}`;\n  \n  // --- Ajustar fecha al formato DD/MM/YYYY ---\n  const originalDate = item.json[\"Fecha (Día/Mes/Año)\"];\n  if (originalDate) {\n    const [year, month, day] = originalDate.split(\"-\");\n    item.json[\"Fecha (Día/Mes/Año)\"] = `${day}/${month}/${year}`;\n  }\n  \n  // --- Ajustar descripción: primera letra mayúscula, resto minúsculas ---\n  let descripcion = item.json[\"Descripción\"];\n  if (descripcion && typeof descripcion === 'string') {\n    descripcion = descripcion.toLowerCase(); // Todo en minúscula\n    item.json[\"Descripción\"] = descripcion.charAt(0).toUpperCase() + descripcion.slice(1);\n  }\n  \n  // --- Agregar ID_EXTRACTO y Periodo Extracto al objeto ---\n  item.json[\"ID_EXTRACTO\"] = ID_EXTRACTO;\n  item.json[\"Periodo Extracto\"] = periodoExtracto;\n  \n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        40,
+        -80
+      ],
+      "id": "ab02f068-c295-43f3-a08d-b1f03eec84f4",
+      "name": "Formato datos",
+      "notes": "Se envían los datos de los extractos con formato establecido, para hacer merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all(); // Obtener todos los ítems de entrada\nconst resultado = [];\nfor (const item of items) {\n  const json = item.json;\n  if ((json.file?.mimeType === \"application/pdf\" || json.file?.mimeType === \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\") && json.name) {\n    resultado.push({\n      name: json.name,\n      \"Url extracto\": json.webUrl, \n      urlDownload: json[\"@microsoft.graph.downloadUrl\"]\n    });\n  }\n}\nreturn resultado.map(entry => ({ json: entry }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        -280
+      ],
+      "id": "d89de488-57b2-4642-b760-ae3e3fee29ec",
+      "name": "Obtener datos de archivos",
+      "notes": "En este nodo se realiza la extracción de información de los archivos listados dentro del directorio"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fec00b65-17c1-4768-bca4-39b06969d02c",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Relación",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        -100
+      ],
+      "id": "307218b9-8919-4770-95fb-500ed872fbf4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener todos los datos de entrada\nconst todosLosItems = $input.all();\n\n// Extraer automáticamente los meses válidos desde los datos\nconst mesesValidos = new Set();\nfor (const item of todosLosItems) {\n  const carpetas = item.json.value;\n  if (!Array.isArray(carpetas)) continue;\n\n  for (const carpeta of carpetas) {\n    const mes = carpeta.parentReference?.name;\n    if (mes) mesesValidos.add(mes);\n  }\n}\n\n// Creamos una lista de salida más útil para n8n\nconst salidaFinal = [];\n\nfor (const item of todosLosItems) {\n  const carpetas = item.json.value;\n  if (!Array.isArray(carpetas)) continue;\n\n  for (const carpeta of carpetas) {\n    const esCarpeta = carpeta.hasOwnProperty(\"folder\");\n    const nombreMes = carpeta.parentReference?.name;\n    const nombreCarpeta = carpeta.name;\n\n    if (esCarpeta && nombreMes && nombreCarpeta && mesesValidos.has(nombreMes)) {\n      salidaFinal.push({\n        mes: nombreMes,\n        banco: nombreCarpeta\n      });\n    }\n  }\n}\n\nreturn salidaFinal.map(entry => ({ json: entry }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2400,
+        -260
+      ],
+      "id": "ddc8253f-427c-44e3-813d-d073aac31da1",
+      "name": "Listar sub folders mes",
+      "notes": "Se extraen los folders de la petición del mes seleccionado"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "append",
+        "workbook": {
+          "__rl": true,
+          "value": "01HZVEXTIWP4G5HEI7J5DYASYQ46DK7OQC",
+          "mode": "list",
+          "cachedResultName": "Extractos",
+          "cachedResultUrl": "https://inverlink-my.sharepoint.com/personal/ekrypto_inverlink_com/_layouts/15/Doc.aspx?sourcedoc=%7BD30D7F16-1F91-474F-804B-10E786AFBA02%7D&file=Extractos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{0C538945-D5A9-4AD4-91C5-617796324802}",
+          "mode": "list",
+          "cachedResultName": "gravamenes",
+          "cachedResultUrl": "https://inverlink-my.sharepoint.com/personal/ekrypto_inverlink_com/_layouts/15/Doc.aspx?sourcedoc=%7BD30D7F16-1F91-474F-804B-10E786AFBA02%7D&file=Extractos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=gravamenes!A1"
+        },
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "Descripción",
+              "fieldValue": "={{ $json[\"Descripción\"] }}"
+            },
+            {
+              "column": "Fecha",
+              "fieldValue": "={{ $json[\"Fecha (Día/Mes/Año)\"] }}"
+            },
+            {
+              "column": "Valor compra",
+              "fieldValue": "={{ $json[\"Valor Compra\"] }}"
+            },
+            {
+              "column": "Cargos y abonos",
+              "fieldValue": "={{ $json[\"Cargos y Abonos\"] }}"
+            },
+            {
+              "column": "Periodo extracto",
+              "fieldValue": "={{ $json[\"Periodo Extracto\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        580,
+        -640
+      ],
+      "id": "f5a79c5a-a2fc-4993-9a96-696586a5d8cc",
+      "name": "Gravamenes",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "UMjXt9SIb2Tb1XTc",
+          "name": "Excel Inverlink"
+        }
+      },
+      "notes": "Se realiza el cargue de información a la hoja de calculo de los gravemenes"
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "workbook": {
+          "__rl": true,
+          "value": "01HZVEXTIWP4G5HEI7J5DYASYQ46DK7OQC",
+          "mode": "list",
+          "cachedResultName": "Extractos",
+          "cachedResultUrl": "https://inverlink-my.sharepoint.com/personal/ekrypto_inverlink_com/_layouts/15/Doc.aspx?sourcedoc=%7BD30D7F16-1F91-474F-804B-10E786AFBA02%7D&file=Extractos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "extractos",
+          "cachedResultUrl": "https://inverlink-my.sharepoint.com/personal/ekrypto_inverlink_com/_layouts/15/Doc.aspx?sourcedoc=%7BD30D7F16-1F91-474F-804B-10E786AFBA02%7D&file=Extractos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=extractos!A1"
+        },
+        "table": {
+          "__rl": true,
+          "value": "{8AE6F636-25EA-4885-983A-A1E292B5694A}",
+          "mode": "list",
+          "cachedResultName": "Extractos",
+          "cachedResultUrl": "https://inverlink-my.sharepoint.com/personal/ekrypto_inverlink_com/_layouts/15/Doc.aspx?sourcedoc=%7BD30D7F16-1F91-474F-804B-10E786AFBA02%7D&file=Extractos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=extractos!A1:R2"
+        },
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "Descripción",
+              "fieldValue": "={{ $json[\"Descripción\"] }}"
+            },
+            {
+              "column": "No de Compte",
+              "fieldValue": "={{ $json[\"No de Compte\"] }}"
+            },
+            {
+              "column": "Ciudad/País",
+              "fieldValue": "={{ $json[\"Ciudad/País\"] }}"
+            },
+            {
+              "column": "Fecha (Día/Mes)",
+              "fieldValue": "={{ $json[\"Fecha (Día/Mes/Año)\"] }}"
+            },
+            {
+              "column": "Valor Compra",
+              "fieldValue": "={{ $json[\"Valor Compra\"] }}"
+            },
+            {
+              "column": "Cargos y abonos",
+              "fieldValue": "={{ $json[\"Cargos y Abonos\"] }}"
+            },
+            {
+              "column": "Saldo diferido",
+              "fieldValue": "={{ $json[\"Saldo Diferido\"] }}"
+            },
+            {
+              "column": "Banco",
+              "fieldValue": "={{ $json.Banco }}"
+            },
+            {
+              "column": "Tarjeta (últimos dígitos)",
+              "fieldValue": "={{ $json[\"Tarjeta (últimos dígitos)\"] }}"
+            },
+            {
+              "column": "Periodo Extracto",
+              "fieldValue": "={{ $json[\"Periodo Extracto\"] }}"
+            },
+            {
+              "column": "Plazo",
+              "fieldValue": "={{ $json.Plazo }}"
+            },
+            {
+              "column": "Cuota fact.",
+              "fieldValue": "={{ $json[\"Cuota Fact\"] }}"
+            },
+            {
+              "column": "Cuota pend.",
+              "fieldValue": "={{ $json[\"Cuota Pend\"] }}"
+            },
+            {
+              "column": "Tasa%",
+              "fieldValue": "={{ $json[\"Tasa%\"] }}"
+            },
+            {
+              "column": "NIT",
+              "fieldValue": "={{ $json.NIT }}"
+            },
+            {
+              "column": "Url extracto",
+              "fieldValue": "={{ $json.URL_extracto }}"
+            },
+            {
+              "column": "Id extracto",
+              "fieldValue": "={{ $json[\"ID_EXTRACTO\"] }}"
+            },
+            {
+              "column": "Titular",
+              "fieldValue": "={{ $json.titular }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        580,
+        -480
+      ],
+      "id": "90d13211-25a1-4fe9-a8b4-4bdce8fbaeeb",
+      "name": "cargue extractos",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "UMjXt9SIb2Tb1XTc",
+          "name": "Excel Inverlink"
+        }
+      },
+      "notes": "Se realiza el cargue de información a la hoja de calculo de los extractos"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tomamos el texto completo del PDF\nconst texto = $json[\"text\"];\n\n// Dividimos cada vez que aparece un nuevo titular\nconst secciones = texto.split(\"SEÑOR (A):\").filter(p => p.trim() !== \"\");\n\n// Procesamos cada bloque\nconst resultados = secciones.map((bloque, index) => {\n  const lineas = bloque.trim().split('\\n');\n\n  // La primera línea después de \"SEÑOR (A):\" es el nombre del titular\n  const nombre = lineas[0].trim();\n\n  return {\n    persona: nombre,\n    seccion: bloque.trim(),\n    orden: index + 1\n  };\n});\n\n// Retornamos los resultados\nreturn resultados.map(item => ({\n  json: item\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        -280
+      ],
+      "id": "5abd9031-5c93-43f0-bbd7-70cd2e899eb4",
+      "name": "tratamiento extracto bancolombia",
+      "notes": "En este nodo se realiza la separación del texto obtenido en hojas"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "transacciones",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -620
+      ],
+      "id": "17238d43-7f25-4fbc-9f28-06097f652af0",
+      "name": "Split Out",
+      "notes": "Se realiza la separación de las listas en items individuales, ya que Loop Over Items si se ingresa un item debe retornar un item"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Nodo 1: Código para separar cada hoja del texto completo\nlet hojas = [];\nlet textoCompleto = $json[\"text\"];\n\n// Separar por \"Hoja\" (cada hoja comienza con esa palabra)\nlet partes = textoCompleto.split(/Hoja \\d+ de \\d+/);\n\n// Eliminar posibles elementos vacíos y almacenar\nfor (let i = 0; i < partes.length; i++) {\n  if (partes[i].trim() !== '') {\n    hojas.push({ hoja: i + 1, texto: partes[i].trim() });\n  }\n}\n\nreturn hojas;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        -480
+      ],
+      "id": "cb76bf5d-726f-4c10-8dea-09f90cd3a8fe",
+      "name": "tratamiento extracto Occidente",
+      "notes": "En este nodo se realiza la separación de información por hojas en el PDF"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -460,
+        -580
+      ],
+      "id": "332b1939-bb89-43bd-96ba-59180e6d0cf2",
+      "name": "Loop Over Items1",
+      "notes": "En este nodo se procesa 1 a 1 los extractos bancarios"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "44e83579-693d-422f-ab52-0ee997f0cd3e",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "Jeeves",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -900,
+        -420
+      ],
+      "id": "7771cb4c-18f8-4eda-94a5-b496b8182f2a",
+      "name": "If5",
+      "notes": "Se realiza la validación de que no ingrese el PDF de jeeves, ya que esta plataforma proporciona un PDF o un XLSX y esto genera duplicidad en los datos"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// === 1. PREPARACIÓN DE DATOS ===\nlet textoCompleto = \"\";\nfor (const item of items) {\n  textoCompleto += item.json.texto + \"\\n\";\n}\n\n// Variables para almacenar los datos maestros del extracto\nlet titular = null;\nlet ultimos4 = null;\nlet anioCorte = null;\nlet mesCorte = null;\nlet periodoExtracto = null;\n\n// === Componentes para generar el ID_EXTRACTO ===\nconst prefix = 'EXT';\nconst timestamp = Date.now();\nconst random = Math.floor(Math.random() * 1000000);\n\n\n// === 2. EXTRACCIÓN DE DATOS MAESTROS ===\n\nconst regexTitular = /\\s+([A-Z\\s&Y]+[A-Z])\\s+En caso de mora inferior/;\nconst matchTitular = textoCompleto.match(regexTitular);\nif (matchTitular && matchTitular[1]) {\n  titular = matchTitular[1].trim();\n}\n\nconst regexTarjeta = /TARJETA No\\.\\s*([\\d*-]+)/;\nconst matchTarjeta = textoCompleto.match(regexTarjeta);\nif (matchTarjeta && matchTarjeta[1]) {\n  const numeroCompleto = matchTarjeta[1].replace(/[*-]/g, '');\n  ultimos4 = numeroCompleto.slice(-4);\n}\n\nconst regexFechaCorte = /FECHA DE CORTE\\s*:\\s*\\d{2}\\/(\\d{2})\\/(\\d{4})/;\nconst matchFechaCorte = textoCompleto.match(regexFechaCorte);\nif (matchFechaCorte) {\n    mesCorte = parseInt(matchFechaCorte[1], 10);\n    anioCorte = parseInt(matchFechaCorte[2], 10);\n    const meses = [\"Enero\", \"Febrero\", \"Marzo\", \"Abril\", \"Mayo\", \"Junio\", \"Julio\", \"Agosto\", \"Septiembre\", \"Octubre\", \"Noviembre\", \"Diciembre\"];\n    periodoExtracto = `${meses[mesCorte - 1]}/${anioCorte}`;\n}\n\n\n// === 3. EXTRACCIÓN Y FORMATEO DE TRANSACCIONES ===\nconst transaccionesFinales = [];\nconst lineas = textoCompleto.split('\\n');\nconst regexTransaccion = /^(.+?)\\s+(\\d{6})\\s+.*?\\s*(\\d{2}\\/\\d{2})\\s+([\\d,.-]+)\\s+([\\d,.-]+)\\s+([\\d,.-]+)\\s+(\\d+)\\s+(\\d+)\\s*(\\d+)?\\s+([\\d,.]+)$/;\nlet index = 0; // Inicia el contador para el ID\n\nfor (const linea of lineas) {\n  const match = linea.match(regexTransaccion);\n  if (match) {\n    index++; // Incrementa el contador por cada transacción encontrada\n    const ID_EXTRACTO = `${prefix}-${timestamp}-${random}-${index}`;\n\n    const parseCurrency = (str) => parseFloat(str.replace(/,/g, ''));\n\n    const fechaParcial = match[3];\n    const [dia, mesStr] = fechaParcial.split('/');\n    const mesTransaccion = parseInt(mesStr, 10);\n\n    let anioTransaccion = anioCorte;\n    if (anioCorte && mesCorte && mesTransaccion > mesCorte) {\n      anioTransaccion = anioCorte - 1;\n    }\n    const fechaCompleta = anioTransaccion ? `${dia}/${mesStr}/${anioTransaccion}` : fechaParcial;\n\n    transaccionesFinales.push({\n      ID_EXTRACTO: ID_EXTRACTO, // <-- CAMPO AÑADIDO\n      persona: titular,\n      ultimos4Tarjeta: ultimos4,\n      numeroAutorizacion: match[2],\n      fecha: fechaCompleta,\n      descripcion: match[1].trim(),\n      valorOriginal: parseCurrency(match[4]),\n      tasaPactada: null,\n      tasaFacturada: parseFloat(match[10]),\n      cargosAbonos: parseCurrency(match[5]),\n      saldoDiferir: parseCurrency(match[6]),\n      banco: \"Banco de Occidente\",\n      NIT: \"890.300.279-4\",\n      cuotas: `${parseInt(match[8],10)}/${parseInt(match[9],10) || 0} de ${parseInt(match[7],10)}`,\n      periodoExtracto: periodoExtracto,\n      URl_extracto: $('Obtener datos de archivos').first().json[\"Url extracto\"]\n    });\n  }\n}\n\n// === 4. DEVOLVER MÚLTIPLES ÍTEMS ===\nreturn [{\n  json: {\n    transacciones: transaccionesFinales\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        -480
+      ],
+      "id": "fd08ebdf-148b-4765-b990-91ef962f574f",
+      "name": "Set  datos occidente",
+      "alwaysOutputData": true,
+      "notes": "Se realiza la extracción de los movimientos de cada hoja, para Occidente"
+    },
+    {
+      "parameters": {
+        "jsCode": "const personas = $input.all();\n\nif (personas.length === 0) {\n  return [{ json: { transacciones: [] } }];\n}\n\nfunction encontrarYFormatearPeriodo(todosLosItems) {\n  const regexPeriodo = /Hasta:\\s*(\\d{2}\\/\\d{2}\\/\\d{4})/i;\n  for (const item of todosLosItems) {\n    const textoSeccion = item.json.seccion;\n    const match = textoSeccion.match(regexPeriodo);\n    if (match && match[1]) {\n      const fechaHasta = match[1];\n      const meses = [\n        \"Enero\", \"Febrero\", \"Marzo\", \"Abril\", \"Mayo\", \"Junio\",\n        \"Julio\", \"Agosto\", \"Septiembre\", \"Octubre\", \"Noviembre\", \"Diciembre\"\n      ];\n      const partesFecha = fechaHasta.split('/');\n      if (partesFecha.length === 3) {\n        const mesNumero = parseInt(partesFecha[1], 10);\n        const anio = partesFecha[2];\n        if (mesNumero >= 1 && mesNumero <= 12) {\n          return `${meses[mesNumero - 1]}/${anio}`;\n        }\n      }\n    }\n  }\n  return null;\n}\n\nconst periodoFormateado = encontrarYFormatearPeriodo(personas);\n\n// --- LÓGICA PARA GENERAR EL ID_EXTRACTO ---\nconst prefix = 'EXT';\nconst timestamp = Date.now();\nlet transactionIndex = 0; // Este será el contador para el ID\n\nlet resultados = [];\n\nfor (const item of personas) {\n  const texto = item.json.seccion;\n\n  const nombre = item.json.persona\n    .toLowerCase()\n    .split(' ')\n    .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))\n    .join(' ');\n\n  const tarjetaMatch = texto.match(/TARJETA:\\s+\\*+(\\d{4})/);\n  const ultimosDigitos = tarjetaMatch ? tarjetaMatch[1] : null;\n\n  const regexSinNumero = /(?<fecha>\\d{2}\\/\\d{2}\\/\\d{4})\\s+(?<descripcion>.+?)\\s+(?<valor>\\d[\\d,.]*)\\s+(?<cargosAbonos>\\d[\\d,.]*)\\s+(?<saldoDiferir>\\d[\\d,.]*)/g;\n\n  let match;\n\n  while ((match = regexSinNumero.exec(texto)) !== null) {\n    if (match.groups.descripcion.toLowerCase().includes('desde:')) continue;\n      \n    const valorFormateado = match.groups.valor.replace(/,/g, '').replace('.', ',');\n    const cargosAbonosFormateado = match.groups.cargosAbonos.replace(/,/g, '').replace('.', ',');\n    \n    const descripcionOriginal = match.groups.descripcion.trim();\n    const descripcionFormateada = descripcionOriginal.length > 0\n      ? descripcionOriginal.charAt(0).toUpperCase() + descripcionOriginal.slice(1).toLowerCase()\n      : '';\n\n    // --- SE GENERA Y AGREGA EL ID ÚNICO ---\n    transactionIndex++; // Incrementa el contador\n    const randomComponent = Math.floor(Math.random() * 10000); // Número aleatorio de 4 dígitos\n    const ID_EXTRACTO = `${prefix}-${timestamp}-${randomComponent}-${transactionIndex}`;\n\n    resultados.push({\n        ID_EXTRACTO: ID_EXTRACTO, // CAMPO AGREGADO\n        persona: nombre,\n        ultimos4Tarjeta: ultimosDigitos,\n        numeroAutorizacion: null,\n        fecha: match.groups.fecha,\n        descripcion: descripcionFormateada,\n        valorOriginal: valorFormateado,\n        tasaPactada: null,\n        tasaFacturada: null,\n        cargosAbonos: cargosAbonosFormateado,\n        saldoDiferir: match.groups.saldoDiferir,\n        banco: \"Bancolombia\",\n        NIT: \"890.903.938-8\",\n        cuotas: null,\n        periodoExtracto: periodoFormateado,\n      URl_extracto: $('Obtener datos de archivos').first().json[\"Url extracto\"]\n    });\n  }\n}\n\nreturn [{\n  json: {\n    transacciones: resultados\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        -280
+      ],
+      "id": "5d27586f-4473-4672-89d8-1c22e3f9270c",
+      "name": "set datos bancolombia",
+      "notes": "Se realiza la extracción de los movimientos de cada hoja, para Bancolombia"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e25e42b7-12d0-4263-934c-d294d85f0fdd",
+              "leftValue": "={{ $json.descripcion }}",
+              "rightValue": "Gmf juridico",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "772d97a1-36cf-4283-b02b-df319f110612",
+              "leftValue": "={{ $json.descripcion }}",
+              "rightValue": "Cuota de manejo",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "ceeab64c-0434-4f9b-a2a1-f151584c2bbf",
+              "leftValue": "={{ $json.descripcion }}",
+              "rightValue": "GMF 4",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "44c49d83-2f89-41e3-901b-47ae63db7617",
+              "leftValue": "={{ $json.descripcion }}",
+              "rightValue": "REINTEGRO CUOTA MANEJO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "5e1b6428-aa9f-485b-b735-12baed27115b",
+              "leftValue": "={{ $json.descripcion }}",
+              "rightValue": "SEGURO VIDA DEUDOR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "8ca23a29-7dd1-4be6-a4d1-5b33988fafd7",
+              "leftValue": "={{ $json.descripcion }}",
+              "rightValue": "CARGO POR",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        100,
+        -620
+      ],
+      "id": "9405b677-b423-40d7-b9e8-472db97640fb",
+      "name": "Validación gravamenes",
+      "notes": "Se valida si la información que se extrae de los extractos contiene Gravámenes, de ser así se separan de los movimientos de crédito "
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ad573897-f166-4ade-8381-523a0bbf0dde",
+              "leftValue": "={{ $('Descarga PDF1').item.json.name }}",
+              "rightValue": "OCCIDENTE",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "8ca0dff1-34ad-4f80-a3e5-50fb72d57cdf",
+              "leftValue": "={{ $('Descarga PDF1').item.json.name }}",
+              "rightValue": "Occidente",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -280,
+        -460
+      ],
+      "id": "64441c21-5ce0-4fdf-9f8c-de3f127dff4e",
+      "name": "Validación banco",
+      "notes": "En este nodo se realiza la validación del banco, separando entre Bancolombia y Occidente"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -80
+      ],
+      "id": "cc75510d-6650-4d3a-bcbb-1742b984ef51",
+      "name": "Extracción datos jeeves",
+      "notes": "Se realiza la extracción de la información descargada en el nodo anterior"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a08519a-18a9-4db2-b8e4-3bcf8013f8cc",
+              "name": "Descripción",
+              "value": "={{ $json.MerchantDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "0e0a5d15-be05-46c4-9547-036991b6d9f1",
+              "name": "No de Compte",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "238e4bbe-7695-4b0b-9b05-e1cfa907f012",
+              "name": "Ciudad/País",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "fb8d0d94-964e-46fb-981c-4d81d6c0dbaf",
+              "name": "Fecha (Día/Mes/Año)",
+              "value": "={{ $json.InitiatedDate }}",
+              "type": "string"
+            },
+            {
+              "id": "cdc41749-505f-4c74-a5e3-738701037cfb",
+              "name": "Valor Compra",
+              "value": "={{ $json.BillingCurrencyAmount }}",
+              "type": "string"
+            },
+            {
+              "id": "9d668fb5-ee16-4653-a2db-0cedb31ade91",
+              "name": "Cargos y Abonos",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "c7c0565a-3c08-42c2-8238-0e15dbac4d7e",
+              "name": "Saldo Diferido",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "8ff2d997-77bf-4723-a501-bdb5c149caae",
+              "name": "Plazo",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "b37bc165-c37b-4a77-ad7e-fe9ccd814bef",
+              "name": "Cuota Pend",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "f7eaf760-10d9-4fa2-a7af-ca7697bc2ecf",
+              "name": "Tasa%",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "7293245d-4438-4f5c-967e-34c7f93f0827",
+              "name": "NIT",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "42ff2ee6-922c-45c2-8ed3-4c858873307b",
+              "name": "Banco",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "66274ac3-1f56-487c-ad5f-bed0e4ef987f",
+              "name": "Tarjeta (últimos dígitos)",
+              "value": "={{ $json.CardLast4 }}",
+              "type": "string"
+            },
+            {
+              "id": "2c75fddb-c5e1-4400-a9bc-902d0642e4df",
+              "name": "Periodo Extracto",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "8e6c53d7-6e5f-43a1-a384-903be9f4961c",
+              "name": "titular",
+              "value": "={{ $json.UserName }}",
+              "type": "string"
+            },
+            {
+              "id": "93811fbb-922b-4e15-9b03-b801f6739c9b",
+              "name": "URL_extracto",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "8d5157e0-755c-4b9a-b792-f399b56107cb",
+              "name": "ID_EXTRACTO",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "e2ade9a9-0d82-4d8e-aceb-957cc0e39e7f",
+              "name": "Cuota Fact",
+              "value": "0",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -180,
+        -80
+      ],
+      "id": "a7bef4a5-93c6-4552-baf5-cf1480047af6",
+      "name": "Ajuste datos de Jeeves",
+      "notes": "Se realiza el ajuste de datos de Jeeves para enviar a un segundo formato"
+    },
+    {
+      "parameters": {
+        "content": "## I'm a note \n**Lista, base de datos grandes, dejarlo en excel\n** github enviar los backups\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -940
+      ],
+      "id": "f0b7fa70-1e6e-4b59-912d-8f14b1042a05",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1740,
+        -280
+      ],
+      "id": "891aa483-9b50-49a6-9889-1dc00e839405",
+      "name": "Separar documentos",
+      "notes": "Se realiza una división de los objetos del json que retorna el folder de Extractos"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "0eb031a2-ba86-4831-9704-48af6071abd7",
+        "options": {
+          "rawBody": ""
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -3240,
+        -140
+      ],
+      "id": "401b21ee-2fc2-4e7a-a64e-faeed9fd1450",
+      "name": "Webhook mes seleccionado",
+      "webhookId": "0eb031a2-ba86-4831-9704-48af6071abd7",
+      "notes": "Este nodo recibe los meses si los requieren volver a validar               01. Enero\t\n02. Febrero\t\n03. Marzo\t\n04. Abril\t\n05. Mayo\t\n06. Junio\t\n07. Julio\t\n08. Agosto"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtiene el primer item que llega al nodo\nconst item = items[0];\n\n// 1. Convierte el 'body' (que es un string) a un objeto JSON\nconst bodyData = JSON.parse(item.json.body);\n\n// 2. Extrae el valor de la propiedad \"mensaje\"\nconst mes = bodyData.mensaje;\n\n// 3. Devuelve un nuevo item con el dato extraído\nreturn [{\n  json: {\n    MesSeleccionado: mes\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3060,
+        -140
+      ],
+      "id": "3cc3d153-0a5d-44a8-8ae5-be35d155f7ef",
+      "name": "extraer mes enviado"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2820,
+        -260
+      ],
+      "id": "8e3530bd-c54e-45b5-9c60-a64fc3aee478",
+      "name": "Merge1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Listar archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Gravamentos": {
+      "main": [
+        [
+          {
+            "node": "Gravamenes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set extractos": {
+      "main": [
+        [
+          {
+            "node": "cargue extractos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descarga xlsx": {
+      "main": [
+        [
+          {
+            "node": "Extracción datos jeeves",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "Descarga PDF1": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Descarga PDF1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extraer texto PDF": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar archivos": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Extraer folders mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer folders mes": {
+      "main": [
+        [
+          {
+            "node": "Mes seleccionado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mes seleccionado": {
+      "main": [
+        [
+          {
+            "node": "Obtener mes seleccionado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener mes seleccionado": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Folder mes seleccionado": {
+      "main": [
+        [
+          {
+            "node": "Listar sub folders mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar documentos": {
+      "main": [
+        [
+          {
+            "node": "Separar documentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar folder extractos": {
+      "main": [
+        [
+          {
+            "node": "Listar documentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formato datos": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Obtener datos de archivos": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Descarga xlsx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar sub folders mes": {
+      "main": [
+        [
+          {
+            "node": "Validar folder extractos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tratamiento extracto bancolombia": {
+      "main": [
+        [
+          {
+            "node": "set datos bancolombia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tratamiento extracto Occidente": {
+      "main": [
+        [
+          {
+            "node": "Set  datos occidente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validación banco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [],
+        [
+          {
+            "node": "extraer texto PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set  datos occidente": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set datos bancolombia": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación gravamenes": {
+      "main": [
+        [
+          {
+            "node": "Set Gravamentos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set extractos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Validación gravamenes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación banco": {
+      "main": [
+        [
+          {
+            "node": "tratamiento extracto Occidente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "tratamiento extracto bancolombia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extracción datos jeeves": {
+      "main": [
+        [
+          {
+            "node": "Ajuste datos de Jeeves",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ajuste datos de Jeeves": {
+      "main": [
+        [
+          {
+            "node": "Formato datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar documentos": {
+      "main": [
+        [
+          {
+            "node": "Obtener datos de archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook mes seleccionado": {
+      "main": [
+        [
+          {
+            "node": "extraer mes enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extraer mes enviado": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Listar Folder mes seleccionado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "bf050055-d678-44b9-b8fc-993d5170d4c0",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-06-03T20:36:49.469Z",
+      "updatedAt": "2025-06-03T20:36:49.469Z",
+      "id": "E9oSeWOtAViNQ19X",
+      "name": "Inverlink"
+    },
+    {
+      "createdAt": "2025-06-21T20:39:27.636Z",
+      "updatedAt": "2025-06-21T20:39:27.636Z",
+      "id": "XxrfLEy8SmG2KtL4",
+      "name": "OCR"
+    },
+    {
+      "createdAt": "2025-06-21T20:39:27.639Z",
+      "updatedAt": "2025-06-21T20:39:27.639Z",
+      "id": "wClzvw7IdVzfaWq7",
+      "name": "Claude"
+    }
+  ]
+}
