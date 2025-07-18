@@ -1,0 +1,1744 @@
+{
+  "createdAt": "2024-10-28T17:47:18.150Z",
+  "updatedAt": "2025-07-07T22:12:54.233Z",
+  "id": "vEPglvntGwbhKytg",
+  "name": "Accounting Records v3 - 5. Clasificacion Cuentas",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Clasificación Cuentas Contables\n\n### - Clasifica y asigna las cuentas contables para la factura, se basa en toda la información de la factura y las cuentas contables parametrizadas para el tercero.\n### - Agrupa y todas las variables y ajusta el fomato para registrar los datos en la DB.\n### - Mueve las facturas (archivos) a carpeta de extraidos. Si no hay error, mueve únicamente las facturas que fueron procesadas corrctamente",
+        "height": 1372,
+        "width": 1594,
+        "color": 7
+      },
+      "id": "0aae2bf5-e113-4606-ab0c-d3120c1f2fba",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3000,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e73f4bb-83d9-4e82-a329-a2ce9a2e869c",
+              "name": "Invoice_uuid",
+              "value": "={{ $('Supabase').item.json.Invoice_uuid }}",
+              "type": "string"
+            },
+            {
+              "id": "be7d8fd4-d3b2-4356-badc-74b11913790f",
+              "name": "Account_Classification",
+              "value": "={{ $json.choices[0].message.content }}",
+              "type": "object"
+            },
+            {
+              "id": "118dbb9d-5823-4352-9879-e87fa70a1585",
+              "name": "TokenIn",
+              "value": "={{ $json.usage.prompt_tokens }}",
+              "type": "number"
+            },
+            {
+              "id": "0cba95bd-248a-432c-a607-f18a001f4a24",
+              "name": "TokenOut",
+              "value": "={{ $json.usage.completion_tokens }}",
+              "type": "number"
+            },
+            {
+              "id": "0614b95b-d447-494a-83f8-ce32f96c035a",
+              "name": "AI_Model",
+              "value": "={{ $json.model }}",
+              "type": "string"
+            },
+            {
+              "id": "c8f8bd7d-66ee-4871-8278-5eff49b172b9",
+              "name": "ParentDocumentID",
+              "value": "={{ $('Invoice_Data').item.json.ParentDocumentID }}",
+              "type": "string"
+            },
+            {
+              "id": "c94fe081-3558-491e-b3d1-0383d0e83a02",
+              "name": "ReceiverParty_CompanyID",
+              "value": "={{ $('Invoice_Data').item.json.ReceiverParty_CompanyID }}",
+              "type": "string"
+            },
+            {
+              "id": "6ef91cc9-c878-4a4b-9849-cfa3525efd5a",
+              "name": "ReceiverParty_RegistrationName",
+              "value": "={{ $('Invoice_Data').item.json.ReceiverParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "b516c64d-f451-4a0b-a2a5-e7ecee31eab5",
+              "name": "SenderParty_RegistrationName",
+              "value": "={{ $('Invoice_Data').item.json.SenderParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "df19e9e8-fe65-4d93-90f1-4cfb6f205759",
+              "name": "SenderParty_CompanyID",
+              "value": "={{ $('Invoice_Data').item.json.SenderParty_CompanyID }}",
+              "type": "number"
+            },
+            {
+              "id": "f53970bb-37da-4c02-b377-109f178272cd",
+              "name": "TaxInclusiveAmount",
+              "value": "={{ $('Invoice_Data').item.json.TaxInclusiveAmount }}",
+              "type": "number"
+            },
+            {
+              "id": "bda2f349-0570-4ba3-b519-87a2db05d510",
+              "name": "IVA",
+              "value": "={{ $('Invoice_Data').item.json.IVA }}",
+              "type": "number"
+            },
+            {
+              "id": "046188d2-b9f2-4d13-bb49-35565a32055f",
+              "name": "IC",
+              "value": "={{ $('Invoice_Data').item.json.IC }}",
+              "type": "string"
+            },
+            {
+              "id": "5b090fd7-4486-4072-b79e-e4b970f6bc01",
+              "name": "ICA",
+              "value": "={{ $('Invoice_Data').item.json.ICA }}",
+              "type": "string"
+            },
+            {
+              "id": "1f147a45-963d-4690-8d1f-c0cd632480a1",
+              "name": "INC",
+              "value": "={{ $('Invoice_Data').item.json.INC }}",
+              "type": "string"
+            },
+            {
+              "id": "afe43717-96fe-4120-b381-2732708c2f24",
+              "name": "ReteIVA",
+              "value": "={{ $('Invoice_Data').item.json.ReteIVA }}",
+              "type": "string"
+            },
+            {
+              "id": "c5e048e2-a0bc-4baa-8edb-20c7969ce219",
+              "name": "ReteFuente",
+              "value": "={{ $('Invoice_Data').item.json.ReteFuente }}",
+              "type": "number"
+            },
+            {
+              "id": "e5cb330e-c6e6-45b5-8210-88c695eb51fe",
+              "name": "ReteICA",
+              "value": "={{ $('Invoice_Data').item.json.ReteICA }}",
+              "type": "string"
+            },
+            {
+              "id": "6f82c952-f36b-4c5a-99e3-81bbd2672db7",
+              "name": "PayableAmount",
+              "value": "={{ $('Invoice_Data').item.json.PayableAmount }}",
+              "type": "number"
+            },
+            {
+              "id": "2767a3e9-7230-4140-ab45-caff49a0c3bf",
+              "name": "InvoiceDescription",
+              "value": "={{ $('Invoice_Data').item.json.InvoiceDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "8e30cf38-2c09-4fba-8f35-2120407a9bcf",
+              "name": "ExpenseType",
+              "value": "={{ $('Invoice_Data').item.json.ExpenseType }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1f2f0fe-5208-47d0-bf93-355c98c91ac5",
+      "name": "All_Invoice_Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3320,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Parametrización Cuentas Terceros\n\n### - Para cada tercero parametriza las cuentas contales que se deben contemplar en la clasificación de las cuentas contables.\n### - Descarta (Error) la factura si el tercero no tiene parametrización de cuentas. ",
+        "height": 1389,
+        "width": 1497,
+        "color": 7
+      },
+      "id": "1870a9da-a032-46f1-ab20-74d7e64dd9d9",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "aa35afd9-fa2b-4b46-8828-0b1bff69d7e9",
+      "name": "Agregador Parm Terceros",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2440,
+        360
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": true,
+      "notes": "Agregador Parametrizacion Información Terceros"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appxDB6mSqj7XDzIC",
+          "mode": "list",
+          "cachedResultName": "InvoiceData",
+          "cachedResultUrl": "https://airtable.com/appxDB6mSqj7XDzIC"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPHIUqpr9gmLfZJ",
+          "mode": "list",
+          "cachedResultName": "AIModels_Prompts",
+          "cachedResultUrl": "https://airtable.com/appxDB6mSqj7XDzIC/tblPHIUqpr9gmLfZJ"
+        },
+        "filterByFormula": "ActualProject = \"Accounting Records\"",
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "ID"
+            }
+          ]
+        }
+      },
+      "id": "444f8fb9-0b74-4edb-a29f-f1638930ff7d",
+      "name": "AI_Variables",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        360
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "qt2DSN1Xi7hBivEb",
+          "name": "Airtable Personal Access Token"
+        }
+      },
+      "notes": "Parametrización modelos AI y Prompts"
+    },
+    {
+      "parameters": {
+        "content": "# Parametrización del Modelo\n\n### - Cargue parámetros para el modelo AI y prompts\n### - Listado facturas disponibles para procesar\n\n\n",
+        "height": 1032.6477525374905,
+        "width": 934.1296700274663,
+        "color": 7
+      },
+      "id": "4d1928fa-6df1-4ebb-b3d6-7daa750f0a36",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Invoice_uuid",
+        "options": {}
+      },
+      "id": "6faaf0bf-aec1-416b-ac58-5b5771ab6802",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0f4fd9c7-332c-4d9d-85f1-a0cad21fdff7",
+              "name": "Invoice_uuid",
+              "value": "={{ $('Webhook').item.json.body.Invoice_uuid }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6c74fbfb-2199-4991-9915-7137fbf82b02",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        360
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5bac97a6-9460-4ca9-91e6-ecd009132eeb",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1540,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "Accounting_Records",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Invoice_uuid",
+              "keyValue": "={{ $json.Invoice_uuid }}"
+            }
+          ]
+        }
+      },
+      "id": "2e138a06-6146-47a5-93e0-8d51a4b0c1de",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        380
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🔹 Función para validar campos obligatorios\nconst validarCampo = (valor, campo) => {\n    if (!valor || valor === \"\") {\n        console.warn(`⚠️ Advertencia: ${campo} está vacío o ausente.`);\n        return \"SIN_\" + campo.toUpperCase(); // Se asigna un valor de respaldo\n    }\n    return valor;\n};\n\n// 🔹 Obtener datos de los nodos\nconst invoiceData = $('Invoice_Data').item.json || {};\nconst allInvoiceData = $('All_Invoice_Data').item.json || {};\nconst aggregateInvoiceData = $('Aggregate_Invoice_Data').item.json || {};\n\n// 🔹 Extraer InvoiceDescription con prioridad de nodos\nconst invoiceDescription = invoiceData.InvoiceDescription || \n                           allInvoiceData.InvoiceDescription || \n                           aggregateInvoiceData.InvoiceDescription || \n                           \"SIN_DESCRIPCIÓN\";\n\n// 🔹 Función para convertir valores a números seguros\nconst convertirNumero = (valor) => {\n    const num = parseFloat(valor);\n    return isNaN(num) ? null : num;\n};\n\n// 🔹 Procesar cada factura\nconst allProcessedData = items.map(item => {\n    const classification = item.json.Account_Classification;\n\n    return {\n        // 📌 **Datos clave de la factura**\n        Invoice_uuid: validarCampo(allInvoiceData.Invoice_uuid, \"Invoice_uuid\"),\n        ParentDocumentID: validarCampo(invoiceData.ParentDocumentID, \"ParentDocumentID\"),\n        SenderParty_CompanyID: validarCampo(invoiceData.SenderParty_CompanyID, \"SenderParty_CompanyID\"),\n        ReceiverParty_CompanyID: validarCampo(invoiceData.ReceiverParty_CompanyID, \"ReceiverParty_CompanyID\"),\n        PayableAmount: convertirNumero(invoiceData.PayableAmount),\n        InvoiceDescription: validarCampo(invoiceDescription, \"InvoiceDescription\"),\n        ExpenseType: validarCampo(invoiceData.ExpenseType, \"ExpenseType\"),\n\n        // 📌 **Cuentas contables**\n        AccountNum1: classification.AccountNum1 || null,\n        AccountNum1_Des: classification.AccountNum1_Des || null,\n        AccountNum1_Val: convertirNumero(classification.AccountNum1_Val),\n        AccountNum1_Deb_Cred: classification.AccountNum1_Deb_Cred || null,\n\n        AccountNum2: classification.AccountNum2 || null,\n        AccountNum2_Des: classification.AccountNum2_Des || null,\n        AccountNum2_Val: convertirNumero(classification.AccountNum2_Val),\n        AccountNum2_Deb_Cred: classification.AccountNum2_Deb_Cred || null,\n\n        AccountNum3: classification.AccountNum3 || null,\n        AccountNum3_Des: classification.AccountNum3_Des || null,\n        AccountNum3_Val: convertirNumero(classification.AccountNum3_Val),\n        AccountNum3_Deb_Cred: classification.AccountNum3_Deb_Cred || null,\n\n        AccountNum4: classification.AccountNum4 || null,\n        AccountNum4_Des: classification.AccountNum4_Des || null,\n        AccountNum4_Val: convertirNumero(classification.AccountNum4_Val),\n        AccountNum4_Deb_Cred: classification.AccountNum4_Deb_Cred || null,\n\n        AccountNum5: classification.AccountNum5 || null,\n        AccountNum5_Des: classification.AccountNum5_Des || null,\n        AccountNum5_Val: convertirNumero(classification.AccountNum5_Val),\n        AccountNum5_Deb_Cred: classification.AccountNum5_Deb_Cred || null,\n\n        AccountNum6: classification.AccountNum6 || null,\n        AccountNum6_Des: classification.AccountNum6_Des || null,\n        AccountNum6_Val: convertirNumero(classification.AccountNum6_Val),\n        AccountNum6_Deb_Cred: classification.AccountNum6_Deb_Cred || null,\n\n        AccountNum7: classification.AccountNum7 || null,\n        AccountNum7_Des: classification.AccountNum7_Des || null,\n        AccountNum7_Val: convertirNumero(classification.AccountNum7_Val),\n        AccountNum7_Deb_Cred: classification.AccountNum7_Deb_Cred || null,\n\n        AccountNum8: classification.AccountNum8 || null,\n        AccountNum8_Des: classification.AccountNum8_Des || null,\n        AccountNum8_Val: convertirNumero(classification.AccountNum8_Val),\n        AccountNum8_Deb_Cred: classification.AccountNum8_Deb_Cred || null,\n\n        // 📌 **Datos adicionales**\n        Confidence: convertirNumero(classification.Confidence),\n        TokenIn: convertirNumero(invoiceData.TokenIn),\n        TokenOut: convertirNumero(invoiceData.TokenOut),\n        AI_Model: invoiceData.AI_Model || null\n    };\n});\n\n// 🔹 Retornar los datos corregidos\nreturn allProcessedData;\n"
+      },
+      "id": "33cecaf0-eaa9-4506-97bd-12f827e24257",
+      "name": "Dat for DB",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3540,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Accounting_Records",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "Invoice_uuid",
+              "condition": "eq",
+              "keyValue": "={{ $json.Invoice_uuid }}"
+            }
+          ]
+        },
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "5688df85-dc1e-4249-8ec8-5d17a89934b9",
+      "name": "Records_DB",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4360,
+        240
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Clean Vendor JSON – Code node\n * Toma la salida cruda de Supabase (Account_Number_1…Account_Number_40,\n * Account_to_InvoiceData_1…Account_to_InvoiceData_40, Account_Description_1…Account_Description_40)\n * y construye un array `mappings` solo con las cuentas realmente parametrizadas.\n */\nreturn items.map(item => {\n  const raw = item.json;\n  const mappings = [];\n\n  // Recorre los 40 posibles campos de cuenta\n  for (let i = 1; i <= 40; i++) {\n    const num = raw[`Account_Number_${i}`];\n    const to  = raw[`Account_to_InvoiceData_${i}`];\n    const des = raw[`Account_Description_${i}`];\n\n    // Solo agrega mappings válidos (número y destino no vacíos)\n    if (num && num.toString().trim() !== '' && to && to.toString().trim() !== '') {\n      mappings.push({\n        invoiceField: to.toString().trim(),\n        number:        num.toString().trim(),\n        description:   des ? des.toString().trim() : ''\n      });\n    }\n  }\n\n  // Devuelve solo el array de mappings\n  return {\n    json: { mappings }\n  };\n});\n"
+      },
+      "id": "77f83ab3-a114-4911-885c-496c13bd33a4",
+      "name": "Clean JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2220,
+        360
+      ],
+      "notes": "Parametrización Terceros. Retorna únicamente variables con valor"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "Param_Terceros",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ReceiverParty_CompanyID",
+              "condition": "ilike",
+              "keyValue": "={{ $('Supabase').item.json.ReceiverParty_CompanyID }}"
+            },
+            {
+              "keyName": "SenderParty_CompanyID",
+              "condition": "like",
+              "keyValue": "={{ $('Supabase').item.json.SenderParty_CompanyID }}"
+            }
+          ]
+        }
+      },
+      "id": "c5cd21d6-606b-498f-b0dd-1ef2a7f3e083",
+      "name": "VendorAccounts",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        380
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b824e03e-3e69-4a4b-8352-962d3343282f",
+              "name": "NIT",
+              "value": 901481071,
+              "type": "number"
+            },
+            {
+              "id": "e4e42a16-b646-4267-9bf7-97551dda398e",
+              "name": "Compañia",
+              "value": "={{ $('Records_DB').item.json.ReceiverParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "66c22310-6d18-45d5-a9ad-04e96ccfe187",
+              "name": "IssueDate",
+              "value": "={{ $('Records_DB').item.json.IssueDate }}",
+              "type": "string"
+            },
+            {
+              "id": "58b77e4b-7fa2-40d8-86ab-d0c690576f19",
+              "name": "NIT Proveedor",
+              "value": "={{ $('Records_DB').item.json.SenderParty_CompanyID }}",
+              "type": "number"
+            },
+            {
+              "id": "0dd4626a-cdf8-4a53-819a-385fdcb9d64b",
+              "name": "Proveedor",
+              "value": "={{ $('Records_DB').item.json.SenderParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "86fc2a59-6505-41b4-9f35-9759af4b4893",
+              "name": "Descripción Factura",
+              "value": "={{ $('Records_DB').item.json.InvoiceDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "f2a771c3-7415-459b-8fac-216a9d11e244",
+              "name": "Valor Antes Impuestos",
+              "value": "={{ $('Records_DB').item.json.LineExtensionAmount }}",
+              "type": "number"
+            },
+            {
+              "id": "32c0066d-32a0-491d-b2ff-f957b738131e",
+              "name": "CUFE",
+              "value": "={{ $('Supabase').item.json.CUFE }}",
+              "type": "string"
+            },
+            {
+              "id": "29098012-f7f6-4a5f-8244-cdfc6d068274",
+              "name": "No Factura",
+              "value": "={{ $('Records_DB').item.json.ParentDocumentID }}",
+              "type": "string"
+            },
+            {
+              "id": "944c0056-a336-4e64-898a-964ebb562b57",
+              "name": "id",
+              "value": "={{ $('Loop Over Items').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ba24f4d3-4fb1-40ca-b689-4b52702fd8fd",
+      "name": "Resumen",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4440,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1eec382d-a00d-4372-b314-eadd7c68541c",
+              "name": "NIT",
+              "value": "={{ $json.NIT }}",
+              "type": "number"
+            },
+            {
+              "id": "e6ed89c4-d8a8-4ab6-9cc2-78bd79ef189e",
+              "name": "Compañia",
+              "value": "={{ $json['Compañia'] }}",
+              "type": "string"
+            },
+            {
+              "id": "df16204b-d260-4c0b-9fd5-cfbf6672bfe8",
+              "name": "No Factura",
+              "value": "={{ $json['No Factura'] }}",
+              "type": "string"
+            },
+            {
+              "id": "39efa28d-bd56-4b07-8f4f-f7e3879911d8",
+              "name": "IssueDate",
+              "value": "={{ $json.IssueDate }}",
+              "type": "string"
+            },
+            {
+              "id": "e881a2cf-823f-48f2-9333-b6ff84636b48",
+              "name": "NIT Proveedor",
+              "value": "={{ $json['NIT Proveedor'] }}",
+              "type": "number"
+            },
+            {
+              "id": "2b7da7f9-6bc2-48fc-a378-96161bfd6798",
+              "name": "Proveedor",
+              "value": "={{ $json.Proveedor }}",
+              "type": "string"
+            },
+            {
+              "id": "50d0965a-2f49-4fbb-a217-aa08e7c276c8",
+              "name": "Descripción Factura",
+              "value": "={{ $json['Descripción Factura'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5c3a3050-8878-418a-afe1-8ec28b462048",
+              "name": "Valor Antes Impuestos",
+              "value": "={{ $json['Valor Antes Impuestos'] }}",
+              "type": "number"
+            },
+            {
+              "id": "4c99760b-7444-4458-8ba0-6f337a105835",
+              "name": "CUFE",
+              "value": "={{ $json.CUFE }}",
+              "type": "string"
+            },
+            {
+              "id": "aed70d9a-2ef2-4c35-a421-fc221b56a288",
+              "name": "File_Id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2194ad73-feaa-44e9-828b-4542f9a8300f",
+      "name": "Resumen Causacion",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1540,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "a94b0736-2b18-456d-b4ea-0f11c56d4291",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1740,
+        80
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "Error_Log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ParentDocumentID",
+              "fieldValue": "={{ $('Supabase').item.json.ParentDocumentID }}"
+            },
+            {
+              "fieldId": "SenderParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "SenderParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_CompanyID }}"
+            },
+            {
+              "fieldId": "ReceiverParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "ReceiverParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_CompanyID }}"
+            },
+            {
+              "fieldId": "FileName",
+              "fieldValue": "={{ $('Supabase').item.json.FileName }}"
+            },
+            {
+              "fieldId": "Error_Log",
+              "fieldValue": "Tercero sin Parametrización"
+            },
+            {
+              "fieldId": "CUFE",
+              "fieldValue": "={{ $('Supabase').item.json.CUFE }}"
+            },
+            {
+              "fieldId": "IssueDate",
+              "fieldValue": "={{ $('Supabase').item.json.IssueDate }}"
+            },
+            {
+              "fieldId": "Accounting_Records - Módulo",
+              "fieldValue": "5. Clasificación Cuentas"
+            }
+          ]
+        }
+      },
+      "id": "56825b2a-1c32-4919-99b9-4b18d1b43b1e",
+      "name": "Error_Log5",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        720
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "Error_Log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ParentDocumentID",
+              "fieldValue": "={{ $('Supabase').item.json.ParentDocumentID }}"
+            },
+            {
+              "fieldId": "SenderParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "SenderParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_CompanyID }}"
+            },
+            {
+              "fieldId": "ReceiverParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "ReceiverParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_CompanyID }}"
+            },
+            {
+              "fieldId": "FileName",
+              "fieldValue": "={{ $('Supabase').item.json.FileName }}"
+            },
+            {
+              "fieldId": "Error_Log",
+              "fieldValue": "Error AI - Clasificación Cuentas"
+            },
+            {
+              "fieldId": "CUFE",
+              "fieldValue": "={{ $('Supabase').item.json.CUFE }}"
+            },
+            {
+              "fieldId": "IssueDate",
+              "fieldValue": "={{ $('Supabase').item.json.IssueDate }}"
+            },
+            {
+              "fieldId": "Accounting_Records - Módulo",
+              "fieldValue": "5. Clasificacion Cuentas"
+            }
+          ]
+        }
+      },
+      "id": "665024cf-c483-43f0-8a02-28d486a6d57d",
+      "name": "Error_Log6",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3100,
+        720
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener los datos originales del nodo 'Dat for DB'\nconst originalData = $json;\n\n// Obtener los valores desde \"All_Invoice_Data\" (Base de Accounting Records)\nconst invoiceData = $('All_Invoice_Data').item.json || {};\n\n// Verificación de Valores Contables\nconst supabaseValues = [\n    invoiceData.LineExtensionAmount || 0,\n    invoiceData.IVA || 0,\n    invoiceData.IC || 0,\n    invoiceData.ICA || 0,\n    invoiceData.INC || 0,\n    invoiceData.ReteIVA || 0,\n    invoiceData.ReteFuente || 0,\n    invoiceData.ReteICA || 0\n];\n\n// Obtener valores de \"Dat for DB\" excluyendo claves no relacionadas con montos\nconst datForDb = $('Dat for DB').item.json || {};\nconst datForDbValues = [\n    datForDb.AccountNum1_Val || 0,\n    datForDb.AccountNum2_Val || 0,\n    datForDb.AccountNum3_Val || 0,\n    datForDb.AccountNum4_Val || 0,\n    datForDb.AccountNum5_Val || 0,\n    datForDb.AccountNum6_Val || 0,\n    datForDb.AccountNum7_Val || 0,\n    datForDb.AccountNum8_Val || 0\n];\n\n// Filtrar valores nulos o cero\nconst filteredSupabaseValues = supabaseValues.filter(value => value !== null && value !== 0);\nconst filteredDatForDbValues = datForDbValues.filter(value => value !== null && value !== 0);\n\n// Verificación Mejorada de Valores\nconst allValuesFound = filteredSupabaseValues.every(value => \n    filteredDatForDbValues.some(dbValue => Math.abs(dbValue - value) < 0.01)\n);\n\n// Validación de Cuentas Contables (Obligatorias)\nlet requiredAccounts = [\"AccountNum1\", \"AccountNum8\"];\n\n// Si hay IVA, la cuenta de IVA debe existir\nif (invoiceData.IVA > 0 && (!datForDb.AccountNum2 || datForDb.AccountNum2 === \"00000000\")) {\n    requiredAccounts.push(\"AccountNum2\");\n}\n\nconst missingAccounts = requiredAccounts.filter(acc => !datForDb[acc] || datForDb[acc] === \"00000000\");\n\n// Preparar mensajes de error\nconst errorMessages = [];\nif (!allValuesFound) errorMessages.push(\"Descuadre entre valores económicos y cuentas contables.\");\nif (missingAccounts.length > 0 && missingAccounts !== \"Ninguna\") errorMessages.push(\"Cuentas contables faltantes: \" + missingAccounts.join(\", \"));\n\n// Determinar resultado\nconst isOk = allValuesFound && missingAccounts.length === 0;\n\n// Generar Error_log si hay error (para logging estructurado)\nlet errorLog = null;\nif (!isOk) {\n    errorLog = {\n        Error_uuid: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : (datForDb.Invoice_uuid || invoiceData.Invoice_uuid || \"SIN_UUID\"),\n        ParentDocumentID: invoiceData.ParentDocumentID || \"SIN_DOCUMENTO\",\n        IssueDate: invoiceData.IssueDate || \"0000-00-00\",\n        SenderParty_RegistrationName: invoiceData.SenderParty_RegistrationName || \"SIN_NOMBRE\",\n        SenderParty_CompanyID: invoiceData.SenderParty_CompanyID || \"SIN_ID\",\n        ReceiverParty_RegistrationName: invoiceData.ReceiverParty_RegistrationName || \"SIN_NOMBRE\",\n        ReceiverParty_CompanyID: invoiceData.ReceiverParty_CompanyID || \"SIN_ID\",\n        FileName: invoiceData.FileName || null,\n        CUFE: invoiceData.CUFE || null,\n        \"Accounting_Records – Módulo\": \"Asignación Cuentas\",\n        Error_Log: errorMessages.join(\"; \"),\n        Error_Date: (new Date()).toISOString()\n    };\n}\n\n// Resultado Final\nconst resultData = {\n    result: isOk ? \"Valores Ok\" : \"Error en cuentas\",\n    Error: !isOk,\n    ErrorMessages: errorMessages,\n    missingAccounts: missingAccounts.length > 0 ? missingAccounts : \"Ninguna\",\n    originalData: {\n        Invoice_uuid: datForDb.Invoice_uuid || invoiceData.Invoice_uuid || \"SIN_UUID\",\n        ParentDocumentID: invoiceData.ParentDocumentID || \"SIN_DOCUMENTO\",\n        IssueDate: invoiceData.IssueDate || \"0000-00-00\",\n\n        // Datos de Quien Envia y Recibe\n        SenderParty_CompanyID: invoiceData.SenderParty_CompanyID || \"SIN_ID\",\n        SenderParty_RegistrationName: invoiceData.SenderParty_RegistrationName || \"SIN_NOMBRE\",\n        ReceiverParty_CompanyID: invoiceData.ReceiverParty_CompanyID || \"SIN_ID\",\n        ReceiverParty_RegistrationName: invoiceData.ReceiverParty_RegistrationName || \"SIN_NOMBRE\",\n\n        // Información Económica\n        PayableAmount: invoiceData.PayableAmount !== null ? invoiceData.PayableAmount : 0,\n        LineExtensionAmount: invoiceData.LineExtensionAmount !== null ? invoiceData.LineExtensionAmount : 0,\n        TaxInclusiveAmount: invoiceData.TaxInclusiveAmount !== null ? invoiceData.TaxInclusiveAmount : 0,\n        IVA: invoiceData.IVA !== null ? invoiceData.IVA : 0,\n        ReteFuente: invoiceData.ReteFuente !== null ? invoiceData.ReteFuente : 0,\n        ReteICA: invoiceData.ReteICA !== null ? invoiceData.ReteICA : 0,\n        InvoiceDescription: invoiceData.InvoiceDescription || \"DESCRIPCIÓN PENDIENTE\",\n        ExpenseType: invoiceData.ExpenseType || \"PENDIENTE\",\n\n        // Cuentas Contables\n        AccountNum1: datForDb.AccountNum1 || null,\n        AccountNum1_Des: datForDb.AccountNum1_Des || null,\n        AccountNum1_Val: datForDb.AccountNum1_Val || 0,\n        AccountNum1_Deb_Cred: datForDb.AccountNum1_Deb_Cred || null,\n\n        AccountNum2: datForDb.AccountNum2 || null,\n        AccountNum2_Des: datForDb.AccountNum2_Des || null,\n        AccountNum2_Val: datForDb.AccountNum2_Val || 0,\n        AccountNum2_Deb_Cred: datForDb.AccountNum2_Deb_Cred || null,\n\n        AccountNum3: datForDb.AccountNum3 || null,\n        AccountNum3_Des: datForDb.AccountNum3_Des || null,\n        AccountNum3_Val: datForDb.AccountNum3_Val || 0,\n        AccountNum3_Deb_Cred: datForDb.AccountNum3_Deb_Cred || null,\n\n        AccountNum8: datForDb.AccountNum8 || null,\n        AccountNum8_Des: datForDb.AccountNum8_Des || null,\n        AccountNum8_Val: datForDb.AccountNum8_Val || 0,\n        AccountNum8_Deb_Cred: datForDb.AccountNum8_Deb_Cred || null\n    },\n    Error_log: errorLog\n};\n\n// Log para depuración (opcional)\nconsole.log(\"📌 Resultado de validación:\", JSON.stringify(resultData, null, 2));\n\nreturn [{ json: resultData }];\n"
+      },
+      "id": "45d82865-c364-4d6c-8580-6abdecb3bddb",
+      "name": "Verificador_Valor _Cuentas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3760,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "Error_Log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ParentDocumentID",
+              "fieldValue": "={{ $('Supabase').item.json.ParentDocumentID }}"
+            },
+            {
+              "fieldId": "SenderParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "SenderParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_CompanyID }}"
+            },
+            {
+              "fieldId": "ReceiverParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "ReceiverParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_CompanyID }}"
+            },
+            {
+              "fieldId": "FileName",
+              "fieldValue": "={{ $('Supabase').item.json.FileName }}"
+            },
+            {
+              "fieldId": "Error_Log",
+              "fieldValue": "Inconsistencia Valores y Clasificación Cuentas"
+            },
+            {
+              "fieldId": "CUFE",
+              "fieldValue": "={{ $('Supabase').item.json.CUFE }}"
+            },
+            {
+              "fieldId": "IssueDate",
+              "fieldValue": "={{ $('Supabase').item.json.IssueDate }}"
+            },
+            {
+              "fieldId": "Accounting_Records - Módulo",
+              "fieldValue": "5. Clasificacion Cuentas"
+            }
+          ]
+        }
+      },
+      "id": "a54c4dd0-1cdf-43ba-b81a-01b5cf61fa63",
+      "name": "Error_Log7",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4200,
+        500
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "Error_Log",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ParentDocumentID",
+              "fieldValue": "={{ $('Supabase').item.json.ParentDocumentID }}"
+            },
+            {
+              "fieldId": "SenderParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "SenderParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.SenderParty_CompanyID }}"
+            },
+            {
+              "fieldId": "ReceiverParty_RegistrationName",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_RegistrationName }}"
+            },
+            {
+              "fieldId": "ReceiverParty_CompanyID",
+              "fieldValue": "={{ $('Supabase').item.json.ReceiverParty_CompanyID }}"
+            },
+            {
+              "fieldId": "FileName",
+              "fieldValue": "={{ $('Supabase').item.json.FileName }}"
+            },
+            {
+              "fieldId": "Error_Log",
+              "fieldValue": "Clasificación Cuentas - Error cargue en DB"
+            },
+            {
+              "fieldId": "CUFE",
+              "fieldValue": "={{ $('Supabase').item.json.CUFE }}"
+            },
+            {
+              "fieldId": "IssueDate",
+              "fieldValue": "={{ $('Supabase').item.json.IssueDate }}"
+            },
+            {
+              "fieldId": "Accounting_Records - Módulo",
+              "fieldValue": "5. Clasificacion Cuentas"
+            }
+          ]
+        }
+      },
+      "id": "41ca8d27-daf2-42c0-ac90-2b4093894fa1",
+      "name": "Error_Log8",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4440,
+        720
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6d1fa5eb-4272-4b76-9155-24b0da992ffc",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "eb9c4e03-26c2-4d89-9a9d-e6790426fc9b",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        560,
+        360
+      ],
+      "webhookId": "abdd9e17-709c-47bb-aa3e-7338b9f6a1b6"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.Error}}",
+                    "rightValue": "false",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "35c42315-7d6f-47cd-b16a-afcf65cda9b2"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=return $input.all()"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1830897c-08db-4572-9099-c3f377fb996b",
+                    "leftValue": "={{$json.Error}}",
+                    "rightValue": "true",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Error"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "e1130bd6-daf4-447b-8e5c-3e2e1fc6aea2",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3980,
+        340
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "={{ $item(2).$node[\"AI_Variables\"].json[\"ActualModel\"] }}",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $item(2).$node[\"AI_Variables\"].json[\"SystemPrompt\"] }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_1\"] }}"
+            },
+            {
+              "content": "={{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_2\"] }}"
+            },
+            {
+              "content": "={{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_3\"] }}"
+            },
+            {
+              "content": "={{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_4\"] }}"
+            },
+            {
+              "content": "=# Knowledge\n### Invoice Description \n{{ $('Supabase').item.json.InvoiceDescription }}\n\n### Invoice information and data:\n{{ JSON.stringify($('Aggregate_Invoice_Data').item.json.data[0]) }}\n\n### Provided Accounts from PUC:\n{{ JSON.stringify($('Agregador Parm Terceros').item.json.data[0]) }}\n\n\n### Expense Type:\n{{ $('Supabase').item.json.ExpenseType }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4096,
+          "temperature": "={{ $item(2).$node[\"AI_Variables\"].json[\"Temperature\"] }}"
+        }
+      },
+      "id": "abc7218e-271e-4f67-8657-7ab223106281",
+      "name": "Account_Classification",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        3080,
+        360
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "0r1L7QIDC5ZRtM0r",
+          "name": "OpenAi"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67b4604a-5b02-4e47-b196-c97d668712f6",
+              "name": "ParentDocumentID",
+              "value": "={{ $('Supabase').item.json.ParentDocumentID }}",
+              "type": "string"
+            },
+            {
+              "id": "046aec30-0c3a-472b-a131-736202aac640",
+              "name": "ReceiverParty_CompanyID",
+              "value": "={{ $json.data[0].ReceiverParty_CompanyID }}",
+              "type": "string"
+            },
+            {
+              "id": "b09d8c56-bc91-47aa-927a-a6aeed1e03c7",
+              "name": "ReceiverParty_RegistrationName",
+              "value": "={{ $json.data[0].ReceiverParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "4a32999f-6596-42e7-b2e8-1c2f0af98ba8",
+              "name": "SenderParty_RegistrationName",
+              "value": "={{ $('Supabase').item.json.SenderParty_RegistrationName }}",
+              "type": "string"
+            },
+            {
+              "id": "51ad4775-6017-4769-be4a-129d6aa0db74",
+              "name": "SenderParty_CompanyID",
+              "value": "={{ $('Supabase').item.json.SenderParty_CompanyID }}",
+              "type": "number"
+            },
+            {
+              "id": "ceb41b47-0871-4f29-a06d-ca7f283138b1",
+              "name": "LineExtensionAmount",
+              "value": "={{ $('Supabase').item.json.LineExtensionAmount }}",
+              "type": "number"
+            },
+            {
+              "id": "d3a5c348-4542-4a46-88e2-20cf91852d22",
+              "name": "TaxInclusiveAmount",
+              "value": "={{ $('Supabase').item.json.TaxInclusiveAmount }}",
+              "type": "number"
+            },
+            {
+              "id": "7c08febe-abe9-4606-a04c-35183b1e0264",
+              "name": "IVA",
+              "value": "={{ $('Supabase').item.json.IVA }}",
+              "type": "number"
+            },
+            {
+              "id": "fb7c196f-a9b3-47b1-8a4a-871f80924667",
+              "name": "IC",
+              "value": "={{ $('Supabase').item.json.IC }}",
+              "type": "string"
+            },
+            {
+              "id": "81ae4195-ffc2-4ed5-8935-26b0507ea7c1",
+              "name": "ICA",
+              "value": "={{ $('Supabase').item.json.ICA }}",
+              "type": "string"
+            },
+            {
+              "id": "85584e4e-a238-4101-bd8c-1bd9192349e7",
+              "name": "INC",
+              "value": "={{ $('Supabase').item.json.INC }}",
+              "type": "string"
+            },
+            {
+              "id": "7f62f248-ec34-433a-9296-f9bdc3ecfb2f",
+              "name": "ReteIVA",
+              "value": "={{ $('Supabase').item.json.ReteIVA }}",
+              "type": "string"
+            },
+            {
+              "id": "cca119f4-b94f-4a05-b3cb-d2f3703b4ad3",
+              "name": "ReteFuente",
+              "value": "={{ $('Supabase').item.json.ReteFuente }}",
+              "type": "number"
+            },
+            {
+              "id": "56690730-24d6-4950-a358-c5a267746086",
+              "name": "ReteICA",
+              "value": "={{ $('Supabase').item.json.ReteICA }}",
+              "type": "number"
+            },
+            {
+              "id": "dcbb1b1c-3485-4619-953c-b1e309d317f4",
+              "name": "PayableAmount",
+              "value": "={{ $('Supabase').item.json.PayableAmount }}",
+              "type": "number"
+            },
+            {
+              "id": "4475bab0-e353-4f40-8038-50e066443678",
+              "name": "InvoiceDescription",
+              "value": "={{ $('Supabase').item.json.InvoiceDescription }}",
+              "type": "string"
+            },
+            {
+              "id": "9adce57a-2f2a-441b-a087-c18abb3feefb",
+              "name": "ExpenseType",
+              "value": "={{ $('Supabase').item.json.ExpenseType }}",
+              "type": "string"
+            },
+            {
+              "id": "ff8ea1b0-242a-4aec-a703-dc2e7cee4e4e",
+              "name": "IssueDate",
+              "value": "={{ $('Supabase').item.json.IssueDate }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2640,
+        360
+      ],
+      "id": "35402cdc-1268-471e-9cb7-1e22496ff86e",
+      "name": "Invoice_Data"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2840,
+        360
+      ],
+      "id": "0e8b417d-9950-4c06-ae20-5bf5a8bd3168",
+      "name": "Aggregate_Invoice_Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Función para validar y asignar valores seguros\nconst validarDato = (valor) => (valor !== undefined && valor !== null && valor !== \"\" ? valor : null);\n\nconst cleanedItems = items.map(item => {\n    // 📌 Asegurar que los datos provienen de \"originalData\" dentro del nodo Switch\n    const data = item.json.originalData || {};\n\n    return {\n        // 📌 Identificación de la factura (clave principal para Supabase)\n        Invoice_uuid: validarDato(data.Invoice_uuid) || \"ERROR_UUID\",\n\n        // 📌 Cuentas contables que deben actualizarse en Supabase\n        AccountNum1: validarDato(data.AccountNum1),\n        AccountNum1_Des: validarDato(data.AccountNum1_Des),\n        AccountNum1_Val: validarDato(data.AccountNum1_Val),\n        AccountNum1_Deb_Cred: validarDato(data.AccountNum1_Deb_Cred),\n\n        AccountNum2: validarDato(data.AccountNum2),\n        AccountNum2_Des: validarDato(data.AccountNum2_Des),\n        AccountNum2_Val: validarDato(data.AccountNum2_Val),\n        AccountNum2_Deb_Cred: validarDato(data.AccountNum2_Deb_Cred),\n\n        AccountNum3: validarDato(data.AccountNum3),\n        AccountNum3_Des: validarDato(data.AccountNum3_Des),\n        AccountNum3_Val: validarDato(data.AccountNum3_Val),\n        AccountNum3_Deb_Cred: validarDato(data.AccountNum3_Deb_Cred),\n\n        AccountNum4: validarDato(data.AccountNum4),\n        AccountNum4_Des: validarDato(data.AccountNum4_Des),\n        AccountNum4_Val: validarDato(data.AccountNum4_Val),\n        AccountNum4_Deb_Cred: validarDato(data.AccountNum4_Deb_Cred),\n\n        AccountNum5: validarDato(data.AccountNum5),\n        AccountNum5_Des: validarDato(data.AccountNum5_Des),\n        AccountNum5_Val: validarDato(data.AccountNum5_Val),\n        AccountNum5_Deb_Cred: validarDato(data.AccountNum5_Deb_Cred),\n\n        AccountNum6: validarDato(data.AccountNum6),\n        AccountNum6_Des: validarDato(data.AccountNum6_Des),\n        AccountNum6_Val: validarDato(data.AccountNum6_Val),\n        AccountNum6_Deb_Cred: validarDato(data.AccountNum6_Deb_Cred),\n\n        AccountNum7: validarDato(data.AccountNum7),\n        AccountNum7_Des: validarDato(data.AccountNum7_Des),\n        AccountNum7_Val: validarDato(data.AccountNum7_Val),\n        AccountNum7_Deb_Cred: validarDato(data.AccountNum7_Deb_Cred),\n\n        AccountNum8: validarDato(data.AccountNum8),\n        AccountNum8_Des: validarDato(data.AccountNum8_Des),\n        AccountNum8_Val: validarDato(data.AccountNum8_Val),\n        AccountNum8_Deb_Cred: validarDato(data.AccountNum8_Deb_Cred),\n    };\n});\n\n// Retornar los datos corregidos (solo con Invoice_uuid y cuentas contables)\nreturn cleanedItems.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4180,
+        240
+      ],
+      "id": "a8117f65-7b49-4950-9cf5-221f847d3262",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_1\"] }}\n\n{{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_2\"] }}\n\n{{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_3\"] }}\n\n{{ $item(2).$node[\"AI_Variables\"].json[\"UserPrompt_4\"] }}\n\n# Knowledge\n### Invoice Description \n{{ $('Supabase').item.json.InvoiceDescription }}\n\n### Invoice information and data:\n{{ JSON.stringify($('Aggregate_Invoice_Data').item.json.data[0]) }}\n\n### Provided Accounts from PUC:\n{{ JSON.stringify($('Agregador Parm Terceros').item.json.data[0]) }}\n\n\n### Expense Type:\n{{ $('Supabase').item.json.ExpenseType }}",
+        "options": {
+          "systemMessage": "={{ $item(2).$node[\"AI_Variables\"].json[\"SystemPrompt\"] }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        2780,
+        1300
+      ],
+      "id": "1aec0fcc-5a5a-4a25-8c96-b3879d7811da",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-2024-11-20",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-2024-11-20"
+        },
+        "options": {
+          "temperature": "={{ $item(2).$node[\"AI_Variables\"].json[\"Temperature\"] }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2780,
+        1480
+      ],
+      "id": "dd38100c-cf58-45d6-8db9-e8bf34c42fc2",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "0r1L7QIDC5ZRtM0r",
+          "name": "OpenAi"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "All_Invoice_Data": {
+      "main": [
+        [
+          {
+            "node": "Dat for DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI_Variables": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase": {
+      "main": [
+        [
+          {
+            "node": "VendorAccounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregador Parm Terceros": {
+      "main": [
+        [
+          {
+            "node": "Invoice_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Resumen Causacion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dat for DB": {
+      "main": [
+        [
+          {
+            "node": "Verificador_Valor _Cuentas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean JSON": {
+      "main": [
+        [
+          {
+            "node": "Agregador Parm Terceros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VendorAccounts": {
+      "main": [
+        [
+          {
+            "node": "Clean JSON",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error_Log5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Records_DB": {
+      "main": [
+        [
+          {
+            "node": "Resumen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error_Log8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumen": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumen Causacion": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error_Log5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error_Log6": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificador_Valor _Cuentas": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error_Log7": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error_Log8": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI_Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error_Log7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Account_Classification": {
+      "main": [
+        [
+          {
+            "node": "All_Invoice_Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error_Log6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice_Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate_Invoice_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate_Invoice_Data": {
+      "main": [
+        [
+          {
+            "node": "Account_Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Records_DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "AI_Variables": [
+      {
+        "json": {
+          "id": "recLRrfXtvZJlZO2C",
+          "createdTime": "2024-09-01T22:12:57.000Z",
+          "Description": "Invoice Data Extraction XML or PDF",
+          "Projects": [
+            "recVlNBSZ9fVMzBIx"
+          ],
+          "UserPrompt_4": "# SPECIAL INSTRUCTIONS\n- Make sure not to duplicate values.\n- Assign each variable the corresponding value. Use the variable name and XML element to extract data accurately.\n- Ensure that ReteIVA is extracted only when cac:TaxScheme/ID:05 and cac:TaxScheme/Name:ReteIVA are present.\n- Ensure that ReteFuente is extracted only when cac:TaxScheme/ID:06 and cac:TaxScheme/Name:ReteFuente or <cbc:Name>ReteRenta are present.\n- Ensure ReteICA is extracted only when cac:TaxScheme/ID:07 and cac:TaxScheme/Name:ReteICA are present.\n- ReteIVA is not the same as ReteFuente, ReteRenta, or ReteICA.\n- ReteICA is not the same as ReteFuente, ReteRenta, or ReteIVA.\n- ReteFuente and ReteRenta are the same and distinct from ReteICA or ReteIVA.\n- ReteICA is not the same as ICA. Both are independent variables.\n- ReteIVA is not the same as IVA. Both are independent variables.\n- Ensure to leave the value empty if there is no match for the corresponding tax field.",
+          "Temperature": 0.6,
+          "SystemPrompt": "# ROL\nYou are an accountant with experience in Colombia, an expert in extracting data from invoices, and capable of reading and extracting data in both Spanish and English.",
+          "UserPrompt_1": "# TASK\nExtract data from XML invoices. You will receive data from an XML text scrape of the invoice. Your task is to turn invoice data into structured fields: Parent Document ID, Issue Date, Sender Party Registration Name, Sender Party Company ID, Receiver Party Registration Name, Receiver Party Company ID, LineExtensionAmount, IVA, IC, ICA, INC, Rete IVA, Rete Fuente, Rete ICA, Tax Inclusive Amount, Payable Amount, Invoice Line, CUFE.\n\nEach variable has a unique value, do not duplicate values, and ensure accurate field allocation.",
+          "Platform": [
+            "recyNe6U43nbX3Nk4"
+          ],
+          "Model": [
+            "recjFBje60udzTklV"
+          ],
+          "UserPrompt_5": "__",
+          "UserPrompt_3": "# OUTPUT\nEnsure that the output complies exactly with the JSON format and that all variables return a value extracted from the data given. If a value cannot be extracted, return an empty string for that field.\n\nReturn the result in JSON using this format:\n\n{  \n  \"ParentDocumentID\": \"invoice id goes here. This is the invoice number or ID, it is not the file name. Avoid getting the file name\",\n  \"IssueDate\": \"date when the invoice was issued\",\n  \"SenderParty_RegistrationName\": \"vendor name goes here. This is the information of the party who issued the invoice\",\n  \"SenderParty_CompanyID\": \"vendor tax ID goes here. This is the identification information of the party who issued the invoice\",\n  \"ReceiverParty_RegistrationName\": \"customer name goes here. This is the information of the party who is receiving the invoice\",\n  \"ReceiverParty_CompanyID\": \"customer tax ID goes here. This is the identification information of the party who is receiving the invoice\",\n  \"LineExtensionAmount\": \"subtotal of the invoice. The value before taxes goes here\",\n  \"TaxInclusiveAmount\": \"total taxable amount of the invoice. In Colombia, this includes the sales tax (IVA)\",\n  \"IVA\": \"added sales value tax (IVA) in Colombia. The XML element and attribute is cac:TaxScheme/ID:01 and cac:TaxScheme/Name:IVA. Return the amount value, not the code value\", \n  \"IC\": \"consumption tax (Impuesto al Consumo) in Colombia. The XML element and attribute is cac:TaxScheme/ID:02 and cac:TaxScheme/Name:IC. Return the amount value, not the code value\",\n  \"ICA\": \"industry and commerce tax (Impuesto de Industria, Comercio y Aviso) in Colombia. The XML element and attribute is cac:TaxScheme/ID:03 and cac:TaxScheme/Name:ICA. Return the amount value, not the code value\",\n  \"INC\": \"national consumption tax (Impuesto Nacional al Consumo) in Colombia. The XML element and attribute is cac:TaxScheme/ID:04 and cac:TaxScheme/Name:INC. Return the amount value, not the code value\",\n  \"ReteFuente\": \"ReteFuente = ReteRenta (Income Withholding). The XML element and attribute is cac:TaxScheme/ID:06 and cac:TaxScheme/Name:ReteFuente or <cbc:Name>ReteRenta</cbc:Name>. Ensure to return only the amount value, not the code value, and ensure no overlap with ReteIVA or ReteICA.\",\n  \"ReteICA\": \"Withholding for the industry and commerce tax. The XML element and attribute is cac:TaxScheme/ID:07 and cac:TaxScheme/Name:ReteICA. Ensure to return only the amount value, not the code value, and ensure no overlap with ReteFuente or ReteIVA.\",\n  \"ReteIVA\": \"Withholding for added sales value tax, Retención sobre el IVA in Colombia. The XML element and attribute is cac:TaxScheme/ID:05 and cac:TaxScheme/Name:ReteIVA. Ensure to return only the amount value, not the code value, and ensure no overlap with ReteFuente or ReteICA.\",\n  \"PayableAmount\": \"total payable amount of the invoice\",\n  \"InvoiceLine\": \"description of all invoice items, including description, quantities, unit value, and total value of each item. If multiple invoice lines exist, concatenate the descriptions, separated by semicolons\",\n  \"CUFE\": \"CUFE is an alphanumeric ID for the invoice\"  \n}\n\nRespond only in JSON. The first character must be “{” and the last character “}”. Do not output “```json” or any other sort of format.",
+          "UserPrompt_2": "__",
+          "ID": 1,
+          "Name": "P1",
+          "ActualModel": "gpt-4o-mini",
+          "ActualPlatform": "openai",
+          "ActualProject": "Accounting Records"
+        }
+      },
+      {
+        "json": {
+          "id": "recICV5Bm4yuqT5yT",
+          "createdTime": "2024-09-05T23:20:19.000Z",
+          "Description": "Invoice Description",
+          "Projects": [
+            "recVlNBSZ9fVMzBIx"
+          ],
+          "UserPrompt_4": "__",
+          "Temperature": 0.6,
+          "SystemPrompt": "# ROL\nYou are an accountant with experience in Colombia, an expert in extracting data from invoices, and capable of reading and extracting data in both Spanish and English. You are an expert in \"Plan Unico de Cuentas\" (PUC) and in all accounting regulations.",
+          "UserPrompt_1": "# TASK\nRead the invoice information presented in a JSON schema. Your job is to write a short description of the invoice. The description must be concrete, succinct, and clear. It should contain the necessary information to classify the invoice properly in an accounting record for each relevant accounting statement according to the PUC. Do not include any monetary or quantity values, only the invoice description.\n\nThe description must be in spanish. Use up to 150 characters. \n\nDo not include any information from SenderParty and ReceiverParty. Do not include word \"Factura\".\n\nTo write the desciption only use the information in \"InvoiceLine\"\n\nMake sure to write a comprehensive and clear invoice description.",
+          "Platform": [
+            "recyNe6U43nbX3Nk4"
+          ],
+          "Model": [
+            "recjFBje60udzTklV"
+          ],
+          "UserPrompt_5": "__",
+          "UserPrompt_3": "# OUTPUT\nEnsure that the output complies exactly with the JSON format and that all variables return a value extracted from the data given. If a value cannot be extracted, return an empty string for that field. \n\nReturn the result in JSON using this format: \n\n{ \n\"InvoiceLineTxt\": ”Text from key value InvoiceLine. Is a must to present the data in a single string. Do not output the data in any other format”, \n”Description”: ”Here goes the invoice Description. Do not include SenderParty_RegistrationName. No not include vendor name”,\n\"ExpenseType\": \"Here you have to indicate if the invoice corresponds to a Purchase of Goods, Services Received, Asset Purchase or Inventory. In the clasification only use the types Purchase of Goods, Services Received, Asset Purchase or Inventory. Review in detail InvoiceLine to make the classification\"\n} \n\nRespond only in JSON. The first character must be \"{\" and the last character \"}\". Do not output \"```json\" or any other sort of format. \n\nThe output must be a valid JSON. And all key values must output as simple strings\n",
+          "UserPrompt_2": "# EXAMPLES\nOutput examples\n\n### Example 1\n\n{\n  \"InvoiceLineTxt\": \"Manzana Royal Gala, Manzana Verde, Mandarina Arrayana Kilo, Banano Urabá Kilo, Granadilla, Manzana Verde, Granadilla\",\n  \"Description\": \"Compra de frutas variadas incluyendo manzanas, mandarinas, bananos y granadillas.\",\n  \"ExpenseType\": \"Purchase of Goods\"\n}\n\n### Example 2\n\n{\n  \"InvoiceLineTxT\": \"POLIZA CUMPLIMIENTO 100036304 ANEXO 0, CERTIFICADO 97106840\",\n  \"Description\": \"Póliza de cumplimiento relacionada con certificado.\",\n  \"ExpenseType\": \"Services Received\"\n}",
+          "ID": 2,
+          "Name": "P2",
+          "ActualModel": "gpt-4o-mini",
+          "ActualPlatform": "openai",
+          "ActualProject": "Accounting Records"
+        }
+      },
+      {
+        "json": {
+          "id": "recYjl3SvcSpi1yWM",
+          "createdTime": "2024-09-05T23:20:22.000Z",
+          "Description": "Account Classification",
+          "Projects": [
+            "recVlNBSZ9fVMzBIx"
+          ],
+          "UserPrompt_4": "# SPECIAL INSTRUCTIONS\n- Output with extracted value only the identified and classified debit records.\n- The output must be only the response in JSON. Do not include any additional information or explanation.\n- Make sure to not repeat AccountNum8 in any other variable.\n- Do not repeat accounts.\n- Respond only in JSON. The first character must be `{` and the last character `}`. Do not output “```json” or any other sort of format.\n- **Ensure that all values from `LineExtensionAmount`, `IVA`, `IC`, `ICA`, `INC`, `ReteIVA`, `ReteFuente`, `ReteICA` are allocated to the corresponding account.**\n- Use the value from \"Account_to_InvoiceData_[1-40]\" to match invoice values with the corresponding account.\n- ReteFuente Accounts always start by digits '2365'. In some cases could include words like ReteFuente, or RTE Fuente or RTF or Retencion Fuente. In other cases words like ReteFuente, or RTE Fuente or RTF or Retencion Fuente won't be present. To be more accurate assign ReteFuente values to accounts that start by digits '2365'.",
+          "Temperature": 0.6,
+          "SystemPrompt": "# ROL\nYou are an accountant with extensive experience in Colombia, specializing in extracting and processing data from invoices in both Spanish and English. You are an expert in “NIIF” and the “Plan Unico de Cuentas” (PUC), and are well-versed in all relevant accounting regulations and procedures in Colombian accounting.",
+          "UserPrompt_1": "# Task\nYour task is to read the invoice information and make the corresponding accounting record for the invoice. Based on the PUC, assign the appropriate account numbers to register the invoice in the accounting books.\n\n- Understand Invoice Description, Invoice Information, items included in InvoiceLine, and ExpenseType to accurately assign accounting accounts.\n- Ensure all invoice values (LineExtensionAmount, IVA, IC, ICA, INC, ReteIVA, ReteFuente, ReteICA) are classified. Each value must be mapped to an appropriate PUC account.\n- Include all necessary accounts to register the expenses or income, as well as taxes.\n- For each account, specify whether it is a debit or a credit entry.\n- Follow all Colombian accounting regulations and procedures meticulously.\n- If certain fields in the invoice data are empty or missing, indicate this by leaving the respective account values and descriptions as null.\n- Only use provided accounts to map corresponding values.\n",
+          "Platform": [
+            "recyNe6U43nbX3Nk4"
+          ],
+          "Model": [
+            "recTgi0FhubRiARnu"
+          ],
+          "UserPrompt_5": "__",
+          "UserPrompt_3": "# OUTPUT\nEnsure that the output complies exactly with the JSON format and that all variables return a value extracted from the data given. If a value cannot be extracted, return an empty string for that field.\n\n### JSON Output Structure:\n{\n  \"AccountNum[number]\": \"Here goes the account number\",\n  \"AccountNum[number]_Des\": \"Here goes the account description AccountNum[number]\",\n  \"AccountNum[number]_Val\": \"Here goes the monetary value from AccountNum[number] taken from invoice data\",\n  \"AccountNum[number]_Deb_Cred\": \"Here goes only the classification Debit or Credit\",\n  \"AccountNum8\": \"Here goes the account number of the liability\",\n  \"AccountNum8_Des\": \"Here goes the account description AccountNum8, a liability account\",\n  \"AccountNum8_Val\": \"Value = 0\",\n  \"AccountNum8_Deb_Cred\": \"Equal to Credit\",\n  \"Confidence\": \"Write the confidence level of the job done. The confidence value goes from 0.0 to 1.0. For example, a level of 0.2 represents low confidence in the account classification, while 0.9 represents high confidence in the account classification\"\n}\n\n- [number] should be an iteration from 1 to 7.\n- AccountNum1. The first Account is a Purchase of Goods, Services Received, Asset Purchase, or Inventory. From that, classify the other accounts.\n- AccountNum1. Is a number greater than 50000000. Do not accept values lower than 50000000. For this variable do not accept values in AccountNum1_Des that contain words like 'Ajuste' 'Diferencia' \n- AccountNum8 is a number greater than 20000000 and lower than 23999999. Ensure the selected account number meets this criterion.\n- AccountNum1 and AccountNum8 always have to return a value and must be different from 0, cannot be empty.\n- ReteFuente Accounts always start by digits '2365'. In some cases could include words like ReteFuente, or RTE Fuente or RTF or Retencion Fuente. In other cases words like ReteFuente, or RTE Fuente or RTF or Retencion Fuente won't be present. To be more accurate assign ReteFuente values to accounts that start by digits '2365'.",
+          "UserPrompt_2": "# Examples\n\nThe information from the following examples is to guide you on the logic to execute the task. Do not take data from examples to complete the task, only the logic.\n\n## Example 1 Output\n\n{\n  \"AccountNum1\": 52356005,\n  \"AccountNum1_Des\": \"PUBLICIDAD, PROPAGANDA Y PROMOCIÓN\",\n  \"AccountNum1_Val\": \"235000.00\",\n  \"AccountNum1_Deb_Cred\": \"Debit\",\n  \"AccountNum2\": 24080205,\n  \"AccountNum2_Des\": \"IVA POR COMPRAS 19%\",\n  \"AccountNum2_Val\": \"44650.00\",\n  \"AccountNum2_Deb_Cred\": \"Debit\",\n  \"AccountNum3\": 23680107,\n  \"AccountNum3_Des\": \"RETENCION ICA 9.66\",\n  \"AccountNum3_Val\": \"2270.10\",\n  \"AccountNum3_Deb_Cred\": \"Credit\",\n  \"AccountNum4\": 23654001,\n  \"AccountNum4_Des\": \"RETENCION POR COMPRAS (DECLARANTES) 2.5%\",\n  \"AccountNum4_Val\": \"9400.00\",\n  \"AccountNum4_Deb_Cred\": \"Credit\",\n  \"AccountNum5\": null,\n  \"AccountNum5_Des\": null,\n  \"AccountNum5_Val\": null,\n  \"AccountNum5_Deb_Cred\": null,\n  \"AccountNum6\": null,\n  \"AccountNum6_Des\": null,\n  \"AccountNum6_Val\": null,\n  \"AccountNum6_Deb_Cred\": null,\n  \"AccountNum7\": null,\n  \"AccountNum7_Des\": null,\n  \"AccountNum7_Val\": null,\n  \"AccountNum7_Deb_Cred\": null,\n  \"AccountNum8\": 22050501,\n  \"AccountNum8_Des\": \"PROVEEDORES NACIONALES\",\n  \"AccountNum8_Deb_Cred\": \"Credit\",\n  \"Confidence\": \"0.90\"\n}\n\n## Example 2 Output\n\n{\n   \"AccountNum1\": 52550505,\n  \"AccountNum1_Des\": \"ALOJAMIENTO Y MANUTENCIÓN\",\n  \"AccountNum1_Val\": \"425742.88\",\n  \"AccountNum1_Deb_Cred\": \"Debit\",\n  \"AccountNum2\": 24080225,\n  \"AccountNum2_Des\": \"COMPRAS DE SERV GRAV A TARIFA DE 19%\",\n  \"AccountNum2_Val\": \"80891.14\",\n  \"AccountNum2_Deb_Cred\": \"Debit\",\n  \"AccountNum3\": null,\n  \"AccountNum3_Des\": null,\n  \"AccountNum3_Val\": null,\n  \"AccountNum3_Deb_Cred\": null,\n  \"AccountNum4\": null,\n  \"AccountNum4_Des\": null,\n  \"AccountNum4_Val\": null,\n  \"AccountNum4_Deb_Cred\": null,\n  \"AccountNum5\": null,\n  \"AccountNum5_Des\": null,\n  \"AccountNum5_Val\": null,\n  \"AccountNum5_Deb_Cred\": null,\n  \"AccountNum6\": null,\n  \"AccountNum6_Des\": null,\n  \"AccountNum6_Val\": null,\n  \"AccountNum6_Deb_Cred\": null,\n  \"AccountNum7\": null,\n  \"AccountNum7_Des\": null,\n  \"AccountNum7_Val\": null,\n  \"AccountNum7_Deb_Cred\": null,\n  \"AccountNum8\": 23356005,\n  \"AccountNum8_Des\": \"GASTOS DE VIAJE\",\n  \"AccountNum8_Deb_Cred\": \"Credit\",\n  \"Confidence\": \"0.90\"\n}\n\n",
+          "ID": 3,
+          "Name": "P3",
+          "ActualModel": "gpt-4o-2024-08-06",
+          "ActualPlatform": "openai",
+          "ActualProject": "Accounting Records"
+        }
+      },
+      {
+        "json": {
+          "id": "recRYuF3AGEi2eQBJ",
+          "createdTime": "2024-10-18T00:09:40.000Z",
+          "Description": "Item Description / ReteFuente - Category Classification",
+          "Projects": [
+            "recVlNBSZ9fVMzBIx"
+          ],
+          "UserPrompt_4": "# SPECIAL INSTRUCTIONS\n- To correctly classify \"Services Received\", Item description in some cases could include 'Arrendamiento' 'Arriendo' 'Servicio' 'Honorarios' 'Legal' 'Mantenimiento' 'Reparacion' 'Seguros' 'Almacenamiento' 'Bodegaje' among others",
+          "Temperature": 0.6,
+          "SystemPrompt": "# ROL\nYou are an accountant with experience in Colombia, an expert in extracting data from invoices, and capable of reading and extracting data in both Spanish and English. You are an expert in \"Plan Unico de Cuentas\" (PUC) and in all accounting regulations.",
+          "UserPrompt_1": "# TASK\nRead the item description extracted from an invoice and classify the item into an \"Expense Type\" as either \"Purchase of Goods\" or \"Services Received\"\n\n## Steps\n\n1. Analyze the item description provided.\n2. Based on the description determine if the item is a \"Purchase of Goods\" or \"Services Received\" based on the description.\n3. Assign the \"Expense Type\" based on the classification.\n",
+          "Platform": [
+            "recyNe6U43nbX3Nk4"
+          ],
+          "Model": [
+            "recjFBje60udzTklV"
+          ],
+          "UserPrompt_5": "__",
+          "UserPrompt_3": "# OUTPUT\nEnsure that the output complies exactly with the JSON format and that all variables return a value extracted from the data given. If a value cannot be extracted, return an empty string for that field. \n\nReturn the result in JSON using this format: \n\n{\n\"ExpenseType\": \"Here you have to indicate if the item corresponds to a Purchase of Goods or Services Received.\"\n}\n\n\nRespond only in JSON. The first character must be \"{\" and the last character \"}\". Do not output \"```json\" or any other sort of format. \n\nThe output must be a valid JSON. And all key values must output as simple strings\n\n",
+          "UserPrompt_2": "_____",
+          "ID": 9,
+          "Name": "P9",
+          "ActualModel": "gpt-4o-mini",
+          "ActualPlatform": "openai",
+          "ActualProject": "Accounting Records"
+        }
+      },
+      {
+        "json": {
+          "id": "rec8npiJ3wkxXmwhk",
+          "createdTime": "2024-10-18T22:20:02.000Z",
+          "Description": "ReteFuente - Type Classification",
+          "Projects": [
+            "recVlNBSZ9fVMzBIx"
+          ],
+          "UserPrompt_4": "__",
+          "Temperature": 0.6,
+          "SystemPrompt": "# ROL\nYou are an accountant with experience in Colombia, an expert in extracting data from invoices, and capable of reading and extracting data in both Spanish and English. You are an expert in Tax classification, you classify conditions to calculate tax withholding for \"Retención en la Fuente\" or \"ReteFuente\"",
+          "UserPrompt_1": "# TASK\nRead the item description extracted from an invoice and classify the item into its corresponding \"Type\". Select one type from the list provided that match with the item description.\n\n## Steps\n\n1. Analyze the item description provided.\n2. Assign the \"Type\" based on the classification from the list provided.\n",
+          "Platform": [
+            "recyNe6U43nbX3Nk4"
+          ],
+          "Model": [
+            "recjFBje60udzTklV"
+          ],
+          "UserPrompt_5": "__",
+          "UserPrompt_3": "# OUTPUT\nEnsure that the output complies exactly with the JSON format and that all variables return a value extracted from the data given. If a value cannot be extracted, return an empty string for that field. \n\nReturn the result in JSON using this format: \n\n{\n\"Type\": \"Here you have to write the type that matches the item description. For the classification only use data provided in list \"Type\"\n}\n\n\nRespond only in JSON. The first character must be \"{\" and the last character \"}\". Do not output \"```json\" or any other sort of format. \n\nThe output must be a valid JSON. And all key values must output as simple strings\n\n",
+          "UserPrompt_2": "__",
+          "ID": 10,
+          "Name": "P10",
+          "ActualModel": "gpt-4o-mini",
+          "ActualPlatform": "openai",
+          "ActualProject": "Accounting Records"
+        }
+      },
+      {
+        "json": {
+          "id": "rechJoSRqi80UJ23o",
+          "createdTime": "2024-10-20T15:07:45.000Z",
+          "Description": "ReteFuente - Concept Classification",
+          "Projects": [
+            "recVlNBSZ9fVMzBIx"
+          ],
+          "UserPrompt_4": "__",
+          "Temperature": 0.6,
+          "SystemPrompt": "# ROL\nYou are an accountant with experience in Colombia, an expert in extracting data from invoices, and capable of reading and extracting data in both Spanish and English. You are an expert in Tax classification, and can classify conditions to calculate tax withholding for \"Retención en la Fuente\" or \"ReteFuente\"",
+          "UserPrompt_1": "# TASK\nYou will be provided with an item description extracted from an invoice, along with a category, type, and a list of tax concepts. \n\nYour task is to:\n1. Analyze the item description.\n2. Identify the closest match based on the description, category, and type from the provided \"Concept List.\"\n3. Based on the item description, classify the item into the corresponding \"CONCEPT\" value and assign the corresponding \"NUM\" value. You can only use \"CONCEPT\" and \"NUM\" values from the \"Concept List\" provided.\n\nAlways return a classification, selecting the most relevant option from the provided \"Concept List.\"\n",
+          "Platform": [
+            "recyNe6U43nbX3Nk4"
+          ],
+          "Model": [
+            "recjFBje60udzTklV"
+          ],
+          "UserPrompt_5": "__",
+          "UserPrompt_3": "# OUTPUT\nReturn the result in JSON format using the following structure:\n\n```json\n{\n    \"NUM\": \"The number of the closest matching concept from the 'Concept List'\",\n    \"CONCEPT\": \"The concept that best matches the item description from the 'Concept List'\"\n}\n\n\nRespond only in JSON. The first character must be \"{\" and the last character \"}\". Do not output \"```json\" or any other sort of format. \n\nThe output must be a valid JSON. And all key values must output as simple strings\n\n\"NUM\" return the value as a valid number\n\"NUM\" and \"CONCEPT\" Can not be empty, always return value\n\n\n",
+          "UserPrompt_2": "__",
+          "ID": 12,
+          "Name": "P12",
+          "ActualModel": "gpt-4o-mini",
+          "ActualPlatform": "openai",
+          "ActualProject": "Accounting Records"
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.appintegria.com",
+            "user-agent": "axios/1.7.4",
+            "content-length": "116",
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "178.156.139.34",
+            "x-forwarded-host": "n8n.appintegria.com",
+            "x-forwarded-port": "80",
+            "x-forwarded-proto": "http",
+            "x-forwarded-server": "51e3e609b9c5",
+            "x-real-ip": "178.156.139.34"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Invoice_uuid": [
+              {
+                "Invoice_uuid": "65381c38-469a-41dd-9ef6-a7649d795b37",
+                "id": "01PHCLF5GC4I4E4QN3QVAKFMHKNFPXTL2E"
+              }
+            ]
+          },
+          "webhookUrl": "https://n8n.appintegria.com/webhook/6d1fa5eb-4272-4b76-9155-24b0da992ffc",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "f3ec18b5-1569-4e18-a8f6-bd803240f6f8",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-02-04T13:55:27.606Z",
+      "updatedAt": "2025-02-04T13:55:27.606Z",
+      "id": "sFbVSiMOCzwy8ZoJ",
+      "name": "Causacion"
+    }
+  ]
+}
