@@ -1,0 +1,3903 @@
+{
+  "createdAt": "2025-04-14T21:50:48.756Z",
+  "updatedAt": "2025-05-09T21:31:45.721Z",
+  "id": "nd4xMsyMcIWGWDaw",
+  "name": "Bancamia Flujo Facturas - SharePoint",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        660
+      ],
+      "id": "67118c23-48bc-4431-8145-af474494279e",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        660
+      ],
+      "id": "88e7eb1e-e6e4-4221-a30a-aa2deb8623a6",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"model\": \"claude-3-7-sonnet-20250219\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"document\",\n          \"source\": {\n            \"type\": \"base64\",\n            \"media_type\": \"application/pdf\",\n            \"data\": \"{{ $('PDF_Base64').item.json.data }}\"\n          }\n        },\n        {\n          \"type\": \"text\",\n          \"text\": {{ JSON.stringify($('Prompts').item.json.Prompt_PDF) }}\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "dotNotation": false
+        }
+      },
+      "id": "6dccfd8f-537e-4323-929d-2580687c6260",
+      "name": "Define Prompt",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1640,
+        680
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        680
+      ],
+      "id": "51a61630-4c3b-49eb-bb7a-15f2f37680af",
+      "name": "PDF_Base64"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw input data from the workflow\nconst inputText = $json.content[0].text;\n\n// Fix invalid JSON format by replacing single quotes with double quotes\nconst correctedJson = inputText.replace(/'/g, '\"');\n\ntry {\n    // Parse the corrected JSON string into an object\n    const extractedData = JSON.parse(correctedJson);\n\n    // Return the structured JSON object\n    return [{ json: extractedData }];\n} catch (error) {\n    // If parsing fails, return an error message\n    return [{ json: { error: \"Invalid JSON format\", details: error.message } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        660
+      ],
+      "id": "d245cf1f-11fc-486c-8efd-dffb17c58e24",
+      "name": "Organizacion_Data",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "luisfernando.munoz@krypto.com.co",
+        "subject": "={{ $now.format('yyyy-MM-dd') }} Reporte Extracción Facturas ",
+        "message": "=<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Reporte Extracción Facturas</title>\n    <style>\n      /* Base styles */\n      body {\n        margin: 0;\n        padding: 0;\n        font-family: Arial, sans-serif;\n        background-color: #f5f5f5;\n      }\n      .container {\n        width: 100%;\n        max-width: 600px;\n        margin: 20px auto;\n        background-color: #ffffff;\n        border: 1px solid #dddddd;\n      }\n      /* Header styling similar to Bancamía's branding */\n      .header {\n        background-color: #B5121D;\n        padding: 20px;\n        text-align: center;\n        color: #ffffff;\n      }\n      .header h1 {\n        margin: 0;\n        font-size: 24px;\n      }\n      /* Content styling */\n      .content {\n        padding: 20px;\n        color: #333333;\n      }\n      .content p {\n        font-size: 16px;\n        line-height: 1.5;\n        margin: 10px 0;\n      }\n      /* Table styling */\n      .report-table {\n        width: 100%;\n        border-collapse: collapse;\n        margin-top: 20px;\n      }\n      .report-table th, .report-table td {\n        border: 1px solid #dddddd;\n        padding: 8px;\n        text-align: left;\n      }\n      .report-table th {\n        background-color: #f0f0f0;\n      }\n      /* Button style for the complete report link */\n      .btn {\n        display: inline-block;\n        padding: 10px 20px;\n        background-color: #B5121D;\n        color: #ffffff !important; /* Ensuring text is white */\n        text-decoration: none;\n        border-radius: 4px;\n        margin-top: 20px;\n        font-weight: bold;\n        text-align: center;\n        border: none;\n      }\n      .btn:hover {\n        background-color: #9f101a;\n      }\n      /* Footer styling */\n      .footer {\n        background-color: #f0f0f0;\n        padding: 10px;\n        text-align: center;\n        font-size: 12px;\n        color: #777777;\n      }\n    </style>\n  </head>\n  <body>\n    <div class=\"container\">\n      <div class=\"header\">\n        <h1>Bancamía | Krypto - IntegrIA</h1>\n      </div>\n      <div class=\"content\">\n        <p><strong>Reporte Extracción Facturas</strong></p>\n        <p><strong>Fecha:</strong> {{$now.format(\"yyyy-MM-dd\")}}</p>\n        <p>Hola!</p>\n        <p>A continuación te reportamos los documentos que necesitan una revisión adicional.</p>\n        \n        <table class=\"report-table\">\n          <thead>\n            <tr>\n              <th>Contrato</th>\n              <th>Empresa</th>\n              <th>Tipo factura</th>\n              <th>Enlace PDF</th>\n            </tr>\n          </thead>\n          <tbody>\n            {{ $json[\"data\"].map(item => `\n              <tr>\n                <td>${item[\"CONTRATO\"]}</td>\n                <td>${item[\"EMPRESA\"]}</td>\n                <td>${item[\"TIPO FACTURA\"]}</td>\n                <td><a href=\"${item[\"LINK PDF\"]}\" target=\"_blank\" style=\"color: #B5121D; text-decoration: none;\">Ver Documento</a></td>\n              </tr>\n            `).join('') }}\n          </tbody>\n        </table>\n        \n        <p>\n          <a class=\"btn\" href=\"https://kryptocolombia-my.sharepoint.com/:x:/g/personal/edgar_caballero_krypto_com_co/EWJ7_iU0hmJEj-5ieUbh7JgBx4GUOcGIo-IDt5XwDaHxJA?e=lSuxsW\">\n            Reporte Completo\n          </a>\n        </p>\n        \n        <p>Muchas Gracias!</p>\n      </div>\n      <div class=\"footer\">\n        © 2025 IntegrIA. Todos los derechos reservados.\n      </div>\n    </div>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        0
+      ],
+      "id": "4962afc3-74b5-4d01-aa93-ae375136143e",
+      "name": "Gmail",
+      "webhookId": "1a36c954-07f5-413d-a9e5-1fb60949819c"
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "workbook": {
+          "__rl": true,
+          "value": "01PHCLF5DCPP7CKNEGMJCI73TCPFDOD3EY",
+          "mode": "list",
+          "cachedResultName": "Control Servicios Publicos",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Servicios",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Servicios!A1"
+        },
+        "table": {
+          "__rl": true,
+          "value": "{00000000-000C-0000-FFFF-FFFF00000000}",
+          "mode": "list",
+          "cachedResultName": "Servicios",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Servicios!A1:AB2"
+        },
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "CONTRATO",
+              "fieldValue": "={{ $('Organizacion_Data').item.json.Contrato }}"
+            },
+            {
+              "column": "EMPRESA",
+              "fieldValue": "={{ $('Organizacion_Data').item.json.Empresa.toUpperCase() }}"
+            },
+            {
+              "column": "TIPO FACTURA",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['Tipo factura'] }}"
+            },
+            {
+              "column": "NO. FACTURA",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['No. FACTURA'] }}"
+            },
+            {
+              "column": "ENERGIA",
+              "fieldValue": "={{ $('Organizacion_Data').item.json.ENERGIA }}"
+            },
+            {
+              "column": "KW ENERGIA",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['KW ENERGIA'] }}"
+            },
+            {
+              "column": "IMTO AP",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['IMTO AP'] }}"
+            },
+            {
+              "column": "ACUEDUCTO",
+              "fieldValue": "={{ $('Organizacion_Data').item.json.ACUEDUCTO }}"
+            },
+            {
+              "column": "METROS CUBICOS",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['METROS CUBICOS'] }}"
+            },
+            {
+              "column": "ASEO",
+              "fieldValue": "={{ $('Organizacion_Data').item.json.ASEO }}"
+            },
+            {
+              "column": "TOTAL RECIBO",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['TOTAL RECIBO'] }}"
+            },
+            {
+              "column": "PERIODO FACTURADO INICIAL",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['PERIODO FACTURADO INICIAL'] }}"
+            },
+            {
+              "column": "PERIODO FACTURADO FINAL",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['PERIODO FACTURADO FINAL'] }}"
+            },
+            {
+              "column": "FECHA LLEGADA",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['FECHA LLEGADA'] }}"
+            },
+            {
+              "column": "FECHA VENCIMIENTO",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['FECHA VENCIMIENTO'] }}"
+            },
+            {
+              "column": "FECHA PROXIMO RECIBO",
+              "fieldValue": "={{ $('Organizacion_Data').item.json['FECHA PROXIMO RECIBO'] }}"
+            },
+            {
+              "column": "FECHA EXTRACCIÓN",
+              "fieldValue": "={{$now.format('dd-MM-yyyy').toString()}}"
+            },
+            {
+              "column": "NIT",
+              "fieldValue": "={{ $('Organizacion_Data').item.json.NIT }}"
+            },
+            {
+              "column": "NOMBRE ARCHIVO",
+              "fieldValue": "={{ $('FILE_ID').item.json.NOMBRE_PDF }}"
+            },
+            {
+              "column": "FILE_ID",
+              "fieldValue": "={{ $('Update Excel').item.json.FILE_ID }}"
+            },
+            {
+              "column": "LINK PDF",
+              "fieldValue": "={{ $json.FILE_URL }}"
+            },
+            {
+              "column": "MES",
+              "fieldValue": "={{$('Mes Facturas').item.json['Mes Facturas']}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        3300,
+        620
+      ],
+      "id": "f84a36d5-7ed2-40bf-a53e-ea621c5ae459",
+      "name": "Microsoft Excel 365",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "RdWQiCkLyjhP02OR",
+          "name": "Microsoft Excel account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "getRows",
+        "workbook": {
+          "__rl": true,
+          "value": "01PHCLF5DCPP7CKNEGMJCI73TCPFDOD3EY",
+          "mode": "list",
+          "cachedResultName": "Control Servicios Publicos",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Servicios",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Servicios!A1"
+        },
+        "table": {
+          "__rl": true,
+          "value": "{00000000-000C-0000-FFFF-FFFF00000000}",
+          "mode": "list",
+          "cachedResultName": "Servicios",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Servicios!A1:AB2"
+        },
+        "returnAll": true,
+        "filters": {
+          "column": []
+        }
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        680,
+        0
+      ],
+      "id": "97f5a767-477e-4080-88ed-5bd7dae84874",
+      "name": "Microsoft Excel 3651",
+      "executeOnce": true,
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "RdWQiCkLyjhP02OR",
+          "name": "Microsoft Excel account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cd593041-008d-4787-868a-0e7c9002e1cf",
+              "leftValue": "={{ $json['VALIDACIÓN'] }}",
+              "rightValue": "REVISAR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "8c642824-84c1-476a-a220-7f9bc7f88440",
+              "leftValue": "={{ $json['FECHA EXTRACCIÓN'] }}",
+              "rightValue": "={{ $now.format('dd-MM-yyyy').toString() }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        920,
+        0
+      ],
+      "id": "16b0ae8a-63d8-40d3-8038-4a6d9df3f8c3",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        0
+      ],
+      "id": "0ec72d57-531f-46c0-8276-ed7610e60e0e",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['KW DESVIACIÓN '] }}",
+                    "rightValue": "REVISAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "KW"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "10bee555-e43e-4eb1-9e52-df39320f0a1b",
+                    "leftValue": "={{ $json['M3 DESVIACIÓN '] }}",
+                    "rightValue": "REVISAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "M3"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2140,
+        1680
+      ],
+      "id": "b259327a-14af-4867-a1e5-6090535a2e8d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "https://kryptocolombia.sharepoint.com/sites/Bancamia_Documentacion/_api/web/GetFolderByServerRelativeUrl('/sites/Bancamia_Documentacion/Documentos%20compartidos/Facturas%20Servicios%20Publicos/Procesamiento')/Files",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json;odata=verbose"
+            }
+          ]
+        },
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        660
+      ],
+      "id": "a031326d-3bfc-4ea9-b4d4-69623128e151",
+      "name": "Microsoft SharePoint HTTP Request1",
+      "extendsCredential": "microsoftSharePointOAuth2Api",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "14a7608c-f72e-4b58-b50a-ad8f33f8d4a2",
+              "leftValue": "={{ $('Microsoft Excel 365').item.json.OFICINA.toJsonString() }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "e2dd770a-3da9-4802-95e1-116cd4cac507",
+              "leftValue": "={{ $('Microsoft Excel 365').item.json.OFICINA.toJsonString() }}",
+              "rightValue": "\"0\"",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "045687d0-4513-471a-9e14-55fbaeb9f28b",
+              "leftValue": "={{ $('Microsoft Excel 365').item.json.OFICINA.toJsonString() }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "e5126774-f2a3-4f5d-8fd0-5285a7320924",
+              "leftValue": "={{ $('Microsoft Excel 365').item.json.OFICINA.toJsonString() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        520,
+        1680
+      ],
+      "id": "7ac36ad7-816a-4d9d-953e-d046d93fd2f1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": {{ $('Prompt_DATA_CONTRATO').item.json.DATA_REVIEW.toJsonString() }}\n        },\n        {\n          \"inline_data\": {\n            \"mime_type\": \"application/pdf\",\n            \"data\": \"{{ $('PDF_Base').item.json.data }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "dotNotation": false
+        }
+      },
+      "id": "43633e63-95ab-4ac5-bcc5-3db649be6af7",
+      "name": "Prompt _Contrato_Validator",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1460,
+        1540
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Define Prompt').item.json.toJsonString() }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "3ff164c4-c06e-476c-8292-deeee29106fa",
+      "name": "AI - PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1860,
+        680
+      ],
+      "typeVersion": 4.2,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "anthropicApi": {
+          "id": "lMcrEsjfTndw8b1i",
+          "name": "Anthropic Bacamia"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d4c66d57-96de-47dc-a38e-1c73c242631a",
+              "name": "Prompt_PDF",
+              "value": "# ROL\nYou are a highly skilled AI extracting data from utilities bills, specifically those written in Spanish from utilities providers. You are a very advanced OCR. Data from utilities bills will be provided in PDF format. The PDF can contain text, images, or both. Your primary objective is to accurately identify and extract all the required data.\n\n# INSTRUCTIONS\n- Extract only the required data.\n- Use the tool Facturas_PDF to get the utility bill in PDF file.\n- Only reply with the output data required. Avoid any other text.\n- Respond only with the data provided in the PDF. If no data is available, assign value `0`.\n- Output must be written in Spanish.\n\n# OUTPUT\nIn the ouput don't include any text like '```json'\nMake sure to extract only the following data based on the schema:\n\n{\n  'Contrato': 'Escribir número del contrato o cuenta o usuario o suscriptor o número de cliente o NIC o Codigo Interno o Matricula o Poliza o NUIS o NUID o NUIR. El numero del contrato no es lo mismo que el numero de la ruta, o recorrido, o la dirreccion por lo tanto no usar esos datos como numero del contrato.',\n  'Empresa': 'Escribir nombre de la empresa de servicios públicos que emite la factura',\n  'NIT': 'Escribir número NIT de identificación tributaria de la empresa de servicios públicos. La identificacion de la empresa no es NIU. Tomar unicamente los 9 primeros digitos',\n  'Tipo factura': 'Si la factura es del servicio de energía, escribir ENERGIA. Si la factura es del servicio de acueducto, escribir ACUEDUCTO',\n  'No. FACTURA': 'Escribir el número de factura. Tambien puede estar relacionado como Consecutivo o documento equivalente electrónico o documento electrónico',\n  'ENERGIA': 'Escribir el valor de la facturación por concepto de ENERGIA',\n  'KW ENERGIA': 'Escribir el último consumo en kilovatios Kw. El valor tambien puede estar clasificado como consumo. Escribir únicamente valores numéricos',\n  'IMTO AP': 'Escribir valor facturado de impuesto alumbrado publico',\n  'ACUEDUCTO': 'Escribir el valor de la facturación por concepto de ACUEDUCTO',\n  'METROS CUBICOS': 'Escribir el último consumo en metros cúbicos',\n  'ASEO': 'Escribir el valor de la facturación por concepto de ASEO',\n  'TOTAL RECIBO': 'Escribir el valor total de la factura',\n  'PERIODO FACTURADO INICIAL': 'Escribir fecha inicial del período de facturación. La fecha esta en formato DD/MM/YY',\n  'PERIODO FACTURADO FINAL': 'Escribir fecha final del período de facturación. La fecha esta en formato DD/MM/YY',\n  'FECHA LLEGADA': 'Si está disponible, escribir fecha de emisión de la factura. La fecha esta en formato DD/MM/YY',\n  'FECHA VENCIMIENTO': 'Escribir fecha de vencimiento del pago o pago oportuno de la factura. La fecha esta en formato DD/MM/YY',\n  'FECHA PROXIMO RECIBO': 'Si está disponible, escribir la próxima fecha de facturación. La fecha esta en formato DD/MM/YY'\n}\n\n# EXAMPLE\n{\n  'Contrato': '7136907',\n  'Empresa': 'EPM',\n  'NIT': '890904996',\n  'Tipo factura': 'Energia',\n  'No. FACTURA': '123-4',\n  'ENERGIA': '500000',\n  'KW ENERGIA': '120',\n  'IMTO AP': '200000',\n  'ACUEDUCTO': '$80,000',\n  'METROS CUBICOS': '45',\n  'ASEO': '20000',\n  'TOTAL RECIBO': '800000',\n  'PERIODO FACTURADO INICIAL': '27/8/24',\n  'PERIODO FACTURADO FINAL': '26/9/24',\n  'FECHA LLEGADA': '8/7/24',\n  'FECHA VENCIMIENTO': '26/10/24',\n  'FECHA PROXIMO RECIBO': '26/10/24'\n}",
+              "type": "string"
+            },
+            {
+              "id": "5c4810f7-0a2f-47d7-8d61-a7423b5eb946",
+              "name": "Prompt_Quality",
+              "value": "# ROL\nYou are a highly skilled AI extracting data from utilities bills, specifically those written in Spanish from utilities providers. You are a very advanced OCR. Data from utilities bills will be provided in PDF format. The PDF can contain text, images, or both. Your primary objective is to accurately identify and extract all the required data.\n\n# INSTRUCTIONS\n- Extract only the required data.\n- Only reply with the output data required. Avoid any other text.\n- Respond only with the data provided in the PDF. If no data is available, assign value `0`.\n- Output must be written in Spanish.\n- Analyze PDF and validate 'Contrato' and 'Empresa' values.\n- From 'DATA TO REVIEW' Get correct values of 'Contrato' and 'Empresa'.In 'DATA TO REVIEW' you will get incorrect values of 'Contrato' and 'Empresa' extracted in a prior execution.\n\n# OUTPUT\nMake sure to extract only the following data based on the schema:\n\n{\n  'Contrato': 'Escribir número del contrato o cuenta o usuario o NIC o Codigo Interno o Matricula o Poliza. El numero del contrato no es lo mismo que el numero de la ruta, o recorrido, o la dirreccion por lo tanto no usar esos datos como numero del contrato.',\n  'Empresa': 'Escribir nombre de la empresa de servicios públicos que emite la factura'\n}\n\n# EXAMPLE\n{\n  'Contrato': '7136907',\n  'Empresa': 'EPM'\n}\n{\n  'Contrato': '10447',\n  'Empresa': 'ACUALCO'\n}\n{\n  'Contrato': '1080186',\n  'Empresa': 'ESSA'\n}\n{\n  'Contrato': '7136907',\n  'Empresa': 'EPM'\n}\n\nExamples are only as a demonstration to show values that are valid.",
+              "type": "string"
+            },
+            {
+              "id": "c609ce78-15f3-4076-8f09-e714f17aa4ae",
+              "name": "Prompt_KW",
+              "value": "# ROL\nYou are a highly skilled AI extracting data from utilities bills, specifically those written in Spanish from utilities providers. You are a very advanced OCR. Data from utilities bills will be provided in PDF format. The PDF can contain text, images, or both. Your primary objective is to accurately identify and extract all the required data.\n\n# INSTRUCTIONS\n- Extract only the required data.\n- Only reply with the output data required. Avoid any other text.\n- Respond only with the data provided in the PDF. If no data is available, assign value `0`.\n- Output must be written in Spanish.\n- Analyze PDF and validate values from .\n- From 'DATA TO REVIEW KW' Get correct values of 'Contrato' and 'Empresa'.In 'DATA TO REVIEW KW' you will get incorrect values of 'Contrato' and 'Empresa' extracted in a prior execution.\n- From 'DATA TO REVIEW KW' review values of 'ENERGIA' and 'KW ENERGIA'.In 'DATA TO REVIEW KW' you will get values of 'ENERGIA' and 'KW ENERGIA' extracted in a prior execution, you have to revalidate values.\n\n# OUTPUT\nMake sure to extract only the following data based on the schema:\n\n{\n  'ENERGIA': 'Valor validado nuevamente de la facturación por concepto de ENERGIA',\n  'KW ENERGIA': 'Valor validado nuevamente del último consumo en kilovatios Kw. El valor tambien puede estar clasificado como consumo.'\n}\n",
+              "type": "string"
+            },
+            {
+              "id": "93110329-b132-44cf-aeed-35d6881c6f4d",
+              "name": "Prompt_M3",
+              "value": "# ROL\nYou are a highly skilled AI extracting data from utilities bills, specifically those written in Spanish from utilities providers. You are a very advanced OCR. Data from utilities bills will be provided in PDF format. The PDF can contain text, images, or both. Your primary objective is to accurately identify and extract all the required data.\n\n# INSTRUCTIONS\n- Extract only the required data.\n- Only reply with the output data required. Avoid any other text.\n- Respond only with the data provided in the PDF. If no data is available, assign value `0`.\n- Output must be written in Spanish.\n- Analyze PDF and validate values from .\n- From 'DATA TO REVIEW M3' review values of 'ACUEDUCTO' and 'METROS CUBICOS'.In 'DATA TO REVIEW M3' you will values of 'ACUEDUCTO' and 'METROS CUBICOS' extracted in a prior execution, you have to revalidate values.\n\n# OUTPUT\nMake sure to extract only the following data based on the schema:\n\n{\n  'ACUEDUCTO': 'Valor validado nuevamente de la facturación por concepto de ACUEDUCTO',\n  'METROS CUBICOS': 'Valor validado nuevamente del último consumo en metros cúbicos'\n}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1400,
+        680
+      ],
+      "id": "fe42e122-7c33-48fb-b483-c7d1d6465a20",
+      "name": "Prompts"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Prompt _Contrato_Validator').item.json.toJsonString() }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "8c30596f-bea1-4a07-abdc-71dd94d7f8f3",
+      "name": "PDF_Quality_CONTRATO",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1680,
+        1540
+      ],
+      "typeVersion": 4.2,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "anthropicApi": {
+          "id": "lMcrEsjfTndw8b1i",
+          "name": "Anthropic Bacamia"
+        },
+        "googlePalmApi": {
+          "id": "Nwi6Sq2I7231OhTU",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "upsert",
+        "workbook": {
+          "__rl": true,
+          "value": "01PHCLF5DCPP7CKNEGMJCI73TCPFDOD3EY",
+          "mode": "list",
+          "cachedResultName": "Control Servicios Publicos",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Servicios",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Servicios!A1"
+        },
+        "columnToMatchOn": "ITEM",
+        "valueToMatchOn": "={{ $('Microsoft Excel 365').item.json.ITEM }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "CONTRATO",
+              "fieldValue": "={{ JSON.parse($json.candidates[0].content.parts[0].text.replace(/```json|```/g, '').replace(/'/g, '\"')).Contrato }}"
+            },
+            {
+              "column": "EMPRESA",
+              "fieldValue": "={{ JSON.parse($json.candidates[0].content.parts[0].text.replace(/```json|```/g, '').replace(/'/g, '\"')).Empresa.toUpperCase() }}"
+            },
+            {
+              "column": "CONTROL",
+              "fieldValue": "REVISADO AI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        1900,
+        1540
+      ],
+      "id": "cb54e2d4-5522-46d0-b4d1-610fba077222",
+      "name": "Update CONTRATO",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "RdWQiCkLyjhP02OR",
+          "name": "Microsoft Excel account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a379f367-ba26-48ef-8545-2a9490d72e75",
+              "name": "DATA_REVIEW",
+              "value": "=# ROL\nYou are a highly skilled AI extracting data from utilities bills, specifically those written in Spanish from utilities providers. You are a very advanced OCR. Data from utilities bills will be provided in PDF format. The PDF can contain text, images, or both. Your primary objective is to accurately identify and extract all the required data.\n\n# INSTRUCTIONS\n- Extract only the required data.\n- Only reply with the output data required. Avoid any other text.\n- Respond only with the data provided in the PDF. If no data is available, assign value `0`.\n- Output must be written in Spanish.\n- Analyze PDF and validate 'Contrato' and 'Empresa' values.\n- From 'DATA TO REVIEW' review values of 'Contrato' and 'Empresa'. The 'Contrato' number provided  in 'DATA TO REVIEW' is incorrect. Values of 'Contrato' and 'Empresa' were extracted in a prior execution. You must get the right values from the pdf.\n\n# OUTPUT\nMake sure to extract only the following data based on the schema:\n\n{\n  'Contrato': 'Escribir número del contrato o cuenta o usuario o NIC o Codigo Interno o Matricula o Poliza. El numero del contrato no es lo mismo que el numero de la ruta, o recorrido, o la dirreccion por lo tanto no usar esos datos como numero del contrato.',\n  'Empresa': 'Escribir nombre de la empresa de servicios públicos que emite la factura'\n}\n\n# EXAMPLE\n{\n  'Contrato': '7136907',\n  'Empresa': 'EPM'\n}\n{\n  'Contrato': '10447',\n  'Empresa': 'ACUALCO'\n}\n{\n  'Contrato': '1080186',\n  'Empresa': 'ESSA'\n}\n{\n  'Contrato': '7136907',\n  'Empresa': 'EPM'\n}\n\nExamples are only as a demonstration to show values that are valid.\n\n# DATA TO REVIEW\n\n'CONTRATO': '{{ $('Microsoft Excel 365').item.json.CONTRATO }}'\n'EMPRESA': '{{ $('Microsoft Excel 365').item.json.EMPRESA }}'\n\nMake sure to propertly read slashed zeros\n\nRemove any \"-\"\n\n\n\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        1540
+      ],
+      "id": "895e6dec-5d27-451e-aa6b-b1700b1de0ce",
+      "name": "Prompt_DATA_CONTRATO"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": {{ $('Microsoft SharePoint HTTP Request4').item.json.DATA_REVIEW.toJsonString() }}\n        },\n        {\n          \"inline_data\": {\n            \"mime_type\": \"application/pdf\",\n            \"data\": \"{{ $('PDF_Base1').item.json.data }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "dotNotation": false
+        }
+      },
+      "id": "275f3f8a-a132-4803-ad56-902cb5a3df80",
+      "name": "Prompt _Validator_KW",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        3060,
+        1500
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a379f367-ba26-48ef-8545-2a9490d72e75",
+              "name": "DATA_REVIEW",
+              "value": "=# ROL\nYou are a highly skilled AI extracting data from utilities bills, specifically those written in Spanish from utilities providers. You are a very advanced OCR. Data from utilities bills will be provided in PDF format. The PDF can contain text, images, or both. Your primary objective is to accurately identify and extract all the required data.\n\n# INSTRUCTIONS\n- Extract only the required data.\n- Only reply with the output data required. Avoid any other text.\n- Respond only with the data provided in the PDF. If no data is available, assign value `0`.\n- Output must be written in Spanish.\n- Analyze PDF and validate values from .\n- From 'DATA TO REVIEW KW' Get correct values of 'Contrato' and 'Empresa'.In 'DATA TO REVIEW KW' you will get incorrect values of 'Contrato' and 'Empresa' extracted in a prior execution.\n- From 'DATA TO REVIEW KW' review values of 'ENERGIA' and 'KW ENERGIA'.In 'DATA TO REVIEW KW' you will get values of 'ENERGIA' and 'KW ENERGIA' extracted in a prior execution, you have to revalidate values.\n\n# OUTPUT\nMake sure to extract only the following data based on the schema:\n\n{\n  'ENERGIA': 'Valor validado nuevamente de la facturación por concepto de ENERGIA',\n  'KW ENERGIA': 'Valor validado nuevamente del último consumo en kilovatios Kw. El valor tambien puede estar clasificado como consumo.'\n}\n\n\n# DATA TO REVIEW KW\n\n'ENERGIA': '{{ $json.ENERGIA }}'\n'KW ENERGIA': '{{ $json['KW ENERGIA'] }}'\n\nMake sure to propoertly read slashed zeros\n\nRemove any \"-\"\n\n\n\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2400,
+        1500
+      ],
+      "id": "62affd65-0911-42da-bc8b-8786477c07cd",
+      "name": "Prompt_KW"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Prompt _Validator_KW').item.json.toJsonString() }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "beb66521-5333-476f-b27d-ff413fef8f00",
+      "name": "PDF_Quality_KW",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3280,
+        1500
+      ],
+      "typeVersion": 4.2,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "anthropicApi": {
+          "id": "lMcrEsjfTndw8b1i",
+          "name": "Anthropic Bacamia"
+        },
+        "googlePalmApi": {
+          "id": "Nwi6Sq2I7231OhTU",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a379f367-ba26-48ef-8545-2a9490d72e75",
+              "name": "DATA_REVIEW",
+              "value": "=# ROL\nYou are a highly skilled AI extracting data from utilities bills, specifically those written in Spanish from utilities providers. You are a very advanced OCR. Data from utilities bills will be provided in PDF format. The PDF can contain text, images, or both. Your primary objective is to accurately identify and extract all the required data.\n\n# INSTRUCTIONS\n- Extract only the required data.\n- Only reply with the output data required. Avoid any other text.\n- Respond only with the data provided in the PDF. If no data is available, assign value `0`.\n- Output must be written in Spanish.\n- Analyze PDF and validate values from .\n- From 'DATA TO REVIEW M3' review values of 'ACUEDUCTO' and 'METROS CUBICOS'.In 'DATA TO REVIEW M3' you will values of 'ACUEDUCTO' and 'METROS CUBICOS' extracted in a prior execution, you have to revalidate values.\n\n# OUTPUT\nMake sure to extract only the following data based on the schema:\n\n{\n  'ACUEDUCTO': 'Valor validado nuevamente de la facturación por concepto de ACUEDUCTO',\n  'METROS CUBICOS': 'Valor validado nuevamente del último consumo en metros cúbicos'\n}\n\n\n# DATA TO REVIEW M3\n\n'ACUEDUTO': '{{ $json.ACUEDUCTO }}'\n'METROS CUBICOS': '{{ $json['METROS CUBICOS'] }}'\n\nMake sure to propoertly read slashed zeros\n\nRemove any \"-\"\n\n\n\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2420,
+        1680
+      ],
+      "id": "ea9893a8-b0f0-4d42-852d-b1f005fd7fa8",
+      "name": "Prompt_M3"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": {{ $('Prompt_M3').item.json.DATA_REVIEW.toJsonString() }}\n        },\n        {\n          \"inline_data\": {\n            \"mime_type\": \"application/pdf\",\n            \"data\": \"{{ $('PDF_Base2').item.json.data }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "dotNotation": false
+        }
+      },
+      "id": "b1ea3e39-bd3c-4c89-8dbf-fa69b367cc59",
+      "name": "Prompt _Validator_M3",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        3060,
+        1680
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "upsert",
+        "workbook": {
+          "__rl": true,
+          "value": "01PHCLF5DCPP7CKNEGMJCI73TCPFDOD3EY",
+          "mode": "list",
+          "cachedResultName": "Control Servicios Publicos",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Servicios",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Servicios!A1"
+        },
+        "columnToMatchOn": "ITEM",
+        "valueToMatchOn": "={{ $('Microsoft Excel 365').item.json.ITEM }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "ENERGIA",
+              "fieldValue": "={{ parseFloat(JSON.parse($json.candidates[0].content.parts[0].text.replace(/```json|```/g, '').replace(/'/g, '\"')).ENERGIA)}}"
+            },
+            {
+              "column": "KW ENERGIA",
+              "fieldValue": "={{ parseInt(JSON.parse($json.candidates[0].content.parts[0].text.replace(/```json|```/g, '').replace(/'/g, '\"'))[\"KW ENERGIA\"].replace(/,/g, '')) }}"
+            },
+            {
+              "column": "CONTROL",
+              "fieldValue": "REVISADO AI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        3500,
+        1500
+      ],
+      "id": "a85bc7dc-1824-4637-a854-d04030f45147",
+      "name": "Update KW",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "RdWQiCkLyjhP02OR",
+          "name": "Microsoft Excel account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        1540
+      ],
+      "id": "7b2017f3-621d-4e16-a12f-866b03494de3",
+      "name": "PDF_Base"
+    },
+    {
+      "parameters": {
+        "amount": 25
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        440,
+        1880
+      ],
+      "id": "eb65646e-d7b3-4ffc-a61f-a4920cccaafd",
+      "name": "Wait",
+      "webhookId": "5eef9342-d325-4308-9f73-361d6a02c582"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        940
+      ],
+      "id": "1e7ac194-1834-4a29-8777-24ff62198c5c",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        940
+      ],
+      "id": "02126794-4957-4277-89b0-c7a30ea88571",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2660,
+        940
+      ],
+      "id": "119de1c2-1245-4dbe-b211-e1ab04c04bc1",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fea6a435-7330-4ae6-bd61-6e1dbeaa661f",
+              "name": "FILE_ID",
+              "value": "={{ $('FILE_ID').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "469bf1c0-e254-4841-856f-d1d23c943796",
+              "name": "FILE_URL",
+              "value": "=https://kryptocolombia.sharepoint.com{{$json[\"d\"][\"ServerRelativeUrl\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3100,
+        620
+      ],
+      "id": "319a4deb-c804-4ab9-a51b-68da1c0942e2",
+      "name": "Update Excel"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "45455442-7b90-4a50-9405-f5d74e0e4f06",
+              "name": "id",
+              "value": "={{ $('PDF DATA').item.json.UniqueId }}",
+              "type": "string"
+            },
+            {
+              "id": "0e1deca5-c14f-46e6-a9d5-288eb4730b18",
+              "name": "NOMBRE_PDF",
+              "value": "={{ ( $(\"Organizacion_Data\").item.json.Empresa + \" FACTURA \" + $(\"Organizacion_Data\").item.json[\"No. FACTURA\"] ).toUpperCase().trim().slice(0, 50) }}.pdf",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2440,
+        640
+      ],
+      "id": "cfdcbcc3-8b26-48e6-ab85-c532f26765a1",
+      "name": "FILE_ID"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input is assumed to be: items[0].json.d.results (SharePoint response structure)\nconst results = items[0].json.d.results;\n\nreturn results.map(file => {\n  return {\n    json: {\n      Name: file.Name,\n      ServerRelativeUrl: file.ServerRelativeUrl,\n      UniqueId: file.UniqueId\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        660
+      ],
+      "id": "6272124a-d04e-4e01-ad27-8f17d4642640",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "=https://kryptocolombia.sharepoint.com/sites/Bancamia_Documentacion/_layouts/15/download.aspx?UniqueId={{$('PDF DATA').item.json.UniqueId}}",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        680
+      ],
+      "id": "e593e993-6ecb-4997-a3bd-5dec9d32fc86",
+      "name": "Microsoft SharePoint HTTP Request2",
+      "extendsCredential": "microsoftSharePointOAuth2Api",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78f2f7a0-a373-4b37-8f5d-e71fba23e123",
+              "name": "Name",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "15e55ec2-bf34-402c-8d15-27cbbf3ea48a",
+              "name": "ServerRelativeUrl",
+              "value": "={{ $json.ServerRelativeUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "734b19d0-77c1-4946-99f2-d1b0573b4a07",
+              "name": "UniqueId",
+              "value": "={{ $json.UniqueId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        680,
+        680
+      ],
+      "id": "3ddf46fc-a9fc-495d-bba3-a2591568771e",
+      "name": "PDF DATA"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "=https://kryptocolombia.sharepoint.com/sites/Bancamia_Documentacion/_api/web/GetFileByServerRelativeUrl('/sites/Bancamia_Documentacion/Documentos%20compartidos/Facturas%20Servicios%20Publicos/{{ $('Mes Facturas').item.json['Mes Facturas'].replace(/ /g, \"%20\") }}/{{ $('FILE_ID').item.json.NOMBRE_PDF }}')",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json;odata=verbose"
+            }
+          ]
+        },
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2860,
+        640
+      ],
+      "id": "b591f422-29cc-4502-b71d-dc69da6f7a63",
+      "name": "Microsoft SharePoint HTTP Request3",
+      "extendsCredential": "microsoftSharePointOAuth2Api",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "48733295-73f0-4023-ae88-f88cab749130",
+              "name": "Mes Facturas",
+              "value": "03 Marzo",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        660
+      ],
+      "id": "957d67ad-9cc3-4df1-af4e-4ebc32083dee",
+      "name": "Mes Facturas"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "POST",
+        "url": "=https://kryptocolombia.sharepoint.com/sites/Bancamia_Documentacion/_api/web/GetFileByServerRelativeUrl('{{ $(\"PDF DATA\").item.json.ServerRelativeUrl }}')/moveTo(newurl='/sites/Bancamia_Documentacion/Documentos%20compartidos/Facturas%20Servicios%20Publicos/{{ $('Mes Facturas').item.json['Mes Facturas'].replace(/ /g, \"%20\") }}/{{ $json.NOMBRE_PDF }}',flags=1)",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json;odata=verbose"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2660,
+        640
+      ],
+      "id": "6dcbb847-5dc4-4eae-ae85-4c03867c4dbc",
+      "name": "Microsoft SharePoint Move & Rename",
+      "extendsCredential": "microsoftSharePointOAuth2Api",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2420,
+        1880
+      ],
+      "id": "f7d049ea-f348-40db-a5ca-61897ae054d7",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "=https://kryptocolombia.sharepoint.com/sites/Bancamia_Documentacion/_layouts/15/download.aspx?UniqueId={{ $('If').item.json.FILE_ID }}",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        1540
+      ],
+      "id": "b51f7a30-87c9-428a-a8bd-bc7e2e7076f0",
+      "name": "Microsoft SharePoint HTTP Request",
+      "extendsCredential": "microsoftSharePointOAuth2Api",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Prompt _Validator_M3').item.json.toJsonString() }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "cce89f3c-3887-4b3a-a809-e8f5cb2d271c",
+      "name": "PDF_Quality_M3",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3280,
+        1680
+      ],
+      "typeVersion": 4.2,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "anthropicApi": {
+          "id": "lMcrEsjfTndw8b1i",
+          "name": "Anthropic Bacamia"
+        },
+        "googlePalmApi": {
+          "id": "Nwi6Sq2I7231OhTU",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "operation": "upsert",
+        "workbook": {
+          "__rl": true,
+          "value": "01PHCLF5DCPP7CKNEGMJCI73TCPFDOD3EY",
+          "mode": "list",
+          "cachedResultName": "Control Servicios Publicos",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "worksheet": {
+          "__rl": true,
+          "value": "{00000000-0001-0000-0000-000000000000}",
+          "mode": "list",
+          "cachedResultName": "Servicios",
+          "cachedResultUrl": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/_layouts/15/Doc.aspx?sourcedoc=%7B25FE7B62-8634-4462-8FEE-627946E1EC98%7D&file=Control%20Servicios%20Publicos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1&activeCell=Servicios!A1"
+        },
+        "columnToMatchOn": "ITEM",
+        "valueToMatchOn": "={{ $('Microsoft Excel 365').item.json.ITEM }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "ENERGIA",
+              "fieldValue": "={{ parseFloat(JSON.parse($json.candidates[0].content.parts[0].text.replace(/```json|```/g, '').replace(/'/g, '\"')).ACUEDUCTO)}}"
+            },
+            {
+              "column": "KW ENERGIA",
+              "fieldValue": "={{ parseInt(JSON.parse($json.candidates[0].content.parts[0].text.replace(/```json|```/g, '').replace(/'/g, '\"'))[\"METROS CUBICOS\"].replace(/,/g, '')) }}"
+            },
+            {
+              "column": "CONTROL",
+              "fieldValue": "REVISADO AI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2.1,
+      "position": [
+        3500,
+        1680
+      ],
+      "id": "05cdc5bc-90fc-4859-87d0-029b8b15a7f0",
+      "name": "Update KW2",
+      "credentials": {
+        "microsoftExcelOAuth2Api": {
+          "id": "RdWQiCkLyjhP02OR",
+          "name": "Microsoft Excel account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3760,
+        1600
+      ],
+      "id": "e19e683e-b263-4d10-91dc-e1862373a876",
+      "name": "No Operation, do nothing4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3760,
+        1880
+      ],
+      "id": "d31c3924-6f5d-4b1e-a959-7e023cde8198",
+      "name": "No Operation, do nothing5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        940
+      ],
+      "id": "eea29637-e09c-4415-a7dd-440b8e0dba88",
+      "name": "No Operation, do nothing6"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2840,
+        1500
+      ],
+      "id": "6be17e21-7bcb-4a8d-a835-98dbe595f87c",
+      "name": "PDF_Base1"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "=https://kryptocolombia.sharepoint.com/sites/Bancamia_Documentacion/_layouts/15/download.aspx?UniqueId={{ $('Switch').item.json.FILE_ID }}",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2640,
+        1500
+      ],
+      "id": "82c48481-14f3-49cc-a97e-804b64a3f173",
+      "name": "Microsoft SharePoint HTTP Request4",
+      "extendsCredential": "microsoftSharePointOAuth2Api",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2840,
+        1680
+      ],
+      "id": "af126d39-610d-4c51-8b49-4ccf85ef20fe",
+      "name": "PDF_Base2"
+    },
+    {
+      "parameters": {
+        "curlImport": "",
+        "httpVariantWarning": "",
+        "method": "GET",
+        "url": "=https://kryptocolombia.sharepoint.com/sites/Bancamia_Documentacion/_layouts/15/download.aspx?UniqueId={{ $('Switch').item.json.FILE_ID }}",
+        "": "",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftSharePointOAuth2Api",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": false,
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2640,
+        1680
+      ],
+      "id": "8e75cec7-28e1-440b-95a9-ba900e527e48",
+      "name": "Microsoft SharePoint HTTP Request5",
+      "extendsCredential": "microsoftSharePointOAuth2Api",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "NvLfWW6CpSEbWCIO",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# \n# Primer Modelo || Extracción Data Factura ",
+        "height": 780,
+        "width": 1400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        660,
+        460
+      ],
+      "id": "52f8179b-e92c-4ea1-9a5a-860b615c842f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# \n# Preparación y Organización Data ",
+        "height": 780,
+        "width": 1400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2120,
+        460
+      ],
+      "id": "b7660855-dfba-4438-9741-57af4802652b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# \n## Segundo Modelo || Validación Revisión Contrato y Empresa",
+        "height": 780,
+        "width": 1400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        660,
+        1280
+      ],
+      "id": "73d26085-80d0-42b0-8d39-4168ecf4e1d8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# \n## Tercer Modelo || Validación Valores",
+        "height": 780,
+        "width": 1840,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2120,
+        1280
+      ],
+      "id": "812bc7b0-764d-48f8-ab49-92d2b2e9a117",
+      "name": "Sticky Note3"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Mes Facturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "PDF DATA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI - PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF_Base64": {
+      "main": [
+        [
+          {
+            "node": "Prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organizacion_Data": {
+      "main": [
+        [
+          {
+            "node": "FILE_ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft Excel 365": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Prompt_KW",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt_M3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Prompt_DATA_CONTRATO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt _Contrato_Validator": {
+      "main": [
+        [
+          {
+            "node": "PDF_Quality_CONTRATO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - PDF": {
+      "main": [
+        [
+          {
+            "node": "Organizacion_Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompts": {
+      "main": [
+        [
+          {
+            "node": "Define Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF_Quality_CONTRATO": {
+      "main": [
+        [
+          {
+            "node": "Update CONTRATO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update CONTRATO": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt_DATA_CONTRATO": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt _Validator_KW": {
+      "main": [
+        [
+          {
+            "node": "PDF_Quality_KW",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt_KW": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt_M3": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt _Validator_M3": {
+      "main": [
+        [
+          {
+            "node": "PDF_Quality_M3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF_Quality_KW": {
+      "main": [
+        [
+          {
+            "node": "Update KW",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF_Base": {
+      "main": [
+        [
+          {
+            "node": "Prompt _Contrato_Validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing3": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Excel": {
+      "main": [
+        [
+          {
+            "node": "Microsoft Excel 365",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FILE_ID": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint Move & Rename",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SharePoint HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SharePoint HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "PDF_Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF DATA": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SharePoint HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Update Excel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mes Facturas": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SharePoint Move & Rename": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update KW": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SharePoint HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "PDF_Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF_Quality_M3": {
+      "main": [
+        [
+          {
+            "node": "Update KW2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update KW2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing4": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing5": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing6": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SharePoint HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "PDF_Base1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF_Base1": {
+      "main": [
+        [
+          {
+            "node": "Prompt _Validator_KW",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Microsoft SharePoint HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "PDF_Base2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF_Base2": {
+      "main": [
+        [
+          {
+            "node": "Prompt _Validator_M3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Microsoft Excel 3651": [
+      {
+        "json": {
+          "ITEM": 0,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": "",
+          "EMPRESA": "",
+          "NIT": "",
+          "TIPO FACTURA": "",
+          "NO. FACTURA": "",
+          "ENERGIA": "",
+          "KW ENERGIA": "",
+          "IMTO AP": "",
+          "ACUEDUCTO": "",
+          "METROS CUBICOS": "",
+          "ASEO": "",
+          "TOTAL RECIBO": "",
+          "PERIODO FACTURADO INICIAL": "",
+          "PERIODO FACTURADO FINAL": "",
+          "FECHA LLEGADA": "",
+          "FECHA VENCIMIENTO": "",
+          "FECHA PROXIMO RECIBO": "",
+          "FECHA EXTRACCIÓN": "",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Cali%20Norte-Energia%20(1)%20(1).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 1,
+          "OFICINA": "Acacias",
+          "CENTRO COSTOS": 604,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 300733324,
+          "EMPRESA": "ELECTRIFICADORA DEL META SA",
+          "NIT": 892002210,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "DES1142845",
+          "ENERGIA": 1466706,
+          "KW ENERGIA": 1321,
+          "IMTO AP": 97780,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 1452790,
+          "PERIODO FACTURADO INICIAL": "15/12/24",
+          "PERIODO FACTURADO FINAL": "14/01/25",
+          "FECHA LLEGADA": "17/01/25",
+          "FECHA VENCIMIENTO": "24/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Acacias(Energia)Vence%2024%20de%20Enero%202025%20(1)%20(1).pdf",
+          "VALOR KW": 1110.29977289932,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 2,
+          "OFICINA": "Bucaramanga Centro",
+          "CENTRO COSTOS": 399,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": 38042,
+          "EMPRESA": "ACUEDUCTO METROPOLITANO DE BUCARAMANGA S.A. E.S.P.",
+          "NIT": 890200162,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 6229603,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 35357,
+          "METROS CUBICOS": 4,
+          "ASEO": 23674,
+          "TOTAL RECIBO": 84740,
+          "PERIODO FACTURADO INICIAL": 45302,
+          "PERIODO FACTURADO FINAL": "30/11/24",
+          "FECHA LLEGADA": "13/01/25",
+          "FECHA VENCIMIENTO": "21/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Acueducto%20%20Bucaramanga%20Centro%2038042.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 8839.25,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 3,
+          "OFICINA": "Cucuta Centro",
+          "CENTRO COSTOS": 289,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": 54628,
+          "EMPRESA": "AGUAS KPITAL CUCUTA",
+          "NIT": 900080956,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 55753479,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 20473.49,
+          "METROS CUBICOS": 4,
+          "ASEO": 0,
+          "TOTAL RECIBO": 87520,
+          "PERIODO FACTURADO INICIAL": 45638,
+          "PERIODO FACTURADO FINAL": "13/01/25",
+          "FECHA LLEGADA": "19/01/25",
+          "FECHA VENCIMIENTO": "28/01/25",
+          "FECHA PROXIMO RECIBO": "29/01/25",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Acueducto%20Cucuta%20Centro%2049057715.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 5118.3725,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 4,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": "000-2309538",
+          "EMPRESA": "EMCODAZZI",
+          "NIT": 800118095,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 4421723,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 49480,
+          "METROS CUBICOS": 13,
+          "ASEO": 0,
+          "TOTAL RECIBO": 49480,
+          "PERIODO FACTURADO INICIAL": "20/12/24",
+          "PERIODO FACTURADO FINAL": "21/11/24",
+          "FECHA LLEGADA": "20/12/24",
+          "FECHA VENCIMIENTO": "17/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/AGUSTIN%20CODAZZI-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 3806.15384615385,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 5,
+          "OFICINA": "Agustin Codazzi",
+          "CENTRO COSTOS": 300,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 7718685,
+          "EMPRESA": "CARIBEMAR DE LA COSTA S.A.S E.S.P",
+          "NIT": 901462578,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 1000082169,
+          "ENERGIA": 2917500,
+          "KW ENERGIA": 2390,
+          "IMTO AP": 1362790,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 139150,
+          "TOTAL RECIBO": 4419440,
+          "PERIODO FACTURADO INICIAL": "21/11/24",
+          "PERIODO FACTURADO FINAL": "21/12/24",
+          "FECHA LLEGADA": "28/12/24",
+          "FECHA VENCIMIENTO": 45901,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/AGUSTIN%20CODAZZI-ENERGIA.pdf",
+          "VALOR KW": 1220.71129707113,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 6,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 5022401000,
+          "EMPRESA": "EPA",
+          "NIT": 900891110,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 2157433,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 30402,
+          "METROS CUBICOS": 5,
+          "ASEO": 0,
+          "TOTAL RECIBO": 54659,
+          "PERIODO FACTURADO INICIAL": 45302,
+          "PERIODO FACTURADO FINAL": "30/11/24",
+          "FECHA LLEGADA": 0,
+          "FECHA VENCIMIENTO": "15/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ANDES-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 6080.4,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 7,
+          "OFICINA": "Andes",
+          "CENTRO COSTOS": 249,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 8373949,
+          "EMPRESA": "EPM",
+          "NIT": 890904996,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "DEE4831065",
+          "ENERGIA": 851490.98,
+          "KW ENERGIA": 780,
+          "IMTO AP": 2353250,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 42711.38,
+          "TOTAL RECIBO": 3256641,
+          "PERIODO FACTURADO INICIAL": 45423,
+          "PERIODO FACTURADO FINAL": 45424,
+          "FECHA LLEGADA": "26/12/24",
+          "FECHA VENCIMIENTO": "14/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ANDES-ENERGIA.pdf",
+          "VALOR KW": 1091.6551025641,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 8,
+          "OFICINA": "Apartadó",
+          "CENTRO COSTOS": 239,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 8721725,
+          "EMPRESA": "AGUAS REGIONALES EPM S.A. E.S.P.",
+          "NIT": 900072303,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": "DEE6883414",
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 12001.56,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 18821,
+          "PERIODO FACTURADO INICIAL": "27/11/24",
+          "PERIODO FACTURADO FINAL": "28/12/24",
+          "FECHA LLEGADA": "20/01/25",
+          "FECHA VENCIMIENTO": 45749,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/APARTADO-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 9,
+          "OFICINA": "Apartadó",
+          "CENTRO COSTOS": 239,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 6322532,
+          "EMPRESA": "EPM",
+          "NIT": 890904996,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "DEE6862659",
+          "ENERGIA": 2451138.23,
+          "KW ENERGIA": 2409,
+          "IMTO AP": 3529875,
+          "ACUEDUCTO": 70014.36,
+          "METROS CUBICOS": 16,
+          "ASEO": 75867.47,
+          "TOTAL RECIBO": 6208487,
+          "PERIODO FACTURADO INICIAL": "27/11/24",
+          "PERIODO FACTURADO FINAL": "28/12/24",
+          "FECHA LLEGADA": "20/01/25",
+          "FECHA VENCIMIENTO": 45749,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/APARTADO-ENERGIA.pdf",
+          "VALOR KW": 1017.49200083022,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": 4375.8975,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 10,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 10447,
+          "EMPRESA": "ACUALCO",
+          "NIT": 806014735,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 74727,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 29308,
+          "METROS CUBICOS": 2,
+          "ASEO": 0,
+          "TOTAL RECIBO": 29310,
+          "PERIODO FACTURADO INICIAL": 45658,
+          "PERIODO FACTURADO FINAL": "31/01/25",
+          "FECHA LLEGADA": 45748,
+          "FECHA VENCIMIENTO": 45931,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ARJONA-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 14654,
+          "M3 DESVIACIÓN ": "REVISAR",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 11,
+          "OFICINA": "Arjona",
+          "CENTRO COSTOS": 375,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 4245064,
+          "EMPRESA": "OPERADOR DE RED CARIBEMAR DE LA COSTA S.A.S E.S.P",
+          "NIT": 175245179,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 1000070333,
+          "ENERGIA": 2218890,
+          "KW ENERGIA": 1754,
+          "IMTO AP": 221880,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 82070,
+          "TOTAL RECIBO": 2522840,
+          "PERIODO FACTURADO INICIAL": 45393,
+          "PERIODO FACTURADO FINAL": 45424,
+          "FECHA LLEGADA": "28/12/2024",
+          "FECHA VENCIMIENTO": 45901,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ARJONA-ENERGIA.pdf",
+          "VALOR KW": 1265.04561003421,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 12,
+          "OFICINA": "Pe Baranoa",
+          "CENTRO COSTOS": 607,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 752984,
+          "EMPRESA": "TRIPLE A",
+          "NIT": 800135741,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 59839091,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 42039,
+          "METROS CUBICOS": 4,
+          "ASEO": 103882,
+          "TOTAL RECIBO": 207981,
+          "PERIODO FACTURADO INICIAL": "27/11/24",
+          "PERIODO FACTURADO FINAL": "28/12/24",
+          "FECHA LLEGADA": 45901,
+          "FECHA VENCIMIENTO": "17/01/25",
+          "FECHA PROXIMO RECIBO": "18/01/25",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/BARANOA-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 10509.75,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 13,
+          "OFICINA": "Pe Baranoa",
+          "CENTRO COSTOS": 607,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 2282726,
+          "EMPRESA": "AIR-E S.A.S. E.S.P.",
+          "NIT": 991380930,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 90789446,
+          "ENERGIA": 753963,
+          "KW ENERGIA": 735,
+          "IMTO AP": 75397,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 929360,
+          "PERIODO FACTURADO INICIAL": 45454,
+          "PERIODO FACTURADO FINAL": 45424,
+          "FECHA LLEGADA": "23/12/24",
+          "FECHA VENCIMIENTO": "30/12/24",
+          "FECHA PROXIMO RECIBO": "31/12/24",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/BARANOA-ENERGIA.pdf",
+          "VALOR KW": 1025.8,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 14,
+          "OFICINA": "Barranquilla",
+          "CENTRO COSTOS": 292,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 2276604,
+          "EMPRESA": "AIR-E S.A.S. E.S.P.",
+          "NIT": 901481022,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "9078918B",
+          "ENERGIA": 3010200,
+          "KW ENERGIA": 2765,
+          "IMTO AP": 170000,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 6692540,
+          "PERIODO FACTURADO INICIAL": "22/11/24",
+          "PERIODO FACTURADO FINAL": "21/12/24",
+          "FECHA LLEGADA": "23/12/24",
+          "FECHA VENCIMIENTO": "23/12/24",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/BARRANQUILA-ENERGIA.pdf",
+          "VALOR KW": 1088.67992766727,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 15,
+          "OFICINA": "Belen",
+          "CENTRO COSTOS": 234,
+          "TERRITORIAL": "Territorial - Nor Occidente",
+          "CONTRATO": 11399014,
+          "EMPRESA": "EPM",
+          "NIT": 890904996,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "DEE6358971",
+          "ENERGIA": 1569990.16,
+          "KW ENERGIA": 1543,
+          "IMTO AP": 33000,
+          "ACUEDUCTO": 217778.96,
+          "METROS CUBICOS": 29,
+          "ASEO": 800485.94,
+          "TOTAL RECIBO": 2785270,
+          "PERIODO FACTURADO INICIAL": "21/11/24",
+          "PERIODO FACTURADO FINAL": "23/12/24",
+          "FECHA LLEGADA": "14/01/25",
+          "FECHA VENCIMIENTO": "30/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/BELEN-ENERGIA.pdf",
+          "VALOR KW": 1017.49200259235,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": 7509.61931034483,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 16,
+          "OFICINA": "Buenaventura",
+          "CENTRO COSTOS": 322,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 44709,
+          "EMPRESA": "SAAAB",
+          "NIT": 835000290,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 44709,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 66996,
+          "METROS CUBICOS": 26,
+          "ASEO": 0,
+          "TOTAL RECIBO": 120035,
+          "PERIODO FACTURADO INICIAL": "17/11/24",
+          "PERIODO FACTURADO FINAL": "16/12/24",
+          "FECHA LLEGADA": 45717,
+          "FECHA VENCIMIENTO": 45962,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Buenaventura-Acueducto.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 2576.76923076923,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 17,
+          "OFICINA": "Cali Norte",
+          "CENTRO COSTOS": 393,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 1145378,
+          "EMPRESA": "EMPRESAS MUNICIPALES DE CALI E.I.C.E. E.S.P.",
+          "NIT": 890399003,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 1758761,
+          "ENERGIA": 2308743.96,
+          "KW ENERGIA": 2180,
+          "IMTO AP": 208245.81,
+          "ACUEDUCTO": 137165,
+          "METROS CUBICOS": 26,
+          "ASEO": 62529,
+          "TOTAL RECIBO": 2896716,
+          "PERIODO FACTURADO INICIAL": "14/11/24",
+          "PERIODO FACTURADO FINAL": "13/12/24",
+          "FECHA LLEGADA": 45748,
+          "FECHA VENCIMIENTO": "17/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Cali%20Norte-Energia%20(1)%20(1).pdf",
+          "VALOR KW": 1059.05686238532,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": 5275.57692307692,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 18,
+          "OFICINA": "Candelaria",
+          "CENTRO COSTOS": 417,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 52877,
+          "EMPRESA": "ACUAVALLE S.A. E.S.P.",
+          "NIT": 890399032,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 74467240,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 13511,
+          "METROS CUBICOS": 3,
+          "ASEO": 0,
+          "TOTAL RECIBO": 21710,
+          "PERIODO FACTURADO INICIAL": 45363,
+          "PERIODO FACTURADO FINAL": 45717,
+          "FECHA LLEGADA": "13/01/25",
+          "FECHA VENCIMIENTO": "21/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Candelaria(Agua)21%20Enero%202025%20(2).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 4503.66666666667,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 19,
+          "OFICINA": "Candelaria",
+          "CENTRO COSTOS": 417,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 5940464517,
+          "EMPRESA": "CELSIA COLOMBIA S.A. E.S.P.",
+          "NIT": 800249860,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "CCCV1739888",
+          "ENERGIA": 683335.41,
+          "KW ENERGIA": 699,
+          "IMTO AP": 14073.78,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 41574,
+          "TOTAL RECIBO": 833900,
+          "PERIODO FACTURADO INICIAL": "21/12/24",
+          "PERIODO FACTURADO FINAL": "21/01/25",
+          "FECHA LLEGADA": "21/01/25",
+          "FECHA VENCIMIENTO": "30/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Candelaria(Energia)Vence%2030%20Enero%20(2).pdf",
+          "VALOR KW": 977.59,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 20,
+          "OFICINA": "Cartagena Del Chaira",
+          "CENTRO COSTOS": 605,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 6682,
+          "EMPRESA": "EMSERPUCAR E.S.P.",
+          "NIT": 828000191,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 2412006682,
+          "ENERGIA": 1520726,
+          "KW ENERGIA": 1741,
+          "IMTO AP": 63067,
+          "ACUEDUCTO": 13000,
+          "METROS CUBICOS": 3,
+          "ASEO": 30851,
+          "TOTAL RECIBO": 1635550,
+          "PERIODO FACTURADO INICIAL": "15/11/24",
+          "PERIODO FACTURADO FINAL": "15/12/24",
+          "FECHA LLEGADA": 45717,
+          "FECHA VENCIMIENTO": "17/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Cartagena%20Del%20Chaira-%20Energia%20(1).pdf",
+          "VALOR KW": 873.478460654796,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": 4333.33333333333,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 21,
+          "OFICINA": "Cartago",
+          "CENTRO COSTOS": 301,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 30542,
+          "EMPRESA": "EMCARTAGO",
+          "NIT": 836000349,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 11817162,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 77323,
+          "METROS CUBICOS": 12,
+          "ASEO": 81156,
+          "TOTAL RECIBO": 221697,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": "31/12/24",
+          "FECHA LLEGADA": 45962,
+          "FECHA VENCIMIENTO": "31/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Cartago-Acueducto%20(1).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 6443.58333333333,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 22,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 12001242,
+          "EMPRESA": "ENERCA S.A.E.S.P.",
+          "NIT": 891855573,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 815989,
+          "ENERGIA": 2485293,
+          "KW ENERGIA": 2188,
+          "IMTO AP": 331546,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 2818140,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": 45658,
+          "FECHA LLEGADA": 45658,
+          "FECHA VENCIMIENTO": "13/01/25",
+          "FECHA PROXIMO RECIBO": "14/01/25",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Aguazul%20815985.pdf",
+          "VALOR KW": 1135.87431444241,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 23,
+          "OFICINA": "Arauca",
+          "CENTRO COSTOS": 299,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": 17749,
+          "EMPRESA": "ENELAR",
+          "NIT": 892099499,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 506719,
+          "ENERGIA": -932198,
+          "KW ENERGIA": 988,
+          "IMTO AP": 45900,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 45900,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": "31/12/24",
+          "FECHA LLEGADA": "13/01/25",
+          "FECHA VENCIMIENTO": "29/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Arauca%20506719.pdf",
+          "VALOR KW": -943.52024291498,
+          "KW DESVIACIÓN ": "REVISAR",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 24,
+          "OFICINA": "Barrancabermeja",
+          "CENTRO COSTOS": 320,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": 1080186,
+          "EMPRESA": "ESSA",
+          "NIT": 890201230,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 37920195,
+          "ENERGIA": 2115749,
+          "KW ENERGIA": 2009,
+          "IMTO AP": 211575,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 298508,
+          "TOTAL RECIBO": 3048982,
+          "PERIODO FACTURADO INICIAL": "29/11/24",
+          "PERIODO FACTURADO FINAL": "30/12/24",
+          "FECHA LLEGADA": 45664,
+          "FECHA VENCIMIENTO": "21/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Barrancabermeja%20%2037920195.pdf",
+          "VALOR KW": 1053.13539074166,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 25,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 34393000,
+          "EMPRESA": "EMPRESA DE ENERGÍA DE PERERA S.A ESP",
+          "NIT": 891900493,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 1819051,
+          "ENERGIA": 1119034,
+          "KW ENERGIA": 1089,
+          "IMTO AP": 332800,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 1467687,
+          "PERIODO FACTURADO INICIAL": 45422,
+          "PERIODO FACTURADO FINAL": 45333,
+          "FECHA LLEGADA": 45484,
+          "FECHA VENCIMIENTO": "20/11/24",
+          "FECHA PROXIMO RECIBO": "21/11/24",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ENERGIA%20CARTAGO.pdf",
+          "VALOR KW": 1027.57943067034,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 26,
+          "OFICINA": "Chiquinquirá",
+          "CENTRO COSTOS": 252,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": 482173241,
+          "EMPRESA": "EBSA",
+          "NIT": 891800219,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 209289822,
+          "ENERGIA": 613632,
+          "KW ENERGIA": 551,
+          "IMTO AP": 92045,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 705680,
+          "PERIODO FACTURADO INICIAL": "17/12/24",
+          "PERIODO FACTURADO FINAL": "16/01/25",
+          "FECHA LLEGADA": "20/01/25",
+          "FECHA VENCIMIENTO": 45718,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Chiquinquira%20209289822.pdf",
+          "VALOR KW": 1113.66969147005,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 27,
+          "OFICINA": "Cucuta Atalaya",
+          "CENTRO COSTOS": 295,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": 566083,
+          "EMPRESA": "CENTRALES ELÉCTRICAS DEL NORTE DE SANTANDER S.A. E.S.P.",
+          "NIT": 890500514,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 107926514,
+          "ENERGIA": 2234671,
+          "KW ENERGIA": 1916,
+          "IMTO AP": 240718,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 77643,
+          "TOTAL RECIBO": 2553032,
+          "PERIODO FACTURADO INICIAL": "24/11/24",
+          "PERIODO FACTURADO FINAL": "22/12/24",
+          "FECHA LLEGADA": 0,
+          "FECHA VENCIMIENTO": "14/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Cucuta%20Atalaya%201079265140.pdf",
+          "VALOR KW": 1166.32098121086,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 28,
+          "OFICINA": "Fusagasuga",
+          "CENTRO COSTOS": 206,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": "5067281-9",
+          "EMPRESA": "ENEL COLOMBIA S.A. ESP",
+          "NIT": 860063875,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "337580162-0",
+          "ENERGIA": 515198,
+          "KW ENERGIA": 596,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 618240,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": 45689,
+          "FECHA LLEGADA": 45839,
+          "FECHA VENCIMIENTO": "17/01/25",
+          "FECHA PROXIMO RECIBO": "30/01/25",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Fusagasuga%20337580162-0%20(2).pdf",
+          "VALOR KW": 864.426174496644,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 29,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 1002140098,
+          "EMPRESA": "EMPRESA DE ENERGIA DEL PUTUMAYO S.A. E.S.P.",
+          "NIT": 846000241,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "FC000011006",
+          "ENERGIA": 2218479,
+          "KW ENERGIA": 1140,
+          "IMTO AP": 123300,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 2341779,
+          "PERIODO FACTURADO INICIAL": "23/11/24",
+          "PERIODO FACTURADO FINAL": "23/12/24",
+          "FECHA LLEGADA": "27/12/24",
+          "FECHA VENCIMIENTO": 45870,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/FACTURA%20SERVICIO%20DE%20ENERGIA%20-%20PAGO%20INMEDIATO.pdf",
+          "VALOR KW": 1946.03421052632,
+          "KW DESVIACIÓN ": "REVISAR",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 30,
+          "OFICINA": "Mitu",
+          "CENTRO COSTOS": 369,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 658,
+          "EMPRESA": "CEELVA S.A.S E.S.P",
+          "NIT": 901651742,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 2412000658,
+          "ENERGIA": 1307416,
+          "KW ENERGIA": 1271,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 1307400,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": "31/12/24",
+          "FECHA LLEGADA": 45962,
+          "FECHA VENCIMIENTO": "31/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/factura-electricidad-enero%202025-oficina%20mitu%20369.pdf",
+          "VALOR KW": 1028.65145554681,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 31,
+          "OFICINA": "Florencia",
+          "CENTRO COSTOS": 314,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 264974780,
+          "EMPRESA": "ELECTRIFICADORA DEL CAQUETÁ S.A E.S.P",
+          "NIT": 891190127,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 236809953,
+          "ENERGIA": 2253896,
+          "KW ENERGIA": 1840,
+          "IMTO AP": 209700,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 71634,
+          "TOTAL RECIBO": 2535230,
+          "PERIODO FACTURADO INICIAL": "24/12/21",
+          "PERIODO FACTURADO FINAL": "25/01/21",
+          "FECHA LLEGADA": "21/01/25",
+          "FECHA VENCIMIENTO": "29/01/25",
+          "FECHA PROXIMO RECIBO": "30/01/25",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Florencia-Energia%20(1)%20(1)%20(1).pdf",
+          "VALOR KW": 1224.94347826087,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 32,
+          "OFICINA": "Granada",
+          "CENTRO COSTOS": 345,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 11978,
+          "EMPRESA": "EMPRESA SERVICIOS PUBLICOS GRANADA ESP",
+          "NIT": 800071835,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 405057,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 47709,
+          "METROS CUBICOS": 16,
+          "ASEO": 52690,
+          "TOTAL RECIBO": 116400,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": "31/12/24",
+          "FECHA LLEGADA": "31/12/24",
+          "FECHA VENCIMIENTO": "28/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Granada-Acueducto%20(1).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 2981.8125,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 33,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 187726,
+          "EMPRESA": "CEDENAR",
+          "NIT": 891200200,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 31632,
+          "ENERGIA": 5429,
+          "KW ENERGIA": 6,
+          "IMTO AP": 15531,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 20960,
+          "PERIODO FACTURADO INICIAL": 45455,
+          "PERIODO FACTURADO FINAL": 45901,
+          "FECHA LLEGADA": 45455,
+          "FECHA VENCIMIENTO": "19/01/24",
+          "FECHA PROXIMO RECIBO": 45902,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Ipiales%201-%20Energia%20(1).pdf",
+          "VALOR KW": 904.833333333333,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 34,
+          "OFICINA": "Palmira",
+          "CENTRO COSTOS": 317,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 63948,
+          "EMPRESA": "AQUA OCCIDENTE",
+          "NIT": 900651752,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": "FV207769",
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 51699,
+          "METROS CUBICOS": 12,
+          "ASEO": 0,
+          "TOTAL RECIBO": 90330,
+          "PERIODO FACTURADO INICIAL": 45363,
+          "PERIODO FACTURADO FINAL": 45689,
+          "FECHA LLEGADA": 45901,
+          "FECHA VENCIMIENTO": "20/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Palmira-Acueducto%20(1).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 4308.25,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 35,
+          "OFICINA": "Popayan Sur",
+          "CENTRO COSTOS": 396,
+          "TERRITORIAL": "Territorial - Sur",
+          "CONTRATO": 26173,
+          "EMPRESA": "ACUEDUCTO Y ALCANTARILLADO DE POPAYÁN S.A. E.S.P.",
+          "NIT": 891500117,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 23336309,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 38264,
+          "METROS CUBICOS": 5,
+          "ASEO": 72486,
+          "TOTAL RECIBO": 110750,
+          "PERIODO FACTURADO INICIAL": "26/11/24",
+          "PERIODO FACTURADO FINAL": "27/12/24",
+          "FECHA LLEGADA": 45931,
+          "FECHA VENCIMIENTO": "18/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Popaya%CC%81n%20Sur%20-Agua%20(1)%20(1).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 7652.8,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": ""
+        }
+      },
+      {
+        "json": {
+          "ITEM": 36,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": "220-2800-0052-3",
+          "EMPRESA": "EMPSA E.S.P",
+          "NIT": 800170559,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 478318,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 10909,
+          "METROS CUBICOS": 3,
+          "ASEO": 95466,
+          "TOTAL RECIBO": 115700,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": 45658,
+          "FECHA LLEGADA": 0,
+          "FECHA VENCIMIENTO": "22/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Tuquerres-Acueducto%20(1).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 3636.33333333333,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": "REVISAR"
+        }
+      }
+    ],
+    "Filter": [
+      {
+        "json": {
+          "ITEM": 4,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": "000-2309538",
+          "EMPRESA": "EMCODAZZI",
+          "NIT": 800118095,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 4421723,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 49480,
+          "METROS CUBICOS": 13,
+          "ASEO": 0,
+          "TOTAL RECIBO": 49480,
+          "PERIODO FACTURADO INICIAL": "20/12/24",
+          "PERIODO FACTURADO FINAL": "21/11/24",
+          "FECHA LLEGADA": "20/12/24",
+          "FECHA VENCIMIENTO": "17/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/AGUSTIN%20CODAZZI-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 3806.15384615385,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 6,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 5022401000,
+          "EMPRESA": "EPA",
+          "NIT": 900891110,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 2157433,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 30402,
+          "METROS CUBICOS": 5,
+          "ASEO": 0,
+          "TOTAL RECIBO": 54659,
+          "PERIODO FACTURADO INICIAL": 45302,
+          "PERIODO FACTURADO FINAL": "30/11/24",
+          "FECHA LLEGADA": 0,
+          "FECHA VENCIMIENTO": "15/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ANDES-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 6080.4,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 10,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 10447,
+          "EMPRESA": "ACUALCO",
+          "NIT": 806014735,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 74727,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 29308,
+          "METROS CUBICOS": 2,
+          "ASEO": 0,
+          "TOTAL RECIBO": 29310,
+          "PERIODO FACTURADO INICIAL": 45658,
+          "PERIODO FACTURADO FINAL": "31/01/25",
+          "FECHA LLEGADA": 45748,
+          "FECHA VENCIMIENTO": 45931,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ARJONA-ACUEDUCTO.pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 14654,
+          "M3 DESVIACIÓN ": "REVISAR",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 22,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 12001242,
+          "EMPRESA": "ENERCA S.A.E.S.P.",
+          "NIT": 891855573,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 815989,
+          "ENERGIA": 2485293,
+          "KW ENERGIA": 2188,
+          "IMTO AP": 331546,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 2818140,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": 45658,
+          "FECHA LLEGADA": 45658,
+          "FECHA VENCIMIENTO": "13/01/25",
+          "FECHA PROXIMO RECIBO": "14/01/25",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Aguazul%20815985.pdf",
+          "VALOR KW": 1135.87431444241,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 23,
+          "OFICINA": "Arauca",
+          "CENTRO COSTOS": 299,
+          "TERRITORIAL": "Territorial - Centro",
+          "CONTRATO": 17749,
+          "EMPRESA": "ENELAR",
+          "NIT": 892099499,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 506719,
+          "ENERGIA": -932198,
+          "KW ENERGIA": 988,
+          "IMTO AP": 45900,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 45900,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": "31/12/24",
+          "FECHA LLEGADA": "13/01/25",
+          "FECHA VENCIMIENTO": "29/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Arauca%20506719.pdf",
+          "VALOR KW": -943.52024291498,
+          "KW DESVIACIÓN ": "REVISAR",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 25,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 34393000,
+          "EMPRESA": "EMPRESA DE ENERGÍA DE PERERA S.A ESP",
+          "NIT": 891900493,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 1819051,
+          "ENERGIA": 1119034,
+          "KW ENERGIA": 1089,
+          "IMTO AP": 332800,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 1467687,
+          "PERIODO FACTURADO INICIAL": 45422,
+          "PERIODO FACTURADO FINAL": 45333,
+          "FECHA LLEGADA": 45484,
+          "FECHA VENCIMIENTO": "20/11/24",
+          "FECHA PROXIMO RECIBO": "21/11/24",
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ENERGIA%20CARTAGO.pdf",
+          "VALOR KW": 1027.57943067034,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 29,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 1002140098,
+          "EMPRESA": "EMPRESA DE ENERGIA DEL PUTUMAYO S.A. E.S.P.",
+          "NIT": 846000241,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": "FC000011006",
+          "ENERGIA": 2218479,
+          "KW ENERGIA": 1140,
+          "IMTO AP": 123300,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 2341779,
+          "PERIODO FACTURADO INICIAL": "23/11/24",
+          "PERIODO FACTURADO FINAL": "23/12/24",
+          "FECHA LLEGADA": "27/12/24",
+          "FECHA VENCIMIENTO": 45870,
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/FACTURA%20SERVICIO%20DE%20ENERGIA%20-%20PAGO%20INMEDIATO.pdf",
+          "VALOR KW": 1946.03421052632,
+          "KW DESVIACIÓN ": "REVISAR",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 33,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": 187726,
+          "EMPRESA": "CEDENAR",
+          "NIT": 891200200,
+          "TIPO FACTURA": "ENERGIA",
+          "NO. FACTURA": 31632,
+          "ENERGIA": 5429,
+          "KW ENERGIA": 6,
+          "IMTO AP": 15531,
+          "ACUEDUCTO": 0,
+          "METROS CUBICOS": 0,
+          "ASEO": 0,
+          "TOTAL RECIBO": 20960,
+          "PERIODO FACTURADO INICIAL": 45455,
+          "PERIODO FACTURADO FINAL": 45901,
+          "FECHA LLEGADA": 45455,
+          "FECHA VENCIMIENTO": "19/01/24",
+          "FECHA PROXIMO RECIBO": 45902,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Ipiales%201-%20Energia%20(1).pdf",
+          "VALOR KW": 904.833333333333,
+          "KW DESVIACIÓN ": "NORMAL",
+          "VALOR AGUA M3 ": "",
+          "M3 DESVIACIÓN ": "",
+          "VALIDACIÓN": "REVISAR"
+        }
+      },
+      {
+        "json": {
+          "ITEM": 36,
+          "OFICINA": "",
+          "CENTRO COSTOS": "",
+          "TERRITORIAL": "",
+          "CONTRATO": "220-2800-0052-3",
+          "EMPRESA": "EMPSA E.S.P",
+          "NIT": 800170559,
+          "TIPO FACTURA": "ACUEDUCTO",
+          "NO. FACTURA": 478318,
+          "ENERGIA": 0,
+          "KW ENERGIA": 0,
+          "IMTO AP": 0,
+          "ACUEDUCTO": 10909,
+          "METROS CUBICOS": 3,
+          "ASEO": 95466,
+          "TOTAL RECIBO": 115700,
+          "PERIODO FACTURADO INICIAL": 45303,
+          "PERIODO FACTURADO FINAL": 45658,
+          "FECHA LLEGADA": 0,
+          "FECHA VENCIMIENTO": "22/01/25",
+          "FECHA PROXIMO RECIBO": 0,
+          "FECHA EXTRACCIÓN": "05-02-2025",
+          "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Tuquerres-Acueducto%20(1).pdf",
+          "VALOR KW": "",
+          "KW DESVIACIÓN ": "",
+          "VALOR AGUA M3 ": 3636.33333333333,
+          "M3 DESVIACIÓN ": "NORMAL",
+          "VALIDACIÓN": "REVISAR"
+        }
+      }
+    ],
+    "Aggregate": [
+      {
+        "json": {
+          "data": [
+            {
+              "ITEM": 4,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": "000-2309538",
+              "EMPRESA": "EMCODAZZI",
+              "NIT": 800118095,
+              "TIPO FACTURA": "ACUEDUCTO",
+              "NO. FACTURA": 4421723,
+              "ENERGIA": 0,
+              "KW ENERGIA": 0,
+              "IMTO AP": 0,
+              "ACUEDUCTO": 49480,
+              "METROS CUBICOS": 13,
+              "ASEO": 0,
+              "TOTAL RECIBO": 49480,
+              "PERIODO FACTURADO INICIAL": "20/12/24",
+              "PERIODO FACTURADO FINAL": "21/11/24",
+              "FECHA LLEGADA": "20/12/24",
+              "FECHA VENCIMIENTO": "17/01/25",
+              "FECHA PROXIMO RECIBO": 0,
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/AGUSTIN%20CODAZZI-ACUEDUCTO.pdf",
+              "VALOR KW": "",
+              "KW DESVIACIÓN ": "",
+              "VALOR AGUA M3 ": 3806.15384615385,
+              "M3 DESVIACIÓN ": "NORMAL",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 6,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": 5022401000,
+              "EMPRESA": "EPA",
+              "NIT": 900891110,
+              "TIPO FACTURA": "ACUEDUCTO",
+              "NO. FACTURA": 2157433,
+              "ENERGIA": 0,
+              "KW ENERGIA": 0,
+              "IMTO AP": 0,
+              "ACUEDUCTO": 30402,
+              "METROS CUBICOS": 5,
+              "ASEO": 0,
+              "TOTAL RECIBO": 54659,
+              "PERIODO FACTURADO INICIAL": 45302,
+              "PERIODO FACTURADO FINAL": "30/11/24",
+              "FECHA LLEGADA": 0,
+              "FECHA VENCIMIENTO": "15/01/25",
+              "FECHA PROXIMO RECIBO": 0,
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ANDES-ACUEDUCTO.pdf",
+              "VALOR KW": "",
+              "KW DESVIACIÓN ": "",
+              "VALOR AGUA M3 ": 6080.4,
+              "M3 DESVIACIÓN ": "NORMAL",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 10,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": 10447,
+              "EMPRESA": "ACUALCO",
+              "NIT": 806014735,
+              "TIPO FACTURA": "ACUEDUCTO",
+              "NO. FACTURA": 74727,
+              "ENERGIA": 0,
+              "KW ENERGIA": 0,
+              "IMTO AP": 0,
+              "ACUEDUCTO": 29308,
+              "METROS CUBICOS": 2,
+              "ASEO": 0,
+              "TOTAL RECIBO": 29310,
+              "PERIODO FACTURADO INICIAL": 45658,
+              "PERIODO FACTURADO FINAL": "31/01/25",
+              "FECHA LLEGADA": 45748,
+              "FECHA VENCIMIENTO": 45931,
+              "FECHA PROXIMO RECIBO": 0,
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ARJONA-ACUEDUCTO.pdf",
+              "VALOR KW": "",
+              "KW DESVIACIÓN ": "",
+              "VALOR AGUA M3 ": 14654,
+              "M3 DESVIACIÓN ": "REVISAR",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 22,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": 12001242,
+              "EMPRESA": "ENERCA S.A.E.S.P.",
+              "NIT": 891855573,
+              "TIPO FACTURA": "ENERGIA",
+              "NO. FACTURA": 815989,
+              "ENERGIA": 2485293,
+              "KW ENERGIA": 2188,
+              "IMTO AP": 331546,
+              "ACUEDUCTO": 0,
+              "METROS CUBICOS": 0,
+              "ASEO": 0,
+              "TOTAL RECIBO": 2818140,
+              "PERIODO FACTURADO INICIAL": 45303,
+              "PERIODO FACTURADO FINAL": 45658,
+              "FECHA LLEGADA": 45658,
+              "FECHA VENCIMIENTO": "13/01/25",
+              "FECHA PROXIMO RECIBO": "14/01/25",
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Aguazul%20815985.pdf",
+              "VALOR KW": 1135.87431444241,
+              "KW DESVIACIÓN ": "NORMAL",
+              "VALOR AGUA M3 ": "",
+              "M3 DESVIACIÓN ": "",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 23,
+              "OFICINA": "Arauca",
+              "CENTRO COSTOS": 299,
+              "TERRITORIAL": "Territorial - Centro",
+              "CONTRATO": 17749,
+              "EMPRESA": "ENELAR",
+              "NIT": 892099499,
+              "TIPO FACTURA": "ENERGIA",
+              "NO. FACTURA": 506719,
+              "ENERGIA": -932198,
+              "KW ENERGIA": 988,
+              "IMTO AP": 45900,
+              "ACUEDUCTO": 0,
+              "METROS CUBICOS": 0,
+              "ASEO": 0,
+              "TOTAL RECIBO": 45900,
+              "PERIODO FACTURADO INICIAL": 45303,
+              "PERIODO FACTURADO FINAL": "31/12/24",
+              "FECHA LLEGADA": "13/01/25",
+              "FECHA VENCIMIENTO": "29/01/25",
+              "FECHA PROXIMO RECIBO": 0,
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Energia%20Arauca%20506719.pdf",
+              "VALOR KW": -943.52024291498,
+              "KW DESVIACIÓN ": "REVISAR",
+              "VALOR AGUA M3 ": "",
+              "M3 DESVIACIÓN ": "",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 25,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": 34393000,
+              "EMPRESA": "EMPRESA DE ENERGÍA DE PERERA S.A ESP",
+              "NIT": 891900493,
+              "TIPO FACTURA": "ENERGIA",
+              "NO. FACTURA": 1819051,
+              "ENERGIA": 1119034,
+              "KW ENERGIA": 1089,
+              "IMTO AP": 332800,
+              "ACUEDUCTO": 0,
+              "METROS CUBICOS": 0,
+              "ASEO": 0,
+              "TOTAL RECIBO": 1467687,
+              "PERIODO FACTURADO INICIAL": 45422,
+              "PERIODO FACTURADO FINAL": 45333,
+              "FECHA LLEGADA": 45484,
+              "FECHA VENCIMIENTO": "20/11/24",
+              "FECHA PROXIMO RECIBO": "21/11/24",
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/ENERGIA%20CARTAGO.pdf",
+              "VALOR KW": 1027.57943067034,
+              "KW DESVIACIÓN ": "NORMAL",
+              "VALOR AGUA M3 ": "",
+              "M3 DESVIACIÓN ": "",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 29,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": 1002140098,
+              "EMPRESA": "EMPRESA DE ENERGIA DEL PUTUMAYO S.A. E.S.P.",
+              "NIT": 846000241,
+              "TIPO FACTURA": "ENERGIA",
+              "NO. FACTURA": "FC000011006",
+              "ENERGIA": 2218479,
+              "KW ENERGIA": 1140,
+              "IMTO AP": 123300,
+              "ACUEDUCTO": 0,
+              "METROS CUBICOS": 0,
+              "ASEO": 0,
+              "TOTAL RECIBO": 2341779,
+              "PERIODO FACTURADO INICIAL": "23/11/24",
+              "PERIODO FACTURADO FINAL": "23/12/24",
+              "FECHA LLEGADA": "27/12/24",
+              "FECHA VENCIMIENTO": 45870,
+              "FECHA PROXIMO RECIBO": 0,
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/FACTURA%20SERVICIO%20DE%20ENERGIA%20-%20PAGO%20INMEDIATO.pdf",
+              "VALOR KW": 1946.03421052632,
+              "KW DESVIACIÓN ": "REVISAR",
+              "VALOR AGUA M3 ": "",
+              "M3 DESVIACIÓN ": "",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 33,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": 187726,
+              "EMPRESA": "CEDENAR",
+              "NIT": 891200200,
+              "TIPO FACTURA": "ENERGIA",
+              "NO. FACTURA": 31632,
+              "ENERGIA": 5429,
+              "KW ENERGIA": 6,
+              "IMTO AP": 15531,
+              "ACUEDUCTO": 0,
+              "METROS CUBICOS": 0,
+              "ASEO": 0,
+              "TOTAL RECIBO": 20960,
+              "PERIODO FACTURADO INICIAL": 45455,
+              "PERIODO FACTURADO FINAL": 45901,
+              "FECHA LLEGADA": 45455,
+              "FECHA VENCIMIENTO": "19/01/24",
+              "FECHA PROXIMO RECIBO": 45902,
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Ipiales%201-%20Energia%20(1).pdf",
+              "VALOR KW": 904.833333333333,
+              "KW DESVIACIÓN ": "NORMAL",
+              "VALOR AGUA M3 ": "",
+              "M3 DESVIACIÓN ": "",
+              "VALIDACIÓN": "REVISAR"
+            },
+            {
+              "ITEM": 36,
+              "OFICINA": "",
+              "CENTRO COSTOS": "",
+              "TERRITORIAL": "",
+              "CONTRATO": "220-2800-0052-3",
+              "EMPRESA": "EMPSA E.S.P",
+              "NIT": 800170559,
+              "TIPO FACTURA": "ACUEDUCTO",
+              "NO. FACTURA": 478318,
+              "ENERGIA": 0,
+              "KW ENERGIA": 0,
+              "IMTO AP": 0,
+              "ACUEDUCTO": 10909,
+              "METROS CUBICOS": 3,
+              "ASEO": 95466,
+              "TOTAL RECIBO": 115700,
+              "PERIODO FACTURADO INICIAL": 45303,
+              "PERIODO FACTURADO FINAL": 45658,
+              "FECHA LLEGADA": 0,
+              "FECHA VENCIMIENTO": "22/01/25",
+              "FECHA PROXIMO RECIBO": 0,
+              "FECHA EXTRACCIÓN": "05-02-2025",
+              "LINK PDF": "https://kryptocolombia-my.sharepoint.com/personal/edgar_caballero_krypto_com_co/Documents/Innovaci%C3%B3n%20y%20Tecnolog%C3%ADa/IntegrIA/Proyectos%20automatizaci%C3%B3n/07%20Bancamia/Facturas%20Servicios%20Publicos/Tuquerres-Acueducto%20(1).pdf",
+              "VALOR KW": "",
+              "KW DESVIACIÓN ": "",
+              "VALOR AGUA M3 ": 3636.33333333333,
+              "M3 DESVIACIÓN ": "NORMAL",
+              "VALIDACIÓN": "REVISAR"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "versionId": "328609ef-6eb2-483f-bad9-41ec804ad0ca",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2025-02-14T20:11:33.618Z",
+      "updatedAt": "2025-02-14T20:11:33.618Z",
+      "id": "xgaldxYSq9KKAeAL",
+      "name": "Bancamia"
+    }
+  ]
+}
