@@ -1,0 +1,503 @@
+{
+  "createdAt": "2024-12-12T05:08:59.346Z",
+  "updatedAt": "2025-03-04T23:10:38.107Z",
+  "id": "xtICDNoke9fjldZj",
+  "name": "Accounting Records v3 - 6. CCO",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b3dbb0b2-77f3-434b-88c6-be352f282fc4",
+              "leftValue": "={{$json[\"Centers\"]}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "8ba3ba59-f618-4502-8d9d-69911a773b7c",
+              "leftValue": "={{$json[\"type\"] || \"Manual\"}}",
+              "rightValue": "Parametrizado",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        300
+      ],
+      "id": "f0407ab7-fd90-4907-9cfa-45433f23f427",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "Accounting_Records"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        540,
+        460
+      ],
+      "id": "042ba4c0-f693-4601-8561-4e4707845b1b",
+      "name": "Data_AccountingRecords",
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "ParamCC",
+        "returnAll": true,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "SenderParty_CompanyID",
+              "condition": "eq",
+              "keyValue": "={{ $json[\"SenderParty_CompanyID\"] }}"
+            },
+            {
+              "keyName": "ReceiverParty_CompanyID",
+              "condition": "eq",
+              "keyValue": "={{ $json[\"ReceiverParty_CompanyID\"] ? parseInt($json[\"ReceiverParty_CompanyID\"], 10) : null }}\n"
+            }
+          ]
+        }
+      },
+      "name": "Data_ParamCC",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        740,
+        460
+      ],
+      "id": "a65ac66b-42ad-4776-a9dd-432ddb1d38fa",
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "U4Lx0acH9rOsOwsN",
+          "name": "Supabase InvoiceData"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "SenderParty_CompanyID",
+              "field2": "SenderParty_CompanyID"
+            },
+            {
+              "field1": "ReceiverParty_CompanyID",
+              "field2": "ReceiverParty_CompanyID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        760,
+        300
+      ],
+      "id": "9eb1144a-f890-4464-b89c-15cc39e4c07a",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "Limpieza de data\n\n- Revisa la información de las facturas y asigna los cenros de costos correspondientes para determinar si esta parametrizado o debe hacerse una asignación manual.",
+        "height": 660,
+        "width": 760,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        300,
+        160
+      ],
+      "id": "eb7ab931-37e4-4c75-aade-ce2a80f994b2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Inicializamos el consecutivo del comprobante\nlet comprobanteConsecutivo = 100;\n\n// Almacenamos el último ID de factura procesado\nlet ultimoParentDocumentID = null;\n\n// Inicializamos los datos finales\nconst finalData = [];\n\n// Procesamos cada factura\nitems.forEach((item) => {\n    const {\n        ParentDocumentID,\n        Invoice_uuid,\n        InvoiceDescription,\n        SenderParty_CompanyID,\n        ReceiverParty_CompanyID,\n        Centers,\n        ...cuentasContables\n    } = item.json;\n\n    // Validación de ParentDocumentID\n    if (!ParentDocumentID) {\n        throw new Error(`❌ La factura con ID '${Invoice_uuid || \"undefined\"}' tiene el campo 'ParentDocumentID' vacío o no definido.`);\n    }\n\n    // Incrementamos el consecutivo solo si el ParentDocumentID cambia\n    if (ParentDocumentID !== ultimoParentDocumentID) {\n        comprobanteConsecutivo += 1;\n        ultimoParentDocumentID = ParentDocumentID;\n    }\n\n    // Validamos Centros de Costos: Si no existen, se asigna un centro de costo por defecto\n    const centrosValidos = Centers && Array.isArray(Centers) && Centers.length > 0 ? Centers : [\n        {\n            Code: \"0\", // Código de centro de costo por defecto\n            Name: \"Sin Centro\",\n            SubName: \"Sin Subcentro\",\n            Percentage: 100,\n            Type: \"Manual\",\n        },\n    ];\n\n    // Detectar cuentas dinámicamente manteniendo su formato\n    const cuentas = Object.keys(cuentasContables)\n        .filter(key => key.startsWith(\"AccountNum\") && key.endsWith(\"_Val\") && cuentasContables[key] !== null)\n        .map(key => {\n            const baseKey = key.replace(\"_Val\", \"\");\n            return {\n                codigo: cuentasContables[baseKey],\n                descripcion: cuentasContables[`${baseKey}_Des`] || null,\n                valor: parseFloat(cuentasContables[key]) || 0,\n                tipo: cuentasContables[`${baseKey}_Deb_Cred`] === \"Credit\" ? \"Credito\" : \"Debito\"\n            };\n        });\n\n    // Procesamos cada centro de costo para generar las cuentas de gastos/costos\n    centrosValidos.forEach((center) => {\n        const { Code, Percentage } = center;\n\n        cuentas.forEach(({ codigo, descripcion, tipo, valor }) => {\n            if (codigo && typeof codigo === \"number\") {\n                finalData.push({\n                    TipoDeComprobante: \"P\",\n                    ConsecutivoComprobante: comprobanteConsecutivo,\n                    FechaElaboracion: new Date().toLocaleDateString(\"es-CO\"), // Fecha actual\n                    SiglaMoneda: \"\",\n                    TasaCambio: \"\",\n                    CodigoCuentaContable: codigo,\n                    IdentificacionTercero: SenderParty_CompanyID,\n                    Sucursal: \"\",\n                    CodigoProducto: \"\",\n                    CodigoDeBodega: \"\",\n                    Accion: \"\",\n                    CantidadProducto: \"\",\n                    Prefijo: \"\",\n                    Consecutivo: \"\",\n                    NumeroCuota: \"\",\n                    FechaVencimiento: \"\",\n                    CodigoImpuesto: \"\",\n                    CodigoGrupoActivoFijo: \"\",\n                    CodigoActivoFijo: \"\",\n                    Descripcion: `${ParentDocumentID} ${InvoiceDescription || \"\"}`.trim(),\n                    CodigoCentroSubcentroDeCostos: Code || \"0\",\n                    Debito: tipo === 'Debito' ? ((valor * Percentage) / 100).toFixed(2).replace('.', ',') : \"0\",\n                    Credito: tipo === 'Credito' ? ((valor * Percentage) / 100).toFixed(2).replace('.', ',') : \"0\",\n                    Observaciones: `${ParentDocumentID} ${InvoiceDescription || \"\"}`.trim(),\n                    BaseGravableLibroComprasVentas: \"\",\n                    BaseExentaLibroComprasVentas: \"\",\n                    MesDeCierre: \"\",\n                });\n            }\n        });\n    });\n});\n\n// Devolvemos los datos finales\nreturn finalData.map((data) => ({ json: data }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        300
+      ],
+      "id": "f62c6cac-f416-438f-9ac7-1f01a6a72e1f",
+      "name": "Distribución"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        300
+      ],
+      "id": "592be5dc-a4a8-456c-8aa4-cdfff1826359",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "fileName": "Validacion_Facturas.xlsx",
+        "parentId": "01PHCLF5BRGX63ADJKEZDJKLVNEIWNENWF",
+        "binaryData": true
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        300
+      ],
+      "id": "fb347628-8805-4139-9893-75798a46dc27",
+      "name": "Microsoft OneDrive",
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "VuffFQLziQK9I5pc",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        360,
+        460
+      ],
+      "id": "5167023c-caa4-4748-898b-f0bbb5b820b3",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener datos de los nodos anteriores\nconst accountingRecords = $items('Data_AccountingRecords').map(item => item.json) || [];\nconst paramCC = $items('Data_ParamCC').map(item => item.json) || [];\n\n// Validar datos clave de entrada\nif (accountingRecords.length === 0) {\n    throw new Error(\"❌ No se encontraron datos en el nodo Data_AccountingRecords.\");\n}\nif (paramCC.length === 0) {\n    throw new Error(\"❌ No se encontraron datos en el nodo Data_ParamCC.\");\n}\n\n// Fusionar datos usando SenderParty_CompanyID como clave común\nconst mergedData = [];\n\naccountingRecords.forEach(record => {\n    const matchingParam = paramCC.find(cc => cc.SenderParty_CompanyID === record.SenderParty_CompanyID);\n\n    const cuentas = Object.keys(record)\n        .filter(key => key.startsWith(\"AccountNum\") && record[key] !== null)\n        .reduce((acc, key) => {\n            acc[key] = record[key];\n            return acc;\n        }, {});\n\n    if (matchingParam) {\n        mergedData.push({\n            // Información de la factura\n            ParentDocumentID: record.ParentDocumentID || null,\n            Invoice_uuid: record.Invoice_uuid || null,\n            PayableAmount: parseFloat(record.PayableAmount) || 0,\n            InvoiceDescription: record.InvoiceDescription || null,\n            ExpenseType: record.ExpenseType || null,\n            IVA: parseFloat(record.IVA) || 0,\n            ReteFuente: parseFloat(record.ReteFuente) || 0,\n            ReteICA: parseFloat(record.ReteICA) || 0,\n            TaxInclusiveAmount: parseFloat(record.TaxInclusiveAmount) || 0,\n            SenderParty_CompanyID: record.SenderParty_CompanyID,\n            ReceiverParty_CompanyID: record.ReceiverParty_CompanyID,\n            type: matchingParam.Tipo || \"Manual\",\n            \n            // Cuentas contables en su formato original\n            ...cuentas,\n\n            // Distribución en centros de costos\n            Centers: Array.from({ length: 12 }, (_, i) => {\n                const index = i + 1;\n                const code = matchingParam[`COD_CC_${index}`];\n                const name = matchingParam[`NOMBRE_CC_${index}`];\n                const subName = matchingParam[`NOMBRE_SUBCC_${index}`];\n                const percentage = matchingParam[`%_CC_${index}`];\n\n                return code && percentage\n                    ? {\n                          Code: code.trim(),\n                          Name: name?.trim() || null,\n                          SubName: subName?.trim() || null,\n                          Percentage: parseFloat(percentage.replace('%', '').trim()) || 0,\n                          Type: \"Parametrizado\"\n                      }\n                    : null;\n            }).filter(center => center !== null)\n        });\n    } else {\n        // Caso donde no hay coincidencia de centros de costos, marcamos manual\n        mergedData.push({\n            ParentDocumentID: record.ParentDocumentID || null,\n            Invoice_uuid: record.Invoice_uuid || null,\n            PayableAmount: parseFloat(record.PayableAmount) || 0,\n            InvoiceDescription: record.InvoiceDescription || null,\n            ExpenseType: record.ExpenseType || null,\n            IVA: parseFloat(record.IVA) || 0,\n            ReteFuente: parseFloat(record.ReteFuente) || 0,\n            ReteICA: parseFloat(record.ReteICA) || 0,\n            TaxInclusiveAmount: parseFloat(record.TaxInclusiveAmount) || 0,\n            SenderParty_CompanyID: record.SenderParty_CompanyID,\n            ReceiverParty_CompanyID: record.ReceiverParty_CompanyID,\n            type: \"Manual\", // Manual si no hay coincidencias\n            \n            // Cuentas contables en su formato original\n            ...cuentas,\n            \n            Centers: []\n        });\n    }\n});\n\n// Devolver datos fusionados\nreturn mergedData.map(data => ({ json: data }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        300
+      ],
+      "id": "cafe39a3-d572-447b-9e60-b117dff33c61",
+      "name": "Depuración"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Registrar detalles de facturas que no pasaron la validación\nconst invoiceDetails = $json.Invoice_uuid || \"No UUID disponible\";\nconst errorReason = $json.Centers?.length > 0 \n  ? \"Centros de costos no parametrizados correctamente.\" \n  : \"Centros de costos vacíos.\";\n\nreturn [\n  {\n    json: {\n      Invoice_uuid: invoiceDetails,\n      ErrorReason: errorReason,\n      AdditionalInfo: $json\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        480
+      ],
+      "id": "4d3a1720-9f7c-456c-b29e-24325cd9647b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "",
+                    "rightValue": "SiigoPyme",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "215e87df-918b-45d6-a700-e778107f7890"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2e450691-ad5a-49d0-9699-f804249db7cc",
+                    "leftValue": "",
+                    "rightValue": "SiigoNube",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8165662d-2f7a-41d4-a4c9-0efdeae0851a",
+                    "leftValue": "",
+                    "rightValue": "WorldOffice",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e12532d5-63ac-4a3e-990f-fd40660a365d",
+                    "leftValue": "",
+                    "rightValue": "Aliaddo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e448f742-dec6-4a41-8f71-a2e7f64c9c31",
+                    "leftValue": "",
+                    "rightValue": "Alegra",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1360,
+        60
+      ],
+      "id": "e1b04f82-b2df-48ba-ba66-9d09f19af334",
+      "name": "Switch"
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Distribución",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data_AccountingRecords": {
+      "main": [
+        [
+          {
+            "node": "Data_ParamCC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data_ParamCC": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Depuración",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Distribución": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Microsoft OneDrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Data_AccountingRecords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Depuración": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9c2742f0-3deb-4688-ab26-5495115ff110",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2025-02-04T13:55:27.606Z",
+      "updatedAt": "2025-02-04T13:55:27.606Z",
+      "id": "sFbVSiMOCzwy8ZoJ",
+      "name": "Causacion"
+    }
+  ]
+}
