@@ -1,0 +1,2469 @@
+{
+  "createdAt": "2024-09-24T23:42:32.771Z",
+  "updatedAt": "2024-09-24T23:42:32.771Z",
+  "id": "NnSqIJKpDVbTXqxV",
+  "name": "Accounting Records v2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "21d8869f-9d39-41af-91a2-173fbe262f05",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3740,
+        1660
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cb8215b3-b748-49ae-a7cb-1321694fb6bb",
+              "leftValue": "={{ $json.mimeType }}",
+              "rightValue": "xml",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "id": "4d465bca-c69a-4406-8792-7a2df4a1fa03",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        -2840,
+        1680
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "xml",
+        "options": {}
+      },
+      "id": "39922986-95d1-47d5-bf20-9c63be213c42",
+      "name": "XML Data",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2420,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "886b885f-ceff-47ea-9ed4-e15c4b6b935a",
+      "name": "Get Files / XML",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2640,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Function to remove null values from an object\nconst removeNulls = (obj) => {\n  for (const key in obj) {\n    if (obj[key] === null) {\n      delete obj[key];\n    }\n  }\n  return obj;\n};\n\n// Apply the function to each item in the 'items' array provided by n8n\nreturn items.map(item => {\n  const cleanedData = removeNulls(item.json);\n  return {\n    json: cleanedData\n  };\n});"
+      },
+      "id": "bd2ad024-2dd1-488c-9d30-80de2747cd5c",
+      "name": "Clean JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1156,
+        1460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('List Files').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1o1Gd60RuWV_BDNGoaElP-FV2z8ERSMkw",
+          "mode": "list",
+          "cachedResultName": "Extracted",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1o1Gd60RuWV_BDNGoaElP-FV2z8ERSMkw"
+        }
+      },
+      "id": "3e57d930-2605-4717-a3ba-5816e33809f6",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        980,
+        2020
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "Invoices_n8n",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "91baad36-fd5d-4924-b7b1-8143c501e6de",
+      "name": "InvoiceDB",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        600,
+        1160
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('List Files').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "19cGASY6TsytZwJX9gloRQ0y-HJbUvaFY",
+          "mode": "list",
+          "cachedResultName": "Error",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/19cGASY6TsytZwJX9gloRQ0y-HJbUvaFY"
+        }
+      },
+      "id": "e3371d1e-5fe1-48ff-98f5-5955912ba016",
+      "name": "Error Handling 1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2180,
+        2020
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "VendorAccounts",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ReceiverParty_CompanyID",
+              "condition": "ilike",
+              "keyValue": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_CompanyID }}"
+            },
+            {
+              "keyName": "SenderParty_CompanyID",
+              "condition": "like",
+              "keyValue": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_CompanyID }}"
+            }
+          ]
+        }
+      },
+      "id": "04513b46-0f45-42a4-98f4-8912d351658d",
+      "name": "VendorAccounts",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1396,
+        1480
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "31fce415-158f-4f3a-95ab-abde72f17a66",
+              "leftValue": "={{ $json.data[0] }}",
+              "rightValue": "[empty]",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "dd392e22-ce66-483f-8616-46c2ddbc28a3",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        -720,
+        1460
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "fbadaea8-b3ac-44ca-8b43-d7f682c2d555",
+      "name": "Aggregate Accounts",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -936,
+        1460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ParentDocumentID": "={{ $('Invoice Data').item.json.choices[0].message.content.ParentDocumentID }}",
+            "IssueDate": "={{ $('Invoice Data').item.json.choices[0].message.content.IssueDate }}",
+            "SenderParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_RegistrationName }}",
+            "SenderParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_CompanyID }}",
+            "ReceiverParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_RegistrationName }}",
+            "ReceiverParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_CompanyID }}",
+            "Error_Log": "Tercero Sin Parametrización",
+            "FileName": "={{ $('Get Files / XML').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ParentDocumentID",
+              "displayName": "ParentDocumentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IssueDate",
+              "displayName": "IssueDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_RegistrationName",
+              "displayName": "SenderParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_CompanyID",
+              "displayName": "SenderParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_RegistrationName",
+              "displayName": "ReceiverParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_CompanyID",
+              "displayName": "ReceiverParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileName",
+              "displayName": "FileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error_Log",
+              "displayName": "Error_Log",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "52dd4503-9d4c-45f4-875f-0d77305a850f",
+      "name": "Error Log 1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1340,
+        1740
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ParentDocumentID": "={{ $('Invoice Data').item.json.choices[0].message.content.ParentDocumentID }}",
+            "IssueDate": "={{ $('Invoice Data').item.json.choices[0].message.content.IssueDate }}",
+            "SenderParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_RegistrationName }}",
+            "SenderParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_CompanyID }}",
+            "ReceiverParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_RegistrationName }}",
+            "ReceiverParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_CompanyID }}",
+            "Error_Log": "Error AI - Descripción",
+            "FileName": "={{ $('Get Files / XML').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ParentDocumentID",
+              "displayName": "ParentDocumentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IssueDate",
+              "displayName": "IssueDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_RegistrationName",
+              "displayName": "SenderParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_CompanyID",
+              "displayName": "SenderParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_RegistrationName",
+              "displayName": "ReceiverParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_CompanyID",
+              "displayName": "ReceiverParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileName",
+              "displayName": "FileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error_Log",
+              "displayName": "Error_Log",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5899fdce-5b06-4414-a9c0-dffbadac2e27",
+      "name": "Error Log 2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -440,
+        1740
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "# Extracción Data Facturas\n\n### - Transforma datos xml en binario base64\n### - Extrae información tomando parámetros y elementos de la DIAN\n### - Eror Handler --> archiva documento en carpeta error\n\n       *- Posibles errores:* \n          *1. API Rate Limit \n          *2. Archivo corrupto.\n\n### - Iteración entre los documentos en la carpeta\n\n\n",
+        "height": 1010.3808916888876,
+        "width": 1197.3824360862534,
+        "color": 7
+      },
+      "id": "111f37b5-a91f-4202-a504-8bdae2672e0c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2675.2034732079273,
+        1240
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Parametrización Cuentas Terceros\n\n### - Para cada tercero parametriza las cuentas contales que se deben contemplar en la clasificación de las cuentas contables.\n### - Descarta (Error) la factura si el tercero no tiene parametrización de cuentas. \n\n",
+        "height": 1129.8921461084183,
+        "width": 642.9015458554296,
+        "color": 7
+      },
+      "id": "c45e81d9-7f7e-40ff-99fe-24ff02386274",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Descripción Factura\n\n### - Basado en los items del documento genera un breve resumen de la factura\n### - Crea un listado \"plano\" de los items de la factura\n### - Basado en el resumen y los items determina el tipo de gasto. Servicio, producto, activo e inventario.\n",
+        "height": 1229.6664089639191,
+        "width": 646.935218642787,
+        "color": 7
+      },
+      "id": "298c68ee-0d35-41c1-a6ae-2febb5ec13ac",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Clasificación Cuentas Contables\n\n### - Clasifica y asigna las cuentas contables para la factura, se basa en toda la información de la factura y las cuentas contables parametrizadas para el tercero.\n### - Agrupa y todas las variables y ajusta el fomato para registrar los datos en la DB.\n### - Mueve las facturas (archivos) a carpeta de extraidos. Si no hay error, mueve únicamente las facturas que fueron procesadas corrctamente",
+        "height": 1330.2329548802854,
+        "width": 1223.679849492316,
+        "color": 7
+      },
+      "id": "e5b18468-e73f-4f08-8130-d89b7773dd6f",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -73.44320601987692,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Parametrización del Modelo\n\n### - Cargue parámetros para el modelo AI y prompts\n### - Listado facturas disponibles para procesar\n\n\n",
+        "height": 910.2845438926778,
+        "width": 1103.5589935768073,
+        "color": 7
+      },
+      "id": "8bcaf337-eff3-4453-b1ae-8b4edf75b281",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3820,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Error Handler \nDocumento con el reporte de errores encontrados.\n\n**Click to View** \n[Document - Error Log](https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit?usp=sharing)\n",
+        "height": 149.78902290299715,
+        "width": 370.10050008103264,
+        "color": 7
+      },
+      "id": "de1c323f-556e-4f03-823d-f66feaba88d3",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        1740
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1275033e-f388-4732-b0ad-fb9cd3b50943",
+      "name": "XML",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -2200,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract the data from the previous node\nconst invoiceData = items[0].json.Invoice;\n\n// Initialize the result object with the necessary fields\nconst result = {\n  ParentDocumentID: invoiceData[\"cbc:ID\"] || \"\",\n  IssueDate: invoiceData[\"cbc:IssueDate\"] || \"\",\n  SenderParty_RegistrationName: invoiceData[\"cac:AccountingSupplierParty\"]?.[\"cac:Party\"]?.[\"cac:PartyTaxScheme\"]?.[\"cbc:RegistrationName\"] || \"\",\n  SenderParty_CompanyID: invoiceData[\"cac:AccountingSupplierParty\"]?.[\"cac:Party\"]?.[\"cac:PartyTaxScheme\"]?.[\"cbc:CompanyID\"]?._ || \"\",\n  ReceiverParty_RegistrationName: invoiceData[\"cac:AccountingCustomerParty\"]?.[\"cac:Party\"]?.[\"cac:PartyTaxScheme\"]?.[\"cbc:RegistrationName\"] || \"\",\n  ReceiverParty_CompanyID: invoiceData[\"cac:AccountingCustomerParty\"]?.[\"cac:Party\"]?.[\"cac:PartyTaxScheme\"]?.[\"cbc:CompanyID\"]?._ || \"\",\n  LineExtensionAmount: invoiceData[\"cac:LegalMonetaryTotal\"]?.[\"cbc:LineExtensionAmount\"]?._ || \"\",\n  TaxInclusiveAmount: invoiceData[\"cac:LegalMonetaryTotal\"]?.[\"cbc:TaxInclusiveAmount\"]?._ || \"\",\n  IVA: \"\",\n  IC: \"\",\n  ICA: \"\",\n  INC: \"\",\n  ReteIVA: \"\",\n  ReteFuente: \"\",\n  ReteICA: \"\",\n  PayableAmount: invoiceData[\"cac:LegalMonetaryTotal\"]?.[\"cbc:PayableAmount\"]?._ || \"\",\n  InvoiceLine: \"\",\n  CUFE: invoiceData[\"cbc:UUID\"]?._ || \"\"\n};\n\n// Extract tax information\nconst taxDetails = invoiceData[\"cac:TaxTotal\"]?.[\"cac:TaxSubtotal\"];\nif (Array.isArray(taxDetails)) {\n  // Iterate through the array to find IVA\n  result.IVA = taxDetails\n    .filter(subtotal => subtotal[\"cac:TaxCategory\"]?.[\"cac:TaxScheme\"]?.[\"cbc:ID\"] === \"01\")\n    .map(subtotal => parseFloat(subtotal[\"cbc:TaxAmount\"]?._ || \"0\"))\n    .reduce((acc, amount) => acc + amount, 0)\n    .toFixed(2); // Sum all IVA amounts\n} else if (taxDetails?.[\"cac:TaxCategory\"]?.[\"cac:TaxScheme\"]?.[\"cbc:ID\"] === \"01\") {\n  result.IVA = taxDetails[\"cbc:TaxAmount\"]?._ || \"\";\n}\n\n// Extract withholding taxes\nconst withholdingTaxes = invoiceData[\"cac:WithholdingTaxTotal\"];\nif (Array.isArray(withholdingTaxes)) {\n  withholdingTaxes.forEach((tax) => {\n    const taxSchemeID = tax[\"cac:TaxSubtotal\"]?.[\"cac:TaxCategory\"]?.[\"cac:TaxScheme\"]?.[\"cbc:ID\"];\n    const taxAmount = parseFloat(tax[\"cac:TaxSubtotal\"]?.[\"cbc:TaxAmount\"]?._ || \"0\");\n    switch (taxSchemeID) {\n      case \"05\":\n        result.ReteIVA = (parseFloat(result.ReteIVA) || 0) + taxAmount;\n        break;\n      case \"06\":\n        result.ReteFuente = (parseFloat(result.ReteFuente) || 0) + taxAmount;\n        break;\n      case \"07\":\n        result.ReteICA = (parseFloat(result.ReteICA) || 0) + taxAmount;\n        break;\n    }\n  });\n\n  // Convert to strings to avoid potential type mismatch\n  result.ReteIVA = result.ReteIVA ? result.ReteIVA.toFixed(2) : \"\";\n  result.ReteFuente = result.ReteFuente ? result.ReteFuente.toFixed(2) : \"\";\n  result.ReteICA = result.ReteICA ? result.ReteICA.toFixed(2) : \"\";\n}\n\n// Extract invoice line items\nconst invoiceLines = invoiceData[\"cac:InvoiceLine\"];\nlet invoiceLineDescriptions = [];\n\nif (Array.isArray(invoiceLines)) {\n  // If it's an array, loop through each invoice line\n  invoiceLines.forEach(invoiceLine => {\n    const description = invoiceLine[\"cac:Item\"]?.[\"cbc:Description\"] || \"\";\n    const quantity = invoiceLine[\"cbc:InvoicedQuantity\"]?._ || \"\";\n    const unitValue = invoiceLine[\"cac:Price\"]?.[\"cbc:PriceAmount\"]?._ || \"\";\n    const totalValue = invoiceLine[\"cbc:LineExtensionAmount\"]?._ || \"\";\n\n    invoiceLineDescriptions.push(`Description: ${description}, Quantity: ${quantity}, Unit Value: ${unitValue}, Total Value: ${totalValue}`);\n  });\n} else if (invoiceLines) {\n  // If it's a single object\n  const description = invoiceLines[\"cac:Item\"]?.[\"cbc:Description\"] || \"\";\n  const quantity = invoiceLines[\"cbc:InvoicedQuantity\"]?._ || \"\";\n  const unitValue = invoiceLines[\"cac:Price\"]?.[\"cbc:PriceAmount\"]?._ || \"\";\n  const totalValue = invoiceLines[\"cbc:LineExtensionAmount\"]?._ || \"\";\n\n  invoiceLineDescriptions.push(`Description: ${description}, Quantity: ${quantity}, Unit Value: ${unitValue}, Total Value: ${totalValue}`);\n}\n\n// Combine all invoice lines into a single string, separated by semicolons\nresult.InvoiceLine = invoiceLineDescriptions.join(\"; \");\n\n// Return the result as JSON\nreturn [{ json: result }];"
+      },
+      "id": "a9131675-5c88-4636-aa38-0e397888b7a8",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2000,
+        1580
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "7d9b75ab-392d-435a-806e-d637c2c3261e",
+      "name": "Aggregate1",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1800,
+        1480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b5db9061-d7ff-4482-98f9-f0c3ac0c4a18",
+              "name": "choices[0].message.content",
+              "value": "={{ $json.data[0] }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eddbc6e9-0c1f-4246-aafb-1f9c54b8666d",
+      "name": "Invoice Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1600,
+        1480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e73f4bb-83d9-4e82-a329-a2ce9a2e869c",
+              "name": "InvoiceData",
+              "value": "={{ $('Invoice Data').item.json.choices[0].message.content }}",
+              "type": "object"
+            },
+            {
+              "id": "a40922ae-c963-4382-8820-687a45c13d04",
+              "name": "TokenIn",
+              "value": "={{  parseInt($('Invoice Description').item.json.usage.prompt_tokens) }}\n",
+              "type": "number"
+            },
+            {
+              "id": "b497f24b-3185-4ae2-8fb4-8e1e9cf60898",
+              "name": "TokenOut",
+              "value": "={{ parseInt($('Invoice Description').item.json.usage.completion_tokens) }}",
+              "type": "number"
+            },
+            {
+              "id": "66352388-d909-4b38-ade0-fe401a99db61",
+              "name": "Invoice_Description",
+              "value": "={{ $('Invoice Description').item.json.choices[0].message.content }}",
+              "type": "object"
+            },
+            {
+              "id": "be7d8fd4-d3b2-4356-badc-74b11913790f",
+              "name": "Account_Classification",
+              "value": "={{ $json.choices[0].message.content }}",
+              "type": "object"
+            },
+            {
+              "id": "118dbb9d-5823-4352-9879-e87fa70a1585",
+              "name": "TokenIn2",
+              "value": "={{ $json.usage.prompt_tokens }}",
+              "type": "number"
+            },
+            {
+              "id": "0cba95bd-248a-432c-a607-f18a001f4a24",
+              "name": "TokenOut2",
+              "value": "={{ $json.usage.completion_tokens }}",
+              "type": "number"
+            },
+            {
+              "id": "0614b95b-d447-494a-83f8-ce32f96c035a",
+              "name": "AI_Model",
+              "value": "={{ $('Invoice Description').item.json.model }}",
+              "type": "string"
+            },
+            {
+              "id": "95c40cdf-af6d-499e-98ea-5f3c087e465e",
+              "name": "AI_Model2",
+              "value": "={{ $json.model }}",
+              "type": "string"
+            },
+            {
+              "id": "2ca64fba-8eee-4369-ac81-8cc354e09eb1",
+              "name": "FileName",
+              "value": "={{ $('Get Files / XML').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "5d48a1ba-9608-4e6e-ab29-021b6d3e63c8",
+              "name": "FileFormat",
+              "value": "={{ $('Get Files / XML').item.json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "64d8f754-c155-4ed1-ab74-088e5ff47e49",
+              "name": "DataExtractionDate",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            },
+            {
+              "id": "34238d76-00c1-41b3-af43-4a6b57151a44",
+              "name": "CUFE",
+              "value": "={{ $('Invoice Data').item.json.choices[0].message.content.CUFE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9baf8dcc-0bb3-4010-9568-2509b8375098",
+      "name": "All_Invoice_Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        1180
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Access the data from All_Invoice_data node\nconst invoiceData = $json.InvoiceData;\nconst invoiceDescription = $json.Invoice_Description;\nconst accountClassification = $json.Account_Classification;\n\n// Check if InvoiceLine is an array or a string and handle accordingly\nlet invoiceLineDescription;\nif (Array.isArray(invoiceData.InvoiceLine)) {\n  // If it's an array, use .map() to concatenate descriptions\n  invoiceLineDescription = invoiceData.InvoiceLine.map(item => \n    `\\tDescription: ${item.Description}\\n\\tInvoicedQuantity: ${item.InvoicedQuantity}\\n\\tPriceAmount: ${item.PriceAmount}\\n\\tLineExtensionAmount: ${item.LineExtensionAmount}`\n  ).join(\"\\n\\n\");\n} else {\n  // If it's not an array (assuming it's a string), use it directly\n  invoiceLineDescription = invoiceData.InvoiceLine;\n}\n\n// Prepare the data to match the Supabase schema\nreturn {\n  json: {\n    ParentDocumentID: invoiceData.ParentDocumentID,\n    IssueDate: invoiceData.IssueDate,\n    SenderParty_RegistrationName: invoiceData.SenderParty_RegistrationName,\n    SenderParty_CompanyID: parseInt(invoiceData.SenderParty_CompanyID),\n    ReceiverParty_RegistrationName: invoiceData.ReceiverParty_RegistrationName,\n    ReceiverParty_CompanyID: parseInt(invoiceData.ReceiverParty_CompanyID),\n    LineExtensionAmount: parseFloat(invoiceData.LineExtensionAmount).toFixed(2),\n    TaxInclusiveAmount: parseFloat(invoiceData.TaxInclusiveAmount).toFixed(2),\n    IVA: invoiceData.IVA ? parseFloat(invoiceData.IVA).toFixed(2) : 0,\n    IC: invoiceData.IC ? parseFloat(invoiceData.IC).toFixed(2) : 0,\n    ICA: invoiceData.ICA ? parseFloat(invoiceData.ICA).toFixed(2) : 0,\n    INC: invoiceData.INC ? parseFloat(invoiceData.INC).toFixed(2) : 0,\n    ReteIVA: invoiceData.ReteIVA ? parseFloat(invoiceData.ReteIVA).toFixed(2) : 0,\n    ReteFuente: invoiceData.ReteFuente ? parseFloat(invoiceData.ReteFuente).toFixed(2) : 0,\n    ReteICA: invoiceData.ReteICA ? parseFloat(invoiceData.ReteICA).toFixed(2) : 0,\n    PayableAmount: parseFloat(invoiceData.PayableAmount).toFixed(2),\n    \n    // Set InvoiceLine (either the concatenated string or the original string)\n    InvoiceLine: invoiceLineDescription,\n\n    // Add CUFE, DataExtractionDate and File information\n    CUFE: $json.CUFE,\n    DataExtractionDate: new Date().toISOString(),\n    FileName: $json.FileName,\n    FileFormat: $json.FileFormat,\n\n    // Add AI model and token information\n    AI_Model: $json.AI_Model,\n    TokenIn: parseInt($json.TokenIn),\n    TokenOut: parseInt($json.TokenOut),\n    AI_Model2: $json.AI_Model2,\n    TokenIn2: parseInt($json.TokenIn2),\n    TokenOut2: parseInt($json.TokenOut2),\n\n    // Invoice description and expense type\n    InvoiceDescription: invoiceDescription.Description,\n    ExpenseType: invoiceDescription.ExpenseType,\n\n    // Account Classification\n    AccountNum1: accountClassification.AccountNum1 ? parseInt(accountClassification.AccountNum1) : null,\n    AccountNum1_Des: accountClassification.AccountNum1_Des || null,\n    AccountNum1_Val: accountClassification.AccountNum1_Val ? parseFloat(accountClassification.AccountNum1_Val).toFixed(2) : null,\n    AccountNum1_Deb_Cred: accountClassification.AccountNum1_Deb_Cred || null,\n\n    AccountNum2: accountClassification.AccountNum2 ? parseInt(accountClassification.AccountNum2) : null,\n    AccountNum2_Des: accountClassification.AccountNum2_Des || null,\n    AccountNum2_Val: accountClassification.AccountNum2_Val ? parseFloat(accountClassification.AccountNum2_Val).toFixed(2) : null,\n    AccountNum2_Deb_Cred: accountClassification.AccountNum2_Deb_Cred || null,\n\n\n    AccountNum3: accountClassification.AccountNum3 ? parseInt(accountClassification.AccountNum3) : null,\n    AccountNum3_Des: accountClassification.AccountNum3_Des || null,\n    AccountNum3_Val: accountClassification.AccountNum3_Val ? parseFloat(accountClassification.AccountNum3_Val).toFixed(2) : null,\n    AccountNum3_Deb_Cred: accountClassification.AccountNum3_Deb_Cred || null,\n\n    AccountNum4: accountClassification.AccountNum4 ? parseInt(accountClassification.AccountNum4) : null,\n    AccountNum4_Des: accountClassification.AccountNum4_Des || null,\n    AccountNum4_Val: accountClassification.AccountNum4_Val ? parseFloat(accountClassification.AccountNum4_Val).toFixed(2) : null,\n    AccountNum4_Deb_Cred: accountClassification.AccountNum4_Deb_Cred || null,\n\n    AccountNum5: accountClassification.AccountNum5 ? parseInt(accountClassification.AccountNum5) : null,\n    AccountNum5_Des: accountClassification.AccountNum5_Des || null,\n    AccountNum5_Val: accountClassification.AccountNum5_Val ? parseFloat(accountClassification.AccountNum5_Val).toFixed(2) : null,\n    AccountNum5_Deb_Cred: accountClassification.AccountNum5_Deb_Cred || null,\n\n    AccountNum6: accountClassification.AccountNum6 ? parseInt(accountClassification.AccountNum6) : null,\n    AccountNum6_Des: accountClassification.AccountNum6_Des || null,\n    AccountNum6_Val: accountClassification.AccountNum6_Val ? parseFloat(accountClassification.AccountNum6_Val).toFixed(2) : null,\n    AccountNum6_Deb_Cred: accountClassification.AccountNum6_Deb_Cred || null,\n\n    AccountNum7: accountClassification.AccountNum7 ? parseInt(accountClassification.AccountNum7) : null,\n    AccountNum7_Des: accountClassification.AccountNum7_Des || null,\n    AccountNum7_Val: accountClassification.AccountNum7_Val ? parseFloat(accountClassification.AccountNum7_Val).toFixed(2) : null,\n    AccountNum7_Deb_Cred: accountClassification.AccountNum7_Deb_Cred || null,\n\n    AccountNum8: accountClassification.AccountNum8 ? parseInt(accountClassification.AccountNum8) : null,\n    AccountNum8_Des: accountClassification.AccountNum8_Des || null,\n    AccountNum8_Deb_Cred: accountClassification.AccountNum8_Deb_Cred || null,\n    \n    // Confidence value\n    Confidence: parseFloat(accountClassification.Confidence).toFixed(2),\n  }\n};"
+      },
+      "id": "265d714e-8cf0-4cd5-86a2-3fb8f92954eb",
+      "name": "Prepare Data for DB",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        1180
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ed8075af-6738-468a-8ac4-806e0e652911",
+              "name": "InvoiceDescription",
+              "value": "={{ $json.choices[0].message.content }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eac8b522-8ba6-4079-8b15-66a0575c408d",
+      "name": "Description",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appxDB6mSqj7XDzIC",
+          "mode": "list",
+          "cachedResultName": "InvoiceData",
+          "cachedResultUrl": "https://airtable.com/appxDB6mSqj7XDzIC"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPHIUqpr9gmLfZJ",
+          "mode": "list",
+          "cachedResultName": "AIModels_Prompts",
+          "cachedResultUrl": "https://airtable.com/appxDB6mSqj7XDzIC/tblPHIUqpr9gmLfZJ"
+        },
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "ID"
+            }
+          ]
+        }
+      },
+      "id": "fd8a6782-c462-4e6c-8695-2298fc10d0ca",
+      "name": "Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -3540,
+        1660
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "55db3f1b-a947-4f00-919b-34b91ffec424",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -3080,
+        1660
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "limit": 200,
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1ZGtCbeZOm0ervZFwY4hPwOaktoo6o5Tx",
+            "mode": "list",
+            "cachedResultName": "Invoices",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1ZGtCbeZOm0ervZFwY4hPwOaktoo6o5Tx"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {
+          "fields": [
+            "name",
+            "mimeType",
+            "id",
+            "webViewLink"
+          ]
+        }
+      },
+      "id": "8f9edb30-ead7-485d-a026-d81caa5d82d8",
+      "name": "List Files",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3340,
+        1660
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "={{ $item(1).$node[\"Airtable\"].json[\"ActualModel\"] }}",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $item(1).$node[\"Airtable\"].json[\"SystemPrompt\"] }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $item(1).$node[\"Airtable\"].json[\"UserPrompt_1\"] }}"
+            },
+            {
+              "content": "={{ $item(1).$node[\"Airtable\"].json[\"UserPrompt_2\"] }}"
+            },
+            {
+              "content": "={{ $item(1).$node[\"Airtable\"].json[\"UserPrompt_3\"] }}"
+            },
+            {
+              "content": "={{ $item(1).$node[\"Airtable\"].json[\"UserPrompt_4\"] }}"
+            },
+            {
+              "content": "={{ JSON.stringify($('Invoice Data').item.json.choices[0].message.content) }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4096,
+          "temperature": "={{ $item(1).$node[\"Airtable\"].json[\"Temperature\"] }}"
+        }
+      },
+      "id": "fc802d1e-4054-4390-91aa-a52fa829ab4b",
+      "name": "Invoice Description",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -520,
+        1360
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "={{ $item(2).$node[\"Airtable\"].json[\"ActualModel\"] }}",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $item(2).$node[\"Airtable\"].json[\"SystemPrompt\"] }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $item(2).$node[\"Airtable\"].json[\"UserPrompt_1\"] }}"
+            },
+            {
+              "content": "={{ $item(2).$node[\"Airtable\"].json[\"UserPrompt_2\"] }}"
+            },
+            {
+              "content": "={{ $item(2).$node[\"Airtable\"].json[\"UserPrompt_3\"] }}"
+            },
+            {
+              "content": "={{ $item(2).$node[\"Airtable\"].json[\"UserPrompt_4\"] }}"
+            },
+            {
+              "content": "=# Knowledge\n### Invoice Description \n{{ $json.InvoiceDescription.Description }}\n\n### Invoice information and data:\n{{ JSON.stringify($('Invoice Data').item.json.choices[0].message.content) }}\n\n### Provided Accounts from PUC:\n{{ JSON.stringify($('Aggregate Accounts').item.json.data[0]) }}\n\n\n### Expense Type:\n{{ $json.InvoiceDescription.ExpenseType }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4096,
+          "temperature": "={{ $item(2).$node[\"Airtable\"].json[\"Temperature\"] }}"
+        }
+      },
+      "id": "24bda24b-79a1-4e1f-8459-a28771aec99e",
+      "name": "Account_Classification",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -40,
+        1280
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1uymiDrtTUcy56FMufL1tYpvFJMRH_3fqdP5QBO2f_zM",
+          "mode": "list",
+          "cachedResultName": "Model Test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uymiDrtTUcy56FMufL1tYpvFJMRH_3fqdP5QBO2f_zM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2976192,
+          "mode": "list",
+          "cachedResultName": "Modelo_2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uymiDrtTUcy56FMufL1tYpvFJMRH_3fqdP5QBO2f_zM/edit#gid=2976192"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ParentDocumentID",
+              "displayName": "ParentDocumentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IssueDate",
+              "displayName": "IssueDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_RegistrationName",
+              "displayName": "SenderParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_CompanyID",
+              "displayName": "SenderParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_RegistrationName",
+              "displayName": "ReceiverParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_CompanyID",
+              "displayName": "ReceiverParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LineExtensionAmount",
+              "displayName": "LineExtensionAmount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TaxInclusiveAmount",
+              "displayName": "TaxInclusiveAmount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IVA",
+              "displayName": "IVA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IC",
+              "displayName": "IC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ICA",
+              "displayName": "ICA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "INC",
+              "displayName": "INC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReteIVA",
+              "displayName": "ReteIVA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReteFuente",
+              "displayName": "ReteFuente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReteICA",
+              "displayName": "ReteICA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PayableAmount",
+              "displayName": "PayableAmount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "InvoiceLine",
+              "displayName": "InvoiceLine",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DataExtractionDate",
+              "displayName": "DataExtractionDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileName",
+              "displayName": "FileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileFormat",
+              "displayName": "FileFormat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI_Model",
+              "displayName": "AI_Model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TokenIn",
+              "displayName": "TokenIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TokenOut",
+              "displayName": "TokenOut",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "InvoiceDescription",
+              "displayName": "InvoiceDescription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ExpenseType",
+              "displayName": "ExpenseType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum1",
+              "displayName": "AccountNum1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum1_Des",
+              "displayName": "AccountNum1_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum1_Val",
+              "displayName": "AccountNum1_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum1_Deb_Cred",
+              "displayName": "AccountNum1_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum2",
+              "displayName": "AccountNum2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum2_Des",
+              "displayName": "AccountNum2_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum2_Val",
+              "displayName": "AccountNum2_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum2_Deb_Cred",
+              "displayName": "AccountNum2_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum3",
+              "displayName": "AccountNum3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum3_Des",
+              "displayName": "AccountNum3_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum3_Val",
+              "displayName": "AccountNum3_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum3_Deb_Cred",
+              "displayName": "AccountNum3_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum4",
+              "displayName": "AccountNum4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum4_Des",
+              "displayName": "AccountNum4_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum4_Val",
+              "displayName": "AccountNum4_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum4_Deb_Cred",
+              "displayName": "AccountNum4_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum5",
+              "displayName": "AccountNum5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum5_Des",
+              "displayName": "AccountNum5_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum5_Val",
+              "displayName": "AccountNum5_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum5_Deb_Cred",
+              "displayName": "AccountNum5_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum6",
+              "displayName": "AccountNum6",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum6_Des",
+              "displayName": "AccountNum6_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum6_Val",
+              "displayName": "AccountNum6_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum6_Deb_Cred",
+              "displayName": "AccountNum6_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum7",
+              "displayName": "AccountNum7",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum7_Des",
+              "displayName": "AccountNum7_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum7_Val",
+              "displayName": "AccountNum7_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum7_Deb_Cred",
+              "displayName": "AccountNum7_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum8",
+              "displayName": "AccountNum8",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum8_Des",
+              "displayName": "AccountNum8_Des",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum8_Val",
+              "displayName": "AccountNum8_Val",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AccountNum8_Deb_Cred",
+              "displayName": "AccountNum8_Deb_Cred",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Validation",
+              "displayName": "Validation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI_Model2",
+              "displayName": "AI_Model2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TokenIn2",
+              "displayName": "TokenIn2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TokenOut2",
+              "displayName": "TokenOut2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CUFE",
+              "displayName": "CUFE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "86253ba8-2315-4b14-b832-3e2ba4c2426e",
+      "name": "Model Test",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        460,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ParentDocumentID": "={{ $('Invoice Data').item.json.choices[0].message.content.ParentDocumentID }}",
+            "IssueDate": "={{ $('Invoice Data').item.json.choices[0].message.content.IssueDate }}",
+            "SenderParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_RegistrationName }}",
+            "SenderParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_CompanyID }}",
+            "ReceiverParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_RegistrationName }}",
+            "ReceiverParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_CompanyID }}",
+            "Error_Log": "Error Script Convertir Variables DB",
+            "FileName": "={{ $('Get Files / XML').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ParentDocumentID",
+              "displayName": "ParentDocumentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IssueDate",
+              "displayName": "IssueDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_RegistrationName",
+              "displayName": "SenderParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_CompanyID",
+              "displayName": "SenderParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_RegistrationName",
+              "displayName": "ReceiverParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_CompanyID",
+              "displayName": "ReceiverParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileName",
+              "displayName": "FileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error_Log",
+              "displayName": "Error_Log",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7a043509-a079-4008-b9f9-6978858402e3",
+      "name": "Error Log  4",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        1740
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ParentDocumentID": "={{ $('Invoice Data').item.json.choices[0].message.content.ParentDocumentID }}",
+            "IssueDate": "={{ $('Invoice Data').item.json.choices[0].message.content.IssueDate }}",
+            "SenderParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_RegistrationName }}",
+            "SenderParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_CompanyID }}",
+            "ReceiverParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_RegistrationName }}",
+            "ReceiverParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_CompanyID }}",
+            "Error_Log": "Error AI - Clasificación Cuentas",
+            "FileName": "={{ $('Get Files / XML').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ParentDocumentID",
+              "displayName": "ParentDocumentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IssueDate",
+              "displayName": "IssueDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_RegistrationName",
+              "displayName": "SenderParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_CompanyID",
+              "displayName": "SenderParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_RegistrationName",
+              "displayName": "ReceiverParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_CompanyID",
+              "displayName": "ReceiverParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileName",
+              "displayName": "FileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error_Log",
+              "displayName": "Error_Log",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "26eaddd5-d9eb-470e-be0e-415aa48ae562",
+      "name": "Error Log  3",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        20,
+        1740
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ParentDocumentID": "={{ $('Invoice Data').item.json.choices[0].message.content.ParentDocumentID }}",
+            "IssueDate": "={{ $('Invoice Data').item.json.choices[0].message.content.IssueDate }}",
+            "SenderParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_RegistrationName }}",
+            "SenderParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_CompanyID }}",
+            "ReceiverParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_RegistrationName }}",
+            "ReceiverParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_CompanyID }}",
+            "Error_Log": "Error Cargue DB",
+            "FileName": "={{ $('Get Files / XML').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ParentDocumentID",
+              "displayName": "ParentDocumentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IssueDate",
+              "displayName": "IssueDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_RegistrationName",
+              "displayName": "SenderParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_CompanyID",
+              "displayName": "SenderParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_RegistrationName",
+              "displayName": "ReceiverParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_CompanyID",
+              "displayName": "ReceiverParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileName",
+              "displayName": "FileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error_Log",
+              "displayName": "Error_Log",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4859c166-245e-414c-8723-000d77fc6598",
+      "name": "Error Log  5",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        660,
+        1740
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Error Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1G618RMtrzF5pecMAvATctu5CLl6dpL-qdKNpWaXx0mI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ParentDocumentID": "={{ $('Invoice Data').item.json.choices[0].message.content.ParentDocumentID }}",
+            "IssueDate": "={{ $('Invoice Data').item.json.choices[0].message.content.IssueDate }}",
+            "SenderParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_RegistrationName }}",
+            "SenderParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.SenderParty_CompanyID }}",
+            "ReceiverParty_RegistrationName": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_RegistrationName }}",
+            "ReceiverParty_CompanyID": "={{ $('Invoice Data').item.json.choices[0].message.content.ReceiverParty_CompanyID }}",
+            "Error_Log": "Error Script Extracción Data",
+            "FileName": "={{ $('Get Files / XML').item.json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ParentDocumentID",
+              "displayName": "ParentDocumentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IssueDate",
+              "displayName": "IssueDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_RegistrationName",
+              "displayName": "SenderParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SenderParty_CompanyID",
+              "displayName": "SenderParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_RegistrationName",
+              "displayName": "ReceiverParty_RegistrationName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReceiverParty_CompanyID",
+              "displayName": "ReceiverParty_CompanyID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FileName",
+              "displayName": "FileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error_Log",
+              "displayName": "Error_Log",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dbb9b20d-592f-42a6-8f65-f33863d9ac60",
+      "name": "Error Log ",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1920,
+        2020
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('List Files').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1aV25STJ_1QDcxK5MOA_gBRbsIduUyVh6",
+          "mode": "list",
+          "cachedResultName": "Error_Proveedor",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1aV25STJ_1QDcxK5MOA_gBRbsIduUyVh6"
+        }
+      },
+      "id": "798b515d-6749-435e-a214-403fa422589b",
+      "name": "Error Handling  2",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1320,
+        2020
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get Files / XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML Data": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Files / XML": {
+      "main": [
+        [
+          {
+            "node": "XML Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean JSON": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Accounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InvoiceDB": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Log  5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handling 1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VendorAccounts": {
+      "main": [
+        [
+          {
+            "node": "Clean JSON",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Log 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Invoice Description",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Log 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Accounts": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log 1": {
+      "main": [
+        [
+          {
+            "node": "Error Handling  2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log 2": {
+      "main": [
+        [
+          {
+            "node": "Error Handling 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Log ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Invoice Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice Data": {
+      "main": [
+        [
+          {
+            "node": "VendorAccounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All_Invoice_Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Data for DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Data for DB": {
+      "main": [
+        [
+          {
+            "node": "InvoiceDB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Log  4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "main": [
+        [
+          {
+            "node": "List Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Files": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice Description": {
+      "main": [
+        [
+          {
+            "node": "Description",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Log 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Description": {
+      "main": [
+        [
+          {
+            "node": "Account_Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Account_Classification": {
+      "main": [
+        [
+          {
+            "node": "All_Invoice_Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Log  3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log  3": {
+      "main": [
+        [
+          {
+            "node": "Error Handling 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log  4": {
+      "main": [
+        [
+          {
+            "node": "Error Handling 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log  5": {
+      "main": [
+        [
+          {
+            "node": "Error Handling 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log ": {
+      "main": [
+        [
+          {
+            "node": "Error Handling 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handling  2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "6f5e11b4-7ac7-4630-a131-5cb77a6bcc74",
+  "triggerCount": 0,
+  "tags": []
+}
